@@ -66,10 +66,8 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail, onGoToS
               ))}
             </nav>
 
-            <div className="absolute bottom-12 left-8 right-8 flex gap-3 justify-center">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="w-16 h-20 bg-primary/30 arch-shape" />
-              ))}
+            <div className="absolute bottom-12 left-8 right-8 text-center">
+              <p className="text-xs text-foreground/20 tracking-widest uppercase">Honeymoon Suite</p>
             </div>
           </motion.div>
         </>
