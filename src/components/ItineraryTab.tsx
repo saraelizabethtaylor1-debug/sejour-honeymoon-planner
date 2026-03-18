@@ -35,11 +35,11 @@ const guessIconType = (title: string): ItineraryActivity['iconType'] => {
 
 const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [day, setDay] = useState(() => ({
+  const [day, setDay] = useState<ItineraryDay>(() => ({
     ...initialDay,
     activities: initialDay.activities.map(a => ({
       ...a,
-      iconType: a.iconType || guessIconType(a.title),
+      iconType: (a.iconType || guessIconType(a.title)) as ItineraryActivity['iconType'],
     })),
   }));
   const [editingTitle, setEditingTitle] = useState(false);
