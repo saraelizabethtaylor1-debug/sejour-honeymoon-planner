@@ -244,25 +244,43 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
 
 // ── Transportation ──
 const TransportView = ({ onBack }: { onBack: () => void }) => {
-  const [items] = useState<TransportItem[]>(sampleTransport);
+  const [items, setItems] = useState<TransportItem[]>(sampleTransport);
+  const add = () => {
+    setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', time: '', cost: 0 }]);
+  };
+  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
+  const update = (id: string, field: keyof TransportItem, value: string | number) => {
+    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  };
+  const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
+
   return (
     <div>
       <DetailHeader title="Transportation" onBack={onBack} />
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-label">{item.type}</span>
-              <span className="text-xs text-primary-foreground bg-primary/30 px-3 py-0.5 pill-shape">{item.confirmation}</span>
-            </div>
-            <p className="font-serif text-lg text-foreground">{item.details}</p>
-            <div className="flex justify-between items-center mt-2">
-              <p className="text-sm text-muted-foreground">{item.time}</p>
-              <p className="text-sm text-foreground/60">${item.cost.toLocaleString()}</p>
+          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+            <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
+              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
+            </button>
+            <div className="space-y-2.5">
+              <div className="grid grid-cols-2 gap-2.5">
+                <input value={item.type} onChange={(e) => update(item.id, 'type', e.target.value)} placeholder="Type (Flight, Ferry...)" className={inputClass} />
+                <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
+              </div>
+              <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
+              <div className="grid grid-cols-2 gap-2.5">
+                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time" className={inputClass} />
+                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="Cost" className={inputClass} />
+              </div>
             </div>
           </div>
         ))}
       </div>
+      <button onClick={add} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Plus size={14} strokeWidth={1.5} />
+        <span className="font-body">Add transportation</span>
+      </button>
     </div>
   );
 };
