@@ -57,6 +57,7 @@ const Index = () => {
         onClose={() => setMenuOpen(false)}
         onNavigate={(t) => { setTab(t); setView('dashboard'); }}
         onGoHome={() => setView('home')}
+        onOpenDetail={setDetailView}
       />
 
       <AnimatePresence>

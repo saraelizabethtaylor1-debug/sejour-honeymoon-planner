@@ -1,15 +1,47 @@
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, Image as ImageIcon, X } from 'lucide-react';
+import { useState, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { ChevronDown, Plus, Image as ImageIcon, X, ArrowUp, ArrowDown, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera } from 'lucide-react';
 import type { ItineraryDay, ItineraryActivity } from '@/types/honeymoon';
 
 interface ItineraryTabProps {
   days: ItineraryDay[];
 }
 
+const iconMap: Record<string, typeof Hotel> = {
+  hotel: Hotel,
+  flight: Plane,
+  dining: UtensilsCrossed,
+  activity: Sparkles,
+  spa: Sparkles,
+  beach: Palmtree,
+  sightseeing: Landmark,
+  transport: Bus,
+  default: Camera,
+};
+
+const guessIconType = (title: string): ItineraryActivity['iconType'] => {
+  const t = title.toLowerCase();
+  if (t.includes('check-in') || t.includes('check in') || t.includes('hotel') || t.includes('suite') || t.includes('resort')) return 'hotel';
+  if (t.includes('flight') || t.includes('airport') || t.includes('fly')) return 'flight';
+  if (t.includes('dinner') || t.includes('lunch') || t.includes('breakfast') || t.includes('restaurant') || t.includes('brunch')) return 'dining';
+  if (t.includes('spa') || t.includes('massage') || t.includes('treatment')) return 'spa';
+  if (t.includes('beach') || t.includes('pool') || t.includes('swim')) return 'beach';
+  if (t.includes('tour') || t.includes('visit') || t.includes('explore') || t.includes('ruins') || t.includes('museum') || t.includes('archaeological')) return 'sightseeing';
+  if (t.includes('ferry') || t.includes('transfer') || t.includes('taxi') || t.includes('drive')) return 'transport';
+  if (t.includes('cruise') || t.includes('catamaran') || t.includes('sail')) return 'activity';
+  if (t.includes('wine') || t.includes('tasting')) return 'activity';
+  return 'activity';
+};
+
 const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [day, setDay] = useState(initialDay);
+  const [day, setDay] = useState<ItineraryDay>(() => ({
+    ...initialDay,
+    activities: initialDay.activities.map(a => ({
+      ...a,
+      iconType: (a.iconType || guessIconType(a.title)) as ItineraryActivity['iconType'],
+    })),
+  }));
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDest, setTitleDest] = useState(day.destination);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
@@ -30,8 +62,27 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
   };
 
   const addActivity = () => {
-    const newAct: ItineraryActivity = { time: '12:00 PM', title: 'New Activity', location: '', notes: '' };
+    const newAct: ItineraryActivity = { time: '12:00 PM', title: 'New Activity', location: '', notes: '', iconType: 'activity' };
     setDay({ ...day, activities: [...day.activities, newAct] });
+  };
+
+  const moveActivity = (index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= day.activities.length) return;
+    const newActivities = [...day.activities];
+    [newActivities[index], newActivities[newIndex]] = [newActivities[newIndex], newActivities[index]];
+    setDay({ ...day, activities: newActivities });
+  };
+
+  const cycleIcon = (activityIndex: number) => {
+    const types: ItineraryActivity['iconType'][] = ['hotel', 'flight', 'dining', 'activity', 'spa', 'beach', 'sightseeing', 'transport', 'default'];
+    const current = day.activities[activityIndex].iconType || 'default';
+    const currentIdx = types.indexOf(current);
+    const next = types[(currentIdx + 1) % types.length];
+    const updated = { ...day };
+    updated.activities = [...updated.activities];
+    updated.activities[activityIndex] = { ...updated.activities[activityIndex], iconType: next };
+    setDay(updated);
   };
 
   return (
@@ -60,10 +111,10 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="overflow-hidden px-6"
+            className="overflow-hidden px-4"
           >
             {/* Editable destination */}
-            <div className="pt-5 pb-2">
+            <div className="pt-5 pb-2 px-2">
               {editingTitle ? (
                 <input
                   value={titleDest}
@@ -86,60 +137,93 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
               )}
             </div>
 
-            <div className="py-4 space-y-5 border-l-2 border-primary/40 ml-4 pl-6">
+            <div className="py-4 space-y-4">
               {day.activities.length === 0 ? (
-                <p className="text-muted-foreground font-serif italic">No activities planned yet</p>
+                <p className="text-muted-foreground font-serif italic px-2">No activities planned yet</p>
               ) : (
-                day.activities.map((act, i) => (
-                  <div key={i} className="relative">
-                    <div className="absolute -left-[29px] top-1.5 w-2.5 h-2.5 rounded-full bg-primary" />
-                    <p className="text-label mb-1">{act.time}</p>
-                    <h4 className="font-serif text-lg text-foreground">{act.title}</h4>
-                    {act.location && (
-                      <p className="text-xs text-muted-foreground">{act.location}</p>
-                    )}
-                    {act.notes && (
-                      <p className="text-xs text-foreground/40 mt-1">{act.notes}</p>
-                    )}
-
-                    {/* Image */}
-                    {act.imageUrl ? (
-                      <div className="mt-3 relative w-full h-32 rounded-xl overflow-hidden">
-                        <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+                day.activities.map((act, i) => {
+                  const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
+                  return (
+                    <div key={i} className="flex gap-4 items-start bg-card rounded-2xl p-4 shadow-soft">
+                      {/* Left: Photo or Icon */}
+                      <div className="flex-shrink-0">
+                        {act.imageUrl ? (
+                          <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                            <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+                            <button
+                              onClick={() => removeImage(i)}
+                              className="absolute -top-1 -right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center"
+                            >
+                              <X size={10} className="text-card" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => fileInputRefs.current[i]?.click()}
+                            className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center hover:bg-primary/25 transition-colors group"
+                            title="Upload photo"
+                          >
+                            <IconComponent size={22} strokeWidth={1.3} className="text-primary-foreground/40 group-hover:text-primary-foreground/60 transition-colors" />
+                          </button>
+                        )}
+                        {/* Icon cycle button */}
                         <button
-                          onClick={() => removeImage(i)}
-                          className="absolute top-2 right-2 w-6 h-6 bg-foreground/60 rounded-full flex items-center justify-center"
+                          onClick={() => cycleIcon(i)}
+                          className="mt-1 w-16 text-center text-[9px] text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <X size={12} className="text-card" />
+                          change icon
                         </button>
                       </div>
-                    ) : (
-                      <button
-                        onClick={() => fileInputRefs.current[i]?.click()}
-                        className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <ImageIcon size={12} strokeWidth={1.5} />
-                        <span>Add photo</span>
-                      </button>
-                    )}
-                    <input
-                      ref={(el) => { fileInputRefs.current[i] = el; }}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageUpload(i, file);
-                      }}
-                    />
-                  </div>
-                ))
+
+                      {/* Right: Content */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-label mb-0.5">{act.time}</p>
+                        <h4 className="font-serif text-lg text-foreground leading-snug">{act.title}</h4>
+                        {act.location && (
+                          <p className="text-xs text-muted-foreground">{act.location}</p>
+                        )}
+                        {act.notes && (
+                          <p className="text-xs text-foreground/40 mt-1">{act.notes}</p>
+                        )}
+                      </div>
+
+                      {/* Reorder buttons */}
+                      <div className="flex flex-col gap-1 flex-shrink-0">
+                        <button
+                          onClick={() => moveActivity(i, 'up')}
+                          disabled={i === 0}
+                          className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
+                        >
+                          <ArrowUp size={14} strokeWidth={1.5} />
+                        </button>
+                        <button
+                          onClick={() => moveActivity(i, 'down')}
+                          disabled={i === day.activities.length - 1}
+                          className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
+                        >
+                          <ArrowDown size={14} strokeWidth={1.5} />
+                        </button>
+                      </div>
+
+                      <input
+                        ref={(el) => { fileInputRefs.current[i] = el; }}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(i, file);
+                        }}
+                      />
+                    </div>
+                  );
+                })
               )}
             </div>
 
             <button
               onClick={addActivity}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 px-2"
             >
               <Plus size={14} strokeWidth={1.5} />
               <span className="font-body">Add activity</span>

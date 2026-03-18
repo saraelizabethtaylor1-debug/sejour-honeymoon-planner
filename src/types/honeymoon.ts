@@ -24,6 +24,7 @@ export interface PackingItem {
   id: string;
   text: string;
   packed: boolean;
+  traveler?: string;
 }
 
 export interface NoteItem {
@@ -77,6 +78,7 @@ export interface ItineraryActivity {
   location: string;
   notes: string;
   imageUrl?: string;
+  iconType?: 'hotel' | 'flight' | 'dining' | 'activity' | 'spa' | 'beach' | 'sightseeing' | 'transport' | 'default';
 }
 
 export interface ItineraryDay {
@@ -87,6 +89,15 @@ export interface ItineraryDay {
   activities: ItineraryActivity[];
 }
 
+export interface TravelerInfo {
+  id: string;
+  name: string;
+  passportNumber: string;
+  passportExpiry: string;
+  dateOfBirth: string;
+  notes: string;
+}
+
 export type AppView = 'welcome' | 'home' | 'dashboard';
 export type DashboardTab = 'planning' | 'overview' | 'itinerary';
-export type DetailView = 'todos' | 'budget' | 'packing' | 'notes' | 'transportation' | 'accommodations' | 'activities' | 'reservations' | 'map' | null;
+export type DetailView = 'todos' | 'budget' | 'packing' | 'notes' | 'transportation' | 'accommodations' | 'activities' | 'reservations' | 'map' | 'travelerInfo' | null;

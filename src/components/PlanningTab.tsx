@@ -29,7 +29,7 @@ const PlanningTab = ({ onOpenDetail }: PlanningTabProps) => {
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-2 gap-5 justify-center"
+      className="grid grid-cols-2 gap-6 justify-center"
     >
       {archCards.map((card) => (
         <motion.button
@@ -38,10 +38,10 @@ const PlanningTab = ({ onOpenDetail }: PlanningTabProps) => {
           whileHover={{ y: -4, transition: { duration: 0.2 } }}
           whileTap={{ scale: 0.96 }}
           onClick={() => onOpenDetail(card.view)}
-          className="relative flex flex-col items-center justify-end pb-7 w-full aspect-[3/4] bg-primary arch-shape shadow-arch overflow-hidden transition-shadow duration-300 hover:shadow-lift"
+          className="relative flex flex-col items-center justify-end pb-8 w-full aspect-[3/4] bg-primary arch-shape shadow-arch overflow-hidden transition-shadow duration-300 hover:shadow-lift"
         >
-          <div className="absolute top-12 text-primary-foreground/20">
-            <card.icon size={44} strokeWidth={1.2} />
+          <div className="absolute top-[38%] -translate-y-1/2 text-primary-foreground/15">
+            <card.icon size={44} strokeWidth={1.4} />
           </div>
           <span className="font-serif text-lg text-primary-foreground tracking-wide">{card.title}</span>
         </motion.button>

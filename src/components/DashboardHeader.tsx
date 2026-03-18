@@ -1,7 +1,6 @@
 import { Menu } from 'lucide-react';
 import type { TripData, DashboardTab } from '@/types/honeymoon';
 import { motion } from 'framer-motion';
-import santoriniCover from '@/assets/santorini-cover.jpg';
 
 interface DashboardHeaderProps {
   tripData: TripData;
@@ -37,27 +36,12 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         </div>
       </header>
 
-      {/* Subtle hero banner */}
-      <div className="mx-6 mb-4 h-20 pill-shape overflow-hidden relative">
-        <img
-          src={santoriniCover}
-          alt="Trip hero"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
-        <div className="absolute inset-0 flex items-center px-6">
-          <p className="font-serif text-lg text-foreground/80 italic">
-            {tripData.names}'s {tripData.destination.split('&')[0].trim()} trip
-          </p>
-        </div>
-      </div>
-
       <div className="flex px-6 gap-10 border-b border-foreground/5">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`pb-4 text-[10px] uppercase tracking-[0.2em] relative transition-colors duration-200 ${
+            className={`pb-4 text-[10px] uppercase tracking-[0.25em] relative transition-colors duration-200 ${
               tab === t.key ? 'text-foreground' : 'text-foreground/30'
             }`}
           >
@@ -71,6 +55,15 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
             )}
           </button>
         ))}
+      </div>
+
+      {/* Subtle hero banner - generic romantic theme */}
+      <div className="mx-6 mt-4 mb-2 h-16 pill-shape overflow-hidden relative bg-gradient-to-r from-primary/40 via-primary/20 to-accent/30">
+        <div className="absolute inset-0 flex items-center px-6">
+          <p className="font-serif text-sm text-foreground/60 italic">
+            ✨ {tripData.names}'s honeymoon adventure
+          </p>
+        </div>
       </div>
     </div>
   );
