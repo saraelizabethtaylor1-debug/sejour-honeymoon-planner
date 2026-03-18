@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { CheckCircle2, DollarSign, Briefcase } from 'lucide-react';
+import { CheckCircle2, DollarSign, Briefcase, StickyNote } from 'lucide-react';
 import type { DetailView } from '@/types/honeymoon';
 
 interface PlanningTabProps {
@@ -10,26 +10,43 @@ const archCards = [
   { title: 'to-dos', icon: CheckCircle2, view: 'todos' as DetailView },
   { title: 'budget', icon: DollarSign, view: 'budget' as DetailView },
   { title: 'packing', icon: Briefcase, view: 'packing' as DetailView },
+  { title: 'notes', icon: StickyNote, view: 'notes' as DetailView },
 ];
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0 },
+};
 
 const PlanningTab = ({ onOpenDetail }: PlanningTabProps) => {
   return (
-    <div className="flex gap-4 justify-center">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-2 gap-5 justify-center"
+    >
       {archCards.map((card) => (
         <motion.button
           key={card.title}
-          whileHover={{ scale: 0.97 }}
-          whileTap={{ scale: 0.94 }}
+          variants={item}
+          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+          whileTap={{ scale: 0.96 }}
           onClick={() => onOpenDetail(card.view)}
-          className="relative flex flex-col items-center justify-end pb-6 w-full max-w-[140px] aspect-[3/4] bg-primary arch-shape shadow-arch overflow-hidden"
+          className="relative flex flex-col items-center justify-end pb-7 w-full aspect-[3/4] bg-primary arch-shape shadow-arch overflow-hidden transition-shadow duration-300 hover:shadow-lift"
         >
-          <div className="absolute top-10 text-primary-foreground/30">
-            <card.icon size={40} strokeWidth={1} />
+          <div className="absolute top-12 text-primary-foreground/20">
+            <card.icon size={44} strokeWidth={1.2} />
           </div>
-          <span className="font-serif text-lg text-primary-foreground">{card.title}</span>
+          <span className="font-serif text-lg text-primary-foreground tracking-wide">{card.title}</span>
         </motion.button>
       ))}
-    </div>
+    </motion.div>
   );
 };
 

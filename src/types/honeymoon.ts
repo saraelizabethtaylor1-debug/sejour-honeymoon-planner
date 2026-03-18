@@ -26,12 +26,20 @@ export interface PackingItem {
   packed: boolean;
 }
 
+export interface NoteItem {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface TransportItem {
   id: string;
   type: string;
   details: string;
   confirmation: string;
   time: string;
+  cost: number;
 }
 
 export interface AccommodationItem {
@@ -41,6 +49,7 @@ export interface AccommodationItem {
   checkIn: string;
   checkOut: string;
   confirmation: string;
+  cost: number;
 }
 
 export interface ActivityItem {
@@ -48,6 +57,8 @@ export interface ActivityItem {
   name: string;
   notes: string;
   time: string;
+  confirmation: string;
+  cost: number;
 }
 
 export interface ReservationItem {
@@ -57,6 +68,7 @@ export interface ReservationItem {
   time: string;
   confirmation: string;
   notes: string;
+  cost: number;
 }
 
 export interface ItineraryActivity {
@@ -64,15 +76,17 @@ export interface ItineraryActivity {
   title: string;
   location: string;
   notes: string;
+  imageUrl?: string;
 }
 
 export interface ItineraryDay {
   id: string;
   dayLabel: string;
+  date: string;
   destination: string;
   activities: ItineraryActivity[];
 }
 
 export type AppView = 'welcome' | 'home' | 'dashboard';
 export type DashboardTab = 'planning' | 'overview' | 'itinerary';
-export type DetailView = 'todos' | 'budget' | 'packing' | 'transportation' | 'accommodations' | 'activities' | 'reservations' | 'map' | null;
+export type DetailView = 'todos' | 'budget' | 'packing' | 'notes' | 'transportation' | 'accommodations' | 'activities' | 'reservations' | 'map' | null;
