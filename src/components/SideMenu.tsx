@@ -17,7 +17,7 @@ const menuItems = [
   { icon: Map, label: 'Trip Overview', action: 'overview' as const },
   { icon: CalendarDays, label: 'Itinerary', action: 'itinerary' as const },
   { icon: Users, label: 'Traveler Info', action: 'travelerInfo' as const },
-  { icon: Settings, label: 'Settings', action: 'home' as const },
+  { icon: Settings, label: 'Settings', action: 'settings' as const },
 ];
 
 const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail, onGoToSettings }: SideMenuProps) => {
