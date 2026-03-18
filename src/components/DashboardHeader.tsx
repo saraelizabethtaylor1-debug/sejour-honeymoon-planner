@@ -22,10 +22,17 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         <button onClick={onMenuToggle} className="mt-1">
           <Menu className="text-foreground/70" size={22} strokeWidth={1.8} />
         </button>
-        <h1 className="font-script text-4xl text-foreground leading-none">honeymoon</h1>
+        <h1 className="font-script text-4xl text-foreground leading-none">
+          {(() => {
+            const parts = tripData.names.split('&').map(s => s.trim());
+            return parts.length === 2
+              ? `${parts[0].charAt(0)} & ${parts[1].charAt(0)}`
+              : tripData.names;
+          })()}
+        </h1>
         <div className="text-right">
           <p className="text-[9px] uppercase tracking-[0.18em] text-foreground/45 leading-tight">
-            {tripData.destination}
+            Honeymoon
           </p>
           <p className="text-[9px] uppercase tracking-[0.18em] text-foreground/45 leading-tight">
             {tripData.date}

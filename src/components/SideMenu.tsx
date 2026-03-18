@@ -8,6 +8,7 @@ interface SideMenuProps {
   onNavigate: (tab: DashboardTab) => void;
   onGoHome: () => void;
   onOpenDetail?: (view: DetailView) => void;
+  onGoToSettings?: () => void;
 }
 
 const menuItems = [
@@ -16,10 +17,10 @@ const menuItems = [
   { icon: Map, label: 'Trip Overview', action: 'overview' as const },
   { icon: CalendarDays, label: 'Itinerary', action: 'itinerary' as const },
   { icon: Users, label: 'Traveler Info', action: 'travelerInfo' as const },
-  { icon: Settings, label: 'Settings', action: 'home' as const },
+  { icon: Settings, label: 'Settings', action: 'settings' as const },
 ];
 
-const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail }: SideMenuProps) => {
+const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail, onGoToSettings }: SideMenuProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -49,7 +50,9 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail }: SideM
                 <button
                   key={item.label}
                   onClick={() => {
-                    if (item.action === 'home') onGoHome();
+                    if (item.action === 'settings') {
+                      onGoToSettings?.();
+                    } else if (item.action === 'home') onGoHome();
                     else if (item.action === 'travelerInfo') {
                       onOpenDetail?.('travelerInfo');
                     } else onNavigate(item.action);
@@ -63,10 +66,8 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail }: SideM
               ))}
             </nav>
 
-            <div className="absolute bottom-12 left-8 right-8 flex gap-3 justify-center">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="w-16 h-20 bg-primary/30 arch-shape" />
-              ))}
+            <div className="absolute bottom-12 left-8 right-8 text-center">
+              <p className="text-xs text-foreground/20 tracking-widest uppercase">Honeymoon Suite</p>
             </div>
           </motion.div>
         </>
