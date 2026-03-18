@@ -102,6 +102,10 @@
     font-family: 'Monsieur La Doulaise', cursive;
   }
 
+  .font-initials {
+    font-family: 'Great Vibes', cursive;
+  }
+
   .font-serif {
     font-family: 'Cormorant Garamond', serif;
     letter-spacing: -0.03em;

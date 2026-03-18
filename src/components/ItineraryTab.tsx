@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, X, ArrowUp, ArrowDown, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera } from 'lucide-react';
 import type { ItineraryDay, ItineraryActivity } from '@/types/honeymoon';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface ItineraryTabProps {
   days: ItineraryDay[];
