@@ -5,6 +5,7 @@ import type { ItineraryDay, ItineraryActivity } from '@/types/honeymoon';
 
 interface ItineraryTabProps {
   days: ItineraryDay[];
+  tripData?: { date: string; days: number; destination: string };
 }
 
 const iconMap: Record<string, typeof Hotel> = {
