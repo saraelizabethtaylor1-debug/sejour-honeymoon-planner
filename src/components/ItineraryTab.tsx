@@ -146,7 +146,7 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
               ) : (
                 <div className="relative">
                   {/* Vertical timeline line */}
-                  <div className="absolute left-[31px] top-4 bottom-4 w-[2.5px] bg-foreground/20" />
+                  <div className="absolute left-[31px] top-4 bottom-4 w-[2.5px] bg-primary/60" />
 
                   <div className="space-y-3">
                     {day.activities.map((act, i) => {
