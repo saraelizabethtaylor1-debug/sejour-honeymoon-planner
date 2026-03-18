@@ -9,11 +9,11 @@ interface DashboardHeaderProps {
   onMenuToggle: () => void;
 }
 
-const tabs: { key: DashboardTab; label: string }[] = [
-  { key: 'planning', label: 'Planning' },
-  { key: 'overview', label: 'Trip Overview' },
-  { key: 'itinerary', label: 'Itinerary' },
-];
+const tabs: {key: DashboardTab;label: string;}[] = [
+{ key: 'planning', label: 'Planning' },
+{ key: 'overview', label: 'Trip Overview' },
+{ key: 'itinerary', label: 'Itinerary' }];
+
 
 const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: DashboardHeaderProps) => {
   return (
@@ -23,12 +23,12 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           <button onClick={onMenuToggle} className="mt-1">
             <Menu className="text-foreground/70" size={22} strokeWidth={1.8} />
           </button>
-          <h1 className="font-script text-4xl text-foreground leading-none">
+          <h1 className="font-script text-4xl text-foreground leading-none text-left">
             {(() => {
-              const parts = tripData.names.split('&').map(s => s.trim());
-              return parts.length === 2
-                ? `${parts[0].charAt(0)} | ${parts[1].charAt(0)}`
-                : tripData.names;
+              const parts = tripData.names.split('&').map((s) => s.trim());
+              return parts.length === 2 ?
+              `${parts[0].charAt(0)} | ${parts[1].charAt(0)}` :
+              tripData.names;
             })()}
           </h1>
         </div>
@@ -46,28 +46,28 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
       </header>
 
       <div className="flex px-6 gap-10 border-b border-foreground/5">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => onTabChange(t.key)}
-            className={`pb-4 text-[10px] uppercase tracking-[0.25em] relative transition-colors duration-200 ${
-              tab === t.key ? 'text-foreground' : 'text-foreground/30'
-            }`}
-          >
+        {tabs.map((t) =>
+        <button
+          key={t.key}
+          onClick={() => onTabChange(t.key)}
+          className={`pb-4 text-[10px] uppercase tracking-[0.25em] relative transition-colors duration-200 ${
+          tab === t.key ? 'text-foreground' : 'text-foreground/30'}`
+          }>
+          
             {t.label}
-            {tab === t.key && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-primary"
-                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-              />
-            )}
+            {tab === t.key &&
+          <motion.div
+            layoutId="activeTab"
+            className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-primary"
+            transition={{ type: 'spring', stiffness: 400, damping: 35 }} />
+
+          }
           </button>
-        ))}
+        )}
       </div>
 
-    </div>
-  );
+    </div>);
+
 };
 
 export default DashboardHeader;
