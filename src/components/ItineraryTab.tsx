@@ -175,7 +175,7 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
                                 className="w-[62px] h-[62px] rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors ring-2 ring-background shadow-soft cursor-pointer"
                                 title="Click to upload photo, right-click to change icon"
                               >
-                                <IconComponent size={22} strokeWidth={1.5} className="text-primary/50" />
+                                <IconComponent size={22} strokeWidth={1.5} className="text-primary/80" />
                               </button>
                             )}
                           </div>
