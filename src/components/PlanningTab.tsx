@@ -26,14 +26,14 @@ const item = {
 const PlanningTab = ({ onOpenDetail }: PlanningTabProps) => {
   return (
     <div>
-      <p className="font-serif italic text-foreground/40 text-center text-xl leading-relaxed mb-8">
+      <p className="font-serif italic text-foreground/40 text-center text-lg sm:text-xl leading-relaxed mb-6 sm:mb-8">
         "you are my greatest adventure yet."
       </p>
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-2 gap-6 justify-center"
+        className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center"
       >
         {archCards.map((card) => (
           <motion.button
@@ -42,12 +42,12 @@ const PlanningTab = ({ onOpenDetail }: PlanningTabProps) => {
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.96 }}
             onClick={() => onOpenDetail(card.view)}
-            className="relative flex flex-col items-center justify-end pb-8 w-full aspect-[3/4] bg-primary arch-shape shadow-arch overflow-hidden transition-shadow duration-300 hover:shadow-lift"
+            className="relative flex flex-col items-center justify-end pb-6 sm:pb-8 w-full aspect-[3/4] bg-primary arch-shape shadow-arch overflow-hidden transition-shadow duration-300 hover:shadow-lift"
           >
-            <div className="absolute bottom-[4.5rem] text-primary-foreground/15">
-              <card.icon size={44} strokeWidth={1.4} />
+            <div className="absolute bottom-[4rem] sm:bottom-[4.5rem] text-primary-foreground/15">
+              <card.icon size={40} strokeWidth={1.4} />
             </div>
-            <span className="font-serif text-lg text-primary-foreground tracking-wide">{card.title}</span>
+            <span className="font-serif text-base sm:text-lg text-primary-foreground tracking-wide">{card.title}</span>
           </motion.button>
         ))}
       </motion.div>

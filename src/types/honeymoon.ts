@@ -5,6 +5,7 @@ export interface TripData {
   names: string;
   quote: string;
   coverImage?: string;
+  clockFormat?: '12h' | '24h';
 }
 
 export interface TodoItem {
