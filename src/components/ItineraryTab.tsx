@@ -172,10 +172,10 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
                               <button
                                 onClick={() => fileInputRefs.current[i]?.click()}
                                 onContextMenu={(e) => { e.preventDefault(); cycleIcon(i); }}
-                                className="w-[62px] h-[62px] rounded-full bg-foreground/10 flex items-center justify-center hover:bg-foreground/15 transition-colors ring-2 ring-background shadow-soft cursor-pointer"
+                                className="w-[62px] h-[62px] rounded-full bg-background flex items-center justify-center hover:bg-primary/20 transition-colors border-2 border-primary shadow-soft cursor-pointer"
                                 title="Click to upload photo, right-click to change icon"
                               >
-                                <IconComponent size={24} strokeWidth={1.8} className="text-foreground/60" />
+                                <IconComponent size={24} strokeWidth={1.8} className="text-primary-foreground" />
                               </button>
                             )}
                           </div>
