@@ -182,11 +182,8 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
 
                           {/* Right: Content */}
                           <div className="flex-1 min-w-0 bg-card rounded-2xl p-4 shadow-soft">
-                            <div className="flex items-baseline gap-2 mb-1">
-                              <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase whitespace-nowrap">{act.time}</span>
-                              <span className="text-muted-foreground/30">|</span>
-                              <h4 className="font-serif text-base text-foreground leading-snug truncate">{act.title}</h4>
-                            </div>
+                            <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase block mb-0.5">{act.time}</span>
+                            <h4 className="font-serif text-base text-foreground leading-snug truncate">{act.title}</h4>
                             {act.location && (
                               <p className="text-xs text-muted-foreground mt-0.5">{act.location}</p>
                             )}

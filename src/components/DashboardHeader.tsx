@@ -66,14 +66,6 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         ))}
       </div>
 
-      {/* Subtle hero banner - generic romantic theme */}
-      <div className="mx-6 mt-4 mb-2 h-16 pill-shape overflow-hidden relative bg-gradient-to-r from-primary/40 via-primary/20 to-accent/30">
-        <div className="absolute inset-0 flex items-center px-6">
-          <p className="font-serif text-sm text-foreground/60 italic">
-            ✨ {tripData.names}'s honeymoon adventure
-          </p>
-        </div>
-      </div>
     </div>
   );
 };
