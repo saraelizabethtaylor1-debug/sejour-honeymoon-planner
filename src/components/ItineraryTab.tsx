@@ -242,10 +242,29 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
   );
 };
 
-const ItineraryTab = ({ days }: ItineraryTabProps) => {
+const generateDaysFromTrip = (tripData: { date: string; days: number; destination: string }): ItineraryDay[] => {
+  const startDate = parseDateString(tripData.date);
+  if (!startDate) return [];
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return Array.from({ length: tripData.days }, (_, i) => {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    return {
+      id: String(i + 1),
+      dayLabel: `Day ${i + 1}`,
+      date: `${dayNames[d.getDay()]}, ${monthNames[d.getMonth()]} ${d.getDate()}`,
+      destination: tripData.destination,
+      activities: [],
+    };
+  });
+};
+
+const ItineraryTab = ({ days, tripData }: ItineraryTabProps) => {
+  const displayDays = tripData ? generateDaysFromTrip(tripData) : days;
   return (
     <div className="space-y-4 pb-20">
-      {days.map((day) => (
+      {displayDays.map((day) => (
         <ItineraryItem key={day.id} day={day} />
       ))}
     </div>
