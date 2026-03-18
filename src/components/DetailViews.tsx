@@ -287,26 +287,44 @@ const TransportView = ({ onBack }: { onBack: () => void }) => {
 
 // ── Accommodations ──
 const AccommodationsView = ({ onBack }: { onBack: () => void }) => {
-  const [items] = useState<AccommodationItem[]>(sampleAccommodations);
+  const [items, setItems] = useState<AccommodationItem[]>(sampleAccommodations);
+  const add = () => {
+    setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkOut: '', confirmation: '', cost: 0 }]);
+  };
+  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
+  const update = (id: string, field: keyof AccommodationItem, value: string | number) => {
+    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  };
+  const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
+
   return (
     <div>
       <DetailHeader title="Accommodations" onBack={onBack} />
       <div className="space-y-4">
         {items.map((item) => (
-          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft">
-            <h3 className="font-serif text-xl text-foreground mb-1">{item.name}</h3>
-            <p className="text-sm text-muted-foreground mb-3">{item.address}</p>
-            <div className="grid grid-cols-2 gap-4">
-              <div><p className="text-label">Check-in</p><p className="text-sm text-foreground">{item.checkIn}</p></div>
-              <div><p className="text-label">Check-out</p><p className="text-sm text-foreground">{item.checkOut}</p></div>
-            </div>
-            <div className="flex justify-between items-center mt-3">
-              <span className="text-xs text-primary-foreground bg-primary/30 px-3 py-1 pill-shape">{item.confirmation}</span>
-              <span className="text-sm text-foreground/60">${item.cost.toLocaleString()}</span>
+          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+            <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
+              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
+            </button>
+            <div className="space-y-2.5">
+              <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={inputClass} />
+              <input value={item.address} onChange={(e) => update(item.id, 'address', e.target.value)} placeholder="Address" className={inputClass} />
+              <div className="grid grid-cols-2 gap-2.5">
+                <input value={item.checkIn} onChange={(e) => update(item.id, 'checkIn', e.target.value)} placeholder="Check-in" className={inputClass} />
+                <input value={item.checkOut} onChange={(e) => update(item.id, 'checkOut', e.target.value)} placeholder="Check-out" className={inputClass} />
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
+                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="Cost" className={inputClass} />
+              </div>
             </div>
           </div>
         ))}
       </div>
+      <button onClick={add} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Plus size={14} strokeWidth={1.5} />
+        <span className="font-body">Add accommodation</span>
+      </button>
     </div>
   );
 };
