@@ -14,9 +14,11 @@ const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) 
     <button onClick={onBack} className="p-2 -ml-2">
       <ArrowLeft size={20} strokeWidth={1.5} className="text-foreground/70" />
     </button>
-    <h2 className="font-serif text-3xl text-foreground">{title}</h2>
+    <h2 className="font-serif text-2xl sm:text-3xl text-foreground">{title}</h2>
   </div>
 );
+
+const formatCost = (val: number) => `$${val.toLocaleString()}`;
 
 // ── To-Dos ──
 const TodosView = ({ onBack }: { onBack: () => void }) => {
@@ -30,13 +32,13 @@ const TodosView = ({ onBack }: { onBack: () => void }) => {
     <div>
       <DetailHeader title="To-Dos" onBack={onBack} />
       <div className="flex gap-2 mb-6">
-        <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add a new task..." className="flex-1 bg-card border border-foreground/5 pill-shape px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
+        <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add a new task..." className="flex-1 bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
         <button onClick={add} className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch"><Plus size={16} strokeWidth={1.8} className="text-primary-foreground" /></button>
       </div>
       <div className="space-y-2.5">
         {items.map((item) => (
-          <motion.div key={item.id} layout whileHover={{ y: -1 }} className="flex items-center gap-3 px-5 py-3.5 bg-card pill-shape shadow-soft">
-            <button onClick={() => toggle(item.id)} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${item.completed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.completed && <Check size={12} className="text-primary-foreground" />}</button>
+          <motion.div key={item.id} layout whileHover={{ y: -1 }} className="flex items-center gap-3 px-4 sm:px-5 py-3.5 bg-card pill-shape shadow-soft">
+            <button onClick={() => toggle(item.id)} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${item.completed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.completed && <Check size={12} className="text-primary-foreground" />}</button>
             <span className={`flex-1 font-body text-sm ${item.completed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
             <button onClick={() => remove(item.id)}><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
           </motion.div>
@@ -76,7 +78,7 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
   return (
     <div>
       <DetailHeader title="Budget" onBack={onBack} />
-      <div className="bg-primary/30 pill-shape p-7 mb-6 text-center">
+      <div className="bg-primary/30 pill-shape p-6 sm:p-7 mb-6 text-center">
         <p className="text-label mb-1">Total Budget</p>
         {editingTotal ? (
           <input
@@ -90,17 +92,17 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
           />
         ) : (
           <button onClick={() => setEditingTotal(true)} className="flex items-center gap-2 mx-auto">
-            <span className="font-serif text-3xl text-foreground">${totalEst.toLocaleString()}</span>
+            <span className="font-serif text-3xl text-foreground">{formatCost(totalEst)}</span>
             <Pencil size={14} className="text-muted-foreground" />
           </button>
         )}
-        <p className="text-sm text-foreground/45 mt-1.5">Spent: ${totalAct.toLocaleString()}</p>
+        <p className="text-sm text-foreground/45 mt-1.5">Spent: {formatCost(totalAct)}</p>
       </div>
 
       {/* Column headers */}
-      <div className="flex items-center justify-between px-5 pb-2 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+      <div className="flex items-center justify-between px-4 sm:px-5 pb-2 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
         <span>Category</span>
-        <div className="flex gap-8">
+        <div className="flex gap-6 sm:gap-8">
           <span>Estimated</span>
           <span>Actual</span>
         </div>
@@ -108,10 +110,9 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
 
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="flex items-center justify-between px-5 py-4 bg-card pill-shape shadow-soft">
+          <div key={item.id} className="flex items-center justify-between px-4 sm:px-5 py-4 bg-card pill-shape shadow-soft">
             <span className="font-serif text-foreground">{item.category}</span>
-            <div className="flex gap-6 items-center">
-              {/* Estimated */}
+            <div className="flex gap-4 sm:gap-6 items-center">
               {editingCell?.id === item.id && editingCell.field === 'estimated' ? (
                 <input
                   type="number"
@@ -124,10 +125,9 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
                 />
               ) : (
                 <button onClick={() => startEdit(item.id, 'estimated', item.estimated)} className="text-sm text-foreground hover:text-primary transition-colors">
-                  ${item.estimated.toLocaleString()}
+                  {formatCost(item.estimated)}
                 </button>
               )}
-              {/* Actual */}
               {editingCell?.id === item.id && editingCell.field === 'actual' ? (
                 <input
                   type="number"
@@ -140,7 +140,7 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
                 />
               ) : (
                 <button onClick={() => startEdit(item.id, 'actual', item.actual)} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  ${item.actual.toLocaleString()}
+                  {formatCost(item.actual)}
                 </button>
               )}
             </div>
@@ -167,13 +167,12 @@ const PackingView = ({ onBack }: { onBack: () => void }) => {
       <p className="text-sm text-muted-foreground mb-4">{packed} of {items.length} packed</p>
       <div className="space-y-2 mb-6">
         <div className="flex gap-2">
-          <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add item..." className="flex-1 bg-card border border-foreground/5 pill-shape px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
+          <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add item..." className="flex-1 bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
           <button onClick={add} className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch"><Plus size={16} strokeWidth={1.8} className="text-primary-foreground" /></button>
         </div>
-        <input value={newTraveler} onChange={(e) => setNewTraveler(e.target.value)} placeholder="Assign to traveler (optional)" className="w-full bg-card border border-foreground/5 pill-shape px-5 py-3 text-xs font-body focus:outline-none focus:border-primary transition-colors" />
+        <input value={newTraveler} onChange={(e) => setNewTraveler(e.target.value)} placeholder="Assign to traveler (optional)" className="w-full bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3 text-xs font-body focus:outline-none focus:border-primary transition-colors" />
       </div>
 
-      {/* Group by traveler */}
       {travelers.length > 0 ? (
         <>
           {[...travelers, undefined].map((traveler) => {
@@ -184,8 +183,8 @@ const PackingView = ({ onBack }: { onBack: () => void }) => {
                 <p className="text-label mb-2">{traveler ?? 'Unassigned'}</p>
                 <div className="space-y-2.5">
                   {travelerItems.map((item) => (
-                    <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
+                    <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-4 sm:px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
                       <span className={`font-body text-sm ${item.packed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
                     </button>
                   ))}
@@ -197,8 +196,8 @@ const PackingView = ({ onBack }: { onBack: () => void }) => {
       ) : (
         <div className="space-y-2.5">
           {items.map((item) => (
-            <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
+            <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-4 sm:px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
               <span className={`font-body text-sm ${item.packed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
             </button>
           ))}
@@ -224,13 +223,13 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
     <div>
       <DetailHeader title="Notes" onBack={onBack} />
       <div className="space-y-3 mb-6">
-        <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Note title..." className="w-full bg-card border border-foreground/5 pill-shape px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary" />
-        <textarea value={newContent} onChange={(e) => setNewContent(e.target.value)} placeholder="Write your note..." rows={3} className="w-full bg-card border border-foreground/5 rounded-2xl px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary resize-none" />
+        <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Note title..." className="w-full bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary" />
+        <textarea value={newContent} onChange={(e) => setNewContent(e.target.value)} placeholder="Write your note..." rows={3} className="w-full bg-card border border-foreground/5 rounded-2xl px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary resize-none" />
         <button onClick={add} className="bg-primary pill-shape px-6 py-3 font-serif text-sm text-primary-foreground shadow-arch">Add Note</button>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
             <button onClick={() => remove(item.id)} className="absolute top-4 right-4"><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
             <p className="text-label mb-1">{item.createdAt}</p>
             <h3 className="font-serif text-lg text-foreground mb-1">{item.title}</h3>
@@ -259,7 +258,7 @@ const TransportView = ({ onBack }: { onBack: () => void }) => {
       <DetailHeader title="Transportation" onBack={onBack} />
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
             <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
@@ -271,7 +270,10 @@ const TransportView = ({ onBack }: { onBack: () => void }) => {
               <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time" className={inputClass} />
-                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="Cost" className={inputClass} />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                  <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+                </div>
               </div>
             </div>
           </div>
@@ -302,7 +304,7 @@ const AccommodationsView = ({ onBack }: { onBack: () => void }) => {
       <DetailHeader title="Accommodations" onBack={onBack} />
       <div className="space-y-4">
         {items.map((item) => (
-          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
             <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
@@ -315,7 +317,10 @@ const AccommodationsView = ({ onBack }: { onBack: () => void }) => {
               </div>
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
-                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="Cost" className={inputClass} />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                  <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+                </div>
               </div>
             </div>
           </div>
@@ -346,7 +351,7 @@ const ActivitiesView = ({ onBack }: { onBack: () => void }) => {
       <DetailHeader title="Activities" onBack={onBack} />
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
             <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
@@ -357,7 +362,10 @@ const ActivitiesView = ({ onBack }: { onBack: () => void }) => {
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
               </div>
               <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
-              <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="Cost" className={inputClass} />
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+              </div>
             </div>
           </div>
         ))}
@@ -387,7 +395,7 @@ const ReservationsView = ({ onBack }: { onBack: () => void }) => {
       <DetailHeader title="Reservations" onBack={onBack} />
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
             <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
@@ -399,6 +407,10 @@ const ReservationsView = ({ onBack }: { onBack: () => void }) => {
               </div>
               <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
               <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+              </div>
             </div>
           </div>
         ))}
@@ -452,7 +464,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
       <DetailHeader title="Traveler Info" onBack={onBack} />
       <div className="space-y-6">
         {travelers.map((traveler) => (
-          <div key={traveler.id} className="bg-card rounded-2xl p-5 shadow-soft relative">
+          <div key={traveler.id} className="bg-card rounded-2xl p-4 sm:p-5 shadow-soft relative">
             <button onClick={() => removeTraveler(traveler.id)} className="absolute top-4 right-4">
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
@@ -500,7 +512,7 @@ const DetailViewComponent = ({ view, onBack }: DetailViewProps) => {
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-      className="fixed inset-0 bg-background z-30 overflow-y-auto px-6 py-12 bg-subtle-gradient"
+      className="fixed inset-0 bg-background z-30 overflow-y-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 bg-subtle-gradient"
     >
       {view === 'todos' && <TodosView onBack={onBack} />}
       {view === 'budget' && <BudgetView onBack={onBack} />}

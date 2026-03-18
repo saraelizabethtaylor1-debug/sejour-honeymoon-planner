@@ -91,7 +91,7 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
         whileHover={{ y: -2, transition: { duration: 0.15 } }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-6 py-5 bg-primary rounded-2xl shadow-arch transition-shadow hover:shadow-lift"
+        className="w-full flex items-center justify-between px-4 sm:px-6 py-5 bg-primary rounded-2xl shadow-arch transition-shadow hover:shadow-lift"
       >
         <div className="flex items-center gap-2.5 overflow-hidden">
           <span className="font-serif text-lg text-primary-foreground whitespace-nowrap">{day.dayLabel}</span>
@@ -111,7 +111,7 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="overflow-hidden px-4"
+            className="overflow-hidden"
           >
             {/* Editable destination */}
             <div className="pt-5 pb-2 px-2">
@@ -144,13 +144,13 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
               ) : (
                 <div className="relative">
                   {/* Vertical timeline line */}
-                  <div className="absolute left-[31px] top-4 bottom-4 w-[2px] bg-primary/40" />
+                  <div className="absolute left-[31px] top-4 bottom-4 w-[2.5px] bg-foreground/20" />
 
                   <div className="space-y-3">
                     {day.activities.map((act, i) => {
                       const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
                       return (
-                        <div key={i} className="flex gap-4 items-start relative">
+                        <div key={i} className="flex gap-3 sm:gap-4 items-start relative">
                           {/* Left: Timeline node - Photo or Icon */}
                           <div className="flex-shrink-0 z-10">
                             {act.imageUrl ? (
@@ -162,7 +162,6 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
                                 >
                                   <X size={10} className="text-background" />
                                 </button>
-                                {/* Click image to change it */}
                                 <button
                                   onClick={() => fileInputRefs.current[i]?.click()}
                                   className="absolute inset-0 bg-foreground/0 hover:bg-foreground/20 transition-colors rounded-full"
@@ -172,42 +171,42 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
                               <button
                                 onClick={() => fileInputRefs.current[i]?.click()}
                                 onContextMenu={(e) => { e.preventDefault(); cycleIcon(i); }}
-                                className="w-[62px] h-[62px] rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors ring-2 ring-background shadow-soft cursor-pointer"
+                                className="w-[62px] h-[62px] rounded-full bg-foreground/10 flex items-center justify-center hover:bg-foreground/15 transition-colors ring-2 ring-background shadow-soft cursor-pointer"
                                 title="Click to upload photo, right-click to change icon"
                               >
-                                <IconComponent size={22} strokeWidth={1.5} className="text-primary/80" />
+                                <IconComponent size={24} strokeWidth={1.8} className="text-foreground/60" />
                               </button>
                             )}
                           </div>
 
-                          {/* Right: Content */}
-                          <div className="flex-1 min-w-0 bg-card rounded-2xl p-4 shadow-soft">
-                            <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase block mb-0.5">{act.time}</span>
-                            <h4 className="font-serif text-base text-foreground leading-snug truncate">{act.title}</h4>
+                          {/* Right: Content card - extends to right edge */}
+                          <div className="flex-1 min-w-0 bg-card rounded-l-2xl sm:rounded-2xl p-4 shadow-soft -mr-6 sm:mr-0 pr-10 sm:pr-4 relative">
+                            <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1">{act.time}</span>
+                            <h4 className="font-serif text-base text-foreground leading-snug">{act.title}</h4>
                             {act.location && (
                               <p className="text-xs text-muted-foreground mt-0.5">{act.location}</p>
                             )}
                             {act.notes && (
                               <p className="text-xs text-foreground/40 mt-1">{act.notes}</p>
                             )}
-                          </div>
 
-                          {/* Reorder buttons */}
-                          <div className="flex flex-col gap-1 flex-shrink-0 pt-3">
-                            <button
-                              onClick={() => moveActivity(i, 'up')}
-                              disabled={i === 0}
-                              className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
-                            >
-                              <ArrowUp size={14} strokeWidth={1.5} />
-                            </button>
-                            <button
-                              onClick={() => moveActivity(i, 'down')}
-                              disabled={i === day.activities.length - 1}
-                              className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
-                            >
-                              <ArrowDown size={14} strokeWidth={1.5} />
-                            </button>
+                            {/* Reorder buttons inside card */}
+                            <div className="absolute top-3 right-3 sm:right-4 flex flex-col gap-0.5">
+                              <button
+                                onClick={() => moveActivity(i, 'up')}
+                                disabled={i === 0}
+                                className="p-1 text-foreground/30 hover:text-foreground/70 disabled:opacity-20 transition-colors"
+                              >
+                                <ArrowUp size={14} strokeWidth={1.8} />
+                              </button>
+                              <button
+                                onClick={() => moveActivity(i, 'down')}
+                                disabled={i === day.activities.length - 1}
+                                className="p-1 text-foreground/30 hover:text-foreground/70 disabled:opacity-20 transition-colors"
+                              >
+                                <ArrowDown size={14} strokeWidth={1.8} />
+                              </button>
+                            </div>
                           </div>
 
                           <input

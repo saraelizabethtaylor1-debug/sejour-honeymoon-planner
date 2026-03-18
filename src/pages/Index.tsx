@@ -24,7 +24,7 @@ const Index = () => {
   };
 
   return (
-    <div className="max-w-[430px] mx-auto min-h-screen bg-background text-foreground overflow-hidden shadow-card relative bg-subtle-gradient">
+    <div className="w-full max-w-[430px] md:max-w-none mx-auto min-h-screen bg-background text-foreground overflow-hidden shadow-card relative bg-subtle-gradient">
       <AnimatePresence mode="wait">
         {view === 'welcome' && (
           <WelcomeScreen key="welcome" onComplete={handleWelcomeComplete} />
@@ -44,7 +44,7 @@ const Index = () => {
             onMenuToggle={() => setMenuOpen(true)}
           />
 
-          <main className="flex-1 overflow-y-auto px-6 py-8">
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             {tab === 'planning' && <PlanningTab onOpenDetail={setDetailView} />}
             {tab === 'overview' && <OverviewTab onOpenDetail={setDetailView} />}
             {tab === 'itinerary' && <ItineraryTab days={sampleItinerary} />}

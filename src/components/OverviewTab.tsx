@@ -30,7 +30,7 @@ const OverviewTab = ({ onOpenDetail }: OverviewTabProps) => {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-4"
+      className="space-y-3 sm:space-y-4"
     >
       {items.map((itm) => (
         <motion.button
@@ -39,10 +39,10 @@ const OverviewTab = ({ onOpenDetail }: OverviewTabProps) => {
           whileHover={{ y: -2, transition: { duration: 0.2 } }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onOpenDetail(itm.view)}
-          className="w-full flex items-center gap-4 px-6 py-5 bg-secondary pill-shape shadow-soft transition-shadow duration-300 hover:shadow-card"
+          className="w-full flex items-center gap-4 px-5 sm:px-6 py-4 sm:py-5 bg-secondary pill-shape shadow-soft transition-shadow duration-300 hover:shadow-card"
         >
           <itm.icon size={18} strokeWidth={1.5} className="text-muted-foreground" />
-          <span className="font-serif text-xl tracking-wide text-foreground">{itm.label}</span>
+          <span className="font-serif text-lg sm:text-xl tracking-wide text-foreground">{itm.label}</span>
         </motion.button>
       ))}
     </motion.div>
