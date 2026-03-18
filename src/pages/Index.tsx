@@ -24,7 +24,7 @@ const Index = () => {
   };
 
   return (
-    <div className="max-w-[430px] mx-auto min-h-screen bg-background text-foreground overflow-hidden shadow-card relative">
+    <div className="max-w-[430px] mx-auto min-h-screen bg-background text-foreground overflow-hidden shadow-card relative bg-subtle-gradient">
       <AnimatePresence mode="wait">
         {view === 'welcome' && (
           <WelcomeScreen key="welcome" onComplete={handleWelcomeComplete} />

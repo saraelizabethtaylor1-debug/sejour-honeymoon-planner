@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 40 33% 97%;
+    --background: 25 33% 96%;
     --foreground: 10 6% 27%;
 
     --card: 0 0% 100%;
@@ -15,24 +15,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 10 6% 27%;
 
-    --primary: 0 52% 89%;
+    --primary: 0 42% 92%;
     --primary-foreground: 0 16% 43%;
 
-    --secondary: 20 16% 88%;
+    --secondary: 20 16% 90%;
     --secondary-foreground: 10 6% 27%;
 
     --muted: 30 20% 94%;
     --muted-foreground: 10 6% 50%;
 
-    --accent: 0 38% 85%;
+    --accent: 0 30% 88%;
     --accent-foreground: 0 16% 43%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 10 6% 27% / 0.05;
-    --input: 10 6% 27% / 0.1;
-    --ring: 0 52% 89%;
+    --input: 10 6% 27% / 0.08;
+    --ring: 0 42% 92%;
 
     --radius: 1.5rem;
 
@@ -46,17 +46,18 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Custom tokens */
-    --blush: 0 52% 89%;
+    --blush: 0 42% 92%;
     --blush-foreground: 0 16% 43%;
-    --dusty-rose: 0 38% 85%;
+    --dusty-rose: 0 30% 88%;
     --warm-taupe: 10 6% 27%;
     --deep-rose: 0 16% 43%;
-    --alabaster: 40 33% 97%;
+    --alabaster: 25 33% 96%;
     --cream: 30 20% 94%;
 
-    --shadow-soft: 0 4px 20px -4px hsl(0 16% 43% / 0.08);
-    --shadow-card: 0 8px 30px -8px hsl(0 16% 43% / 0.1);
-    --shadow-arch: 0 6px 24px -6px hsl(0 52% 89% / 0.4);
+    --shadow-soft: 0 4px 24px -4px hsl(0 16% 43% / 0.06);
+    --shadow-card: 0 8px 40px -8px hsl(0 16% 43% / 0.08);
+    --shadow-arch: 0 8px 28px -6px hsl(0 42% 92% / 0.5);
+    --shadow-lift: 0 12px 36px -8px hsl(0 16% 43% / 0.1);
   }
 
   .dark {
@@ -66,19 +67,19 @@
     --card-foreground: 40 33% 97%;
     --popover: 10 6% 12%;
     --popover-foreground: 40 33% 97%;
-    --primary: 0 52% 89%;
+    --primary: 0 42% 92%;
     --primary-foreground: 0 16% 43%;
     --secondary: 10 6% 20%;
     --secondary-foreground: 40 33% 97%;
     --muted: 10 6% 18%;
     --muted-foreground: 10 6% 60%;
-    --accent: 0 38% 85%;
+    --accent: 0 30% 88%;
     --accent-foreground: 0 16% 43%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 40 33% 97% / 0.08;
     --input: 40 33% 97% / 0.1;
-    --ring: 0 52% 89%;
+    --ring: 0 42% 92%;
   }
 }
 
@@ -116,11 +117,11 @@
   }
 
   .arch-shape {
-    border-radius: 999px 999px 1rem 1rem;
+    border-radius: 999px 999px 1.25rem 1.25rem;
   }
 
   .pill-shape {
-    @apply rounded-full;
+    @apply rounded-[1.5rem];
   }
 
   .shadow-soft {
@@ -133,5 +134,18 @@
 
   .shadow-arch {
     box-shadow: var(--shadow-arch);
+  }
+
+  .shadow-lift {
+    box-shadow: var(--shadow-lift);
+  }
+
+  .bg-subtle-gradient {
+    background: linear-gradient(
+      180deg,
+      hsl(25 33% 96%) 0%,
+      hsl(30 25% 95%) 50%,
+      hsl(25 33% 96%) 100%
+    );
   }
 }
