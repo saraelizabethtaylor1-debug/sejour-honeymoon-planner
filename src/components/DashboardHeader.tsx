@@ -33,7 +33,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           <button onClick={onMenuToggle} className="mt-1">
             <Menu className="text-foreground/70" size={22} strokeWidth={1.8} />
           </button>
-          <h1 className="font-script text-3xl sm:text-4xl text-foreground leading-none text-left">
+          <h1 className="font-initials text-3xl sm:text-4xl text-foreground leading-none text-left">
             {initials}
           </h1>
         </div>

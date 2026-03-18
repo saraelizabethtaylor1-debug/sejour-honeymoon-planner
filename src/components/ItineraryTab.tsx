@@ -2,9 +2,11 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, X, ArrowUp, ArrowDown, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera } from 'lucide-react';
 import type { ItineraryDay, ItineraryActivity } from '@/types/honeymoon';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface ItineraryTabProps {
   days: ItineraryDay[];
+  tripData?: { date: string; days: number; destination: string };
 }
 
 const iconMap: Record<string, typeof Hotel> = {
@@ -144,7 +146,7 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
               ) : (
                 <div className="relative">
                   {/* Vertical timeline line */}
-                  <div className="absolute left-[31px] top-4 bottom-4 w-[2.5px] bg-foreground/20" />
+                  <div className="absolute left-[31px] top-4 bottom-4 w-[2.5px] bg-primary/60" />
 
                   <div className="space-y-3">
                     {day.activities.map((act, i) => {
@@ -171,10 +173,10 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
                               <button
                                 onClick={() => fileInputRefs.current[i]?.click()}
                                 onContextMenu={(e) => { e.preventDefault(); cycleIcon(i); }}
-                                className="w-[62px] h-[62px] rounded-full bg-foreground/10 flex items-center justify-center hover:bg-foreground/15 transition-colors ring-2 ring-background shadow-soft cursor-pointer"
+                                className="w-[62px] h-[62px] rounded-full bg-background flex items-center justify-center hover:bg-primary/20 transition-colors border-2 border-primary shadow-soft cursor-pointer"
                                 title="Click to upload photo, right-click to change icon"
                               >
-                                <IconComponent size={24} strokeWidth={1.8} className="text-foreground/60" />
+                                <IconComponent size={24} strokeWidth={1.8} className="text-primary-foreground" />
                               </button>
                             )}
                           </div>
@@ -241,10 +243,29 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
   );
 };
 
-const ItineraryTab = ({ days }: ItineraryTabProps) => {
+const generateDaysFromTrip = (tripData: { date: string; days: number; destination: string }): ItineraryDay[] => {
+  const startDate = parseDateString(tripData.date);
+  if (!startDate) return [];
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return Array.from({ length: tripData.days }, (_, i) => {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    return {
+      id: String(i + 1),
+      dayLabel: `Day ${i + 1}`,
+      date: `${dayNames[d.getDay()]}, ${monthNames[d.getMonth()]} ${d.getDate()}`,
+      destination: tripData.destination,
+      activities: [],
+    };
+  });
+};
+
+const ItineraryTab = ({ days, tripData }: ItineraryTabProps) => {
+  const displayDays = tripData ? generateDaysFromTrip(tripData) : days;
   return (
     <div className="space-y-4 pb-20">
-      {days.map((day) => (
+      {displayDays.map((day) => (
         <ItineraryItem key={day.id} day={day} />
       ))}
     </div>
