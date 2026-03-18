@@ -19,17 +19,19 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
   return (
     <div className="bg-background z-10">
       <header className="px-6 pt-12 pb-4 flex items-start justify-between">
-        <button onClick={onMenuToggle} className="mt-1">
-          <Menu className="text-foreground/70" size={22} strokeWidth={1.8} />
-        </button>
-        <h1 className="font-script text-4xl text-foreground leading-none">
-          {(() => {
-            const parts = tripData.names.split('&').map(s => s.trim());
-            return parts.length === 2
-              ? `${parts[0].charAt(0)} & ${parts[1].charAt(0)}`
-              : tripData.names;
-          })()}
-        </h1>
+        <div className="flex items-center gap-3">
+          <button onClick={onMenuToggle} className="mt-1">
+            <Menu className="text-foreground/70" size={22} strokeWidth={1.8} />
+          </button>
+          <h1 className="font-script text-4xl text-foreground leading-none">
+            {(() => {
+              const parts = tripData.names.split('&').map(s => s.trim());
+              return parts.length === 2
+                ? `${parts[0].charAt(0)} | ${parts[1].charAt(0)}`
+                : tripData.names;
+            })()}
+          </h1>
+        </div>
         <div className="text-right">
           <p className="text-[9px] uppercase tracking-[0.18em] text-foreground/45 leading-tight">
             Honeymoon
@@ -64,14 +66,6 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         ))}
       </div>
 
-      {/* Subtle hero banner - generic romantic theme */}
-      <div className="mx-6 mt-4 mb-2 h-16 pill-shape overflow-hidden relative bg-gradient-to-r from-primary/40 via-primary/20 to-accent/30">
-        <div className="absolute inset-0 flex items-center px-6">
-          <p className="font-serif text-sm text-foreground/60 italic">
-            ✨ {tripData.names}'s honeymoon adventure
-          </p>
-        </div>
-      </div>
     </div>
   );
 };

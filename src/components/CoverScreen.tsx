@@ -51,14 +51,39 @@ const CoverScreen = ({ tripData, onEnter }: CoverScreenProps) => {
 
         <div className="bg-primary/50 px-8 py-2.5 pill-shape">
           <p className="font-serif italic text-primary-foreground text-sm">
-            {tripData.days} days away
+            {(() => {
+              const parseDateString = (dateStr: string): Date | null => {
+                const cleaned = dateStr.replace(/\./g, '/');
+                const mmddyy = cleaned.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+                if (mmddyy) {
+                  const year = mmddyy[3].length === 2 ? 2000 + parseInt(mmddyy[3]) : parseInt(mmddyy[3]);
+                  return new Date(year, parseInt(mmddyy[1]) - 1, parseInt(mmddyy[2]));
+                }
+                const monthNames: Record<string, number> = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sept: 8, sep: 8, oct: 9, nov: 10, dec: 11 };
+                const named = dateStr.match(/([A-Za-z]+)\s+(\d{1,2}),?\s*(\d{4})/);
+                if (named) {
+                  const m = monthNames[named[1].toLowerCase()];
+                  if (m !== undefined) return new Date(parseInt(named[3]), m, parseInt(named[2]));
+                }
+                return null;
+              };
+              const tripDate = parseDateString(tripData.date);
+              if (tripDate) {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                tripDate.setHours(0, 0, 0, 0);
+                const diff = Math.ceil((tripDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                if (diff > 0) return `${diff} days away`;
+                if (diff === 0) return "Today!";
+                return `${Math.abs(diff)} days ago`;
+              }
+              return `${tripData.days} days away`;
+            })()}
           </p>
         </div>
       </div>
 
-      <p className="font-serif italic text-foreground/40 max-w-[260px] text-xl leading-relaxed">
-        {tripData.quote}
-      </p>
+      <div className="h-16" />
     </motion.div>
   );
 };

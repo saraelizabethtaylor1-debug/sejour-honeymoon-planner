@@ -144,7 +144,7 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
               ) : (
                 <div className="relative">
                   {/* Vertical timeline line */}
-                  <div className="absolute left-[31px] top-4 bottom-4 w-[1.5px] bg-primary/15" />
+                  <div className="absolute left-[31px] top-4 bottom-4 w-[2px] bg-primary/40" />
 
                   <div className="space-y-3">
                     {day.activities.map((act, i) => {
@@ -175,18 +175,15 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
                                 className="w-[62px] h-[62px] rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors ring-2 ring-background shadow-soft cursor-pointer"
                                 title="Click to upload photo, right-click to change icon"
                               >
-                                <IconComponent size={22} strokeWidth={1.5} className="text-primary/50" />
+                                <IconComponent size={22} strokeWidth={1.5} className="text-primary/80" />
                               </button>
                             )}
                           </div>
 
                           {/* Right: Content */}
                           <div className="flex-1 min-w-0 bg-card rounded-2xl p-4 shadow-soft">
-                            <div className="flex items-baseline gap-2 mb-1">
-                              <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase whitespace-nowrap">{act.time}</span>
-                              <span className="text-muted-foreground/30">|</span>
-                              <h4 className="font-serif text-base text-foreground leading-snug truncate">{act.title}</h4>
-                            </div>
+                            <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase block mb-0.5">{act.time}</span>
+                            <h4 className="font-serif text-base text-foreground leading-snug truncate">{act.title}</h4>
                             {act.location && (
                               <p className="text-xs text-muted-foreground mt-0.5">{act.location}</p>
                             )}
