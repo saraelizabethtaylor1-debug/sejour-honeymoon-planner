@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
-import { ChevronDown, Plus, Image as ImageIcon, X, ArrowUp, ArrowDown, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Plus, X, ArrowUp, ArrowDown, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera } from 'lucide-react';
 import type { ItineraryDay, ItineraryActivity } from '@/types/honeymoon';
 
 interface ItineraryTabProps {
@@ -91,7 +91,7 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
         whileHover={{ y: -2, transition: { duration: 0.15 } }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-6 py-5 bg-primary pill-shape shadow-arch transition-shadow hover:shadow-lift"
+        className="w-full flex items-center justify-between px-6 py-5 bg-primary rounded-2xl shadow-arch transition-shadow hover:shadow-lift"
       >
         <div className="flex items-center gap-2.5 overflow-hidden">
           <span className="font-serif text-lg text-primary-foreground whitespace-nowrap">{day.dayLabel}</span>
@@ -137,87 +137,97 @@ const ItineraryItem = ({ day: initialDay }: { day: ItineraryDay }) => {
               )}
             </div>
 
-            <div className="py-4 space-y-4">
+            {/* Timeline */}
+            <div className="py-4 relative">
               {day.activities.length === 0 ? (
                 <p className="text-muted-foreground font-serif italic px-2">No activities planned yet</p>
               ) : (
-                day.activities.map((act, i) => {
-                  const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
-                  return (
-                    <div key={i} className="flex gap-4 items-start bg-card rounded-2xl p-4 shadow-soft">
-                      {/* Left: Photo or Icon */}
-                      <div className="flex-shrink-0">
-                        {act.imageUrl ? (
-                          <div className="relative w-16 h-16 rounded-full overflow-hidden">
-                            <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+                <div className="relative">
+                  {/* Vertical timeline line */}
+                  <div className="absolute left-[31px] top-4 bottom-4 w-[1.5px] bg-primary/15" />
+
+                  <div className="space-y-3">
+                    {day.activities.map((act, i) => {
+                      const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
+                      return (
+                        <div key={i} className="flex gap-4 items-start relative">
+                          {/* Left: Timeline node - Photo or Icon */}
+                          <div className="flex-shrink-0 z-10">
+                            {act.imageUrl ? (
+                              <div className="relative w-[62px] h-[62px] rounded-full overflow-hidden ring-2 ring-background shadow-soft">
+                                <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+                                <button
+                                  onClick={() => removeImage(i)}
+                                  className="absolute -top-1 -right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center"
+                                >
+                                  <X size={10} className="text-background" />
+                                </button>
+                                {/* Click image to change it */}
+                                <button
+                                  onClick={() => fileInputRefs.current[i]?.click()}
+                                  className="absolute inset-0 bg-foreground/0 hover:bg-foreground/20 transition-colors rounded-full"
+                                />
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => fileInputRefs.current[i]?.click()}
+                                onContextMenu={(e) => { e.preventDefault(); cycleIcon(i); }}
+                                className="w-[62px] h-[62px] rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors ring-2 ring-background shadow-soft cursor-pointer"
+                                title="Click to upload photo, right-click to change icon"
+                              >
+                                <IconComponent size={22} strokeWidth={1.5} className="text-primary/50" />
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Right: Content */}
+                          <div className="flex-1 min-w-0 bg-card rounded-2xl p-4 shadow-soft">
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase whitespace-nowrap">{act.time}</span>
+                              <span className="text-muted-foreground/30">|</span>
+                              <h4 className="font-serif text-base text-foreground leading-snug truncate">{act.title}</h4>
+                            </div>
+                            {act.location && (
+                              <p className="text-xs text-muted-foreground mt-0.5">{act.location}</p>
+                            )}
+                            {act.notes && (
+                              <p className="text-xs text-foreground/40 mt-1">{act.notes}</p>
+                            )}
+                          </div>
+
+                          {/* Reorder buttons */}
+                          <div className="flex flex-col gap-1 flex-shrink-0 pt-3">
                             <button
-                              onClick={() => removeImage(i)}
-                              className="absolute -top-1 -right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center"
+                              onClick={() => moveActivity(i, 'up')}
+                              disabled={i === 0}
+                              className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
                             >
-                              <X size={10} className="text-card" />
+                              <ArrowUp size={14} strokeWidth={1.5} />
+                            </button>
+                            <button
+                              onClick={() => moveActivity(i, 'down')}
+                              disabled={i === day.activities.length - 1}
+                              className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
+                            >
+                              <ArrowDown size={14} strokeWidth={1.5} />
                             </button>
                           </div>
-                        ) : (
-                          <button
-                            onClick={() => fileInputRefs.current[i]?.click()}
-                            className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center hover:bg-primary/25 transition-colors group"
-                            title="Upload photo"
-                          >
-                            <IconComponent size={22} strokeWidth={1.3} className="text-primary-foreground/40 group-hover:text-primary-foreground/60 transition-colors" />
-                          </button>
-                        )}
-                        {/* Icon cycle button */}
-                        <button
-                          onClick={() => cycleIcon(i)}
-                          className="mt-1 w-16 text-center text-[9px] text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          change icon
-                        </button>
-                      </div>
 
-                      {/* Right: Content */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-label mb-0.5">{act.time}</p>
-                        <h4 className="font-serif text-lg text-foreground leading-snug">{act.title}</h4>
-                        {act.location && (
-                          <p className="text-xs text-muted-foreground">{act.location}</p>
-                        )}
-                        {act.notes && (
-                          <p className="text-xs text-foreground/40 mt-1">{act.notes}</p>
-                        )}
-                      </div>
-
-                      {/* Reorder buttons */}
-                      <div className="flex flex-col gap-1 flex-shrink-0">
-                        <button
-                          onClick={() => moveActivity(i, 'up')}
-                          disabled={i === 0}
-                          className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
-                        >
-                          <ArrowUp size={14} strokeWidth={1.5} />
-                        </button>
-                        <button
-                          onClick={() => moveActivity(i, 'down')}
-                          disabled={i === day.activities.length - 1}
-                          className="p-1 text-foreground/20 hover:text-foreground/60 disabled:opacity-20 transition-colors"
-                        >
-                          <ArrowDown size={14} strokeWidth={1.5} />
-                        </button>
-                      </div>
-
-                      <input
-                        ref={(el) => { fileInputRefs.current[i] = el; }}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleImageUpload(i, file);
-                        }}
-                      />
-                    </div>
-                  );
-                })
+                          <input
+                            ref={(el) => { fileInputRefs.current[i] = el; }}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleImageUpload(i, file);
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </div>
 
