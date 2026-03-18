@@ -1,12 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Home, ClipboardList, Map, CalendarDays, Settings, Users } from 'lucide-react';
-import type { DashboardTab } from '@/types/honeymoon';
+import type { DashboardTab, DetailView } from '@/types/honeymoon';
 
 interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (tab: DashboardTab) => void;
   onGoHome: () => void;
+  onOpenDetail?: (view: DetailView) => void;
 }
 
 const menuItems = [
@@ -14,11 +15,11 @@ const menuItems = [
   { icon: ClipboardList, label: 'Planning', action: 'planning' as const },
   { icon: Map, label: 'Trip Overview', action: 'overview' as const },
   { icon: CalendarDays, label: 'Itinerary', action: 'itinerary' as const },
-  { icon: Users, label: 'Traveler Info', action: 'home' as const },
+  { icon: Users, label: 'Traveler Info', action: 'travelerInfo' as const },
   { icon: Settings, label: 'Settings', action: 'home' as const },
 ];
 
-const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome }: SideMenuProps) => {
+const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail }: SideMenuProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -49,7 +50,9 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome }: SideMenuProps) => {
                   key={item.label}
                   onClick={() => {
                     if (item.action === 'home') onGoHome();
-                    else onNavigate(item.action);
+                    else if (item.action === 'travelerInfo') {
+                      onOpenDetail?.('travelerInfo');
+                    } else onNavigate(item.action);
                     onClose();
                   }}
                   className="w-full flex items-center gap-4 px-4 py-3.5 pill-shape text-foreground/60 hover:bg-primary/20 hover:text-foreground transition-all duration-200"

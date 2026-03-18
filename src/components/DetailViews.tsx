@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Check, Pencil } from 'lucide-react';
-import type { DetailView, TodoItem, BudgetItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+import type { DetailView, TodoItem, BudgetItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
 import { sampleTodos, sampleBudget, samplePacking, sampleNotes, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
 
 interface DetailViewProps {
@@ -51,11 +51,26 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
   const [items, setItems] = useState<BudgetItem[]>(sampleBudget);
   const [editingTotal, setEditingTotal] = useState(false);
   const [totalBudgetOverride, setTotalBudgetOverride] = useState<number | null>(null);
+  const [editingCell, setEditingCell] = useState<{ id: string; field: 'estimated' | 'actual' } | null>(null);
+  const [editValue, setEditValue] = useState('');
+
   const totalEst = totalBudgetOverride ?? items.reduce((s, i) => s + i.estimated, 0);
   const totalAct = items.reduce((s, i) => s + i.actual, 0);
 
   const updateItem = (id: string, field: 'estimated' | 'actual', value: number) => {
     setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  };
+
+  const startEdit = (id: string, field: 'estimated' | 'actual', currentValue: number) => {
+    setEditingCell({ id, field });
+    setEditValue(currentValue.toString());
+  };
+
+  const commitEdit = () => {
+    if (editingCell) {
+      updateItem(editingCell.id, editingCell.field, parseInt(editValue) || 0);
+      setEditingCell(null);
+    }
   };
 
   return (
@@ -81,13 +96,53 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
         )}
         <p className="text-sm text-foreground/45 mt-1.5">Spent: ${totalAct.toLocaleString()}</p>
       </div>
+
+      {/* Column headers */}
+      <div className="flex items-center justify-between px-5 pb-2 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+        <span>Category</span>
+        <div className="flex gap-8">
+          <span>Estimated</span>
+          <span>Actual</span>
+        </div>
+      </div>
+
       <div className="space-y-3">
         {items.map((item) => (
           <div key={item.id} className="flex items-center justify-between px-5 py-4 bg-card pill-shape shadow-soft">
             <span className="font-serif text-foreground">{item.category}</span>
-            <div className="text-right">
-              <p className="text-sm text-foreground">${item.estimated.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">${item.actual.toLocaleString()} spent</p>
+            <div className="flex gap-6 items-center">
+              {/* Estimated */}
+              {editingCell?.id === item.id && editingCell.field === 'estimated' ? (
+                <input
+                  type="number"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={commitEdit}
+                  onKeyDown={(e) => e.key === 'Enter' && commitEdit()}
+                  autoFocus
+                  className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body"
+                />
+              ) : (
+                <button onClick={() => startEdit(item.id, 'estimated', item.estimated)} className="text-sm text-foreground hover:text-primary transition-colors">
+                  ${item.estimated.toLocaleString()}
+                </button>
+              )}
+              {/* Actual */}
+              {editingCell?.id === item.id && editingCell.field === 'actual' ? (
+                <input
+                  type="number"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={commitEdit}
+                  onKeyDown={(e) => e.key === 'Enter' && commitEdit()}
+                  autoFocus
+                  className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body"
+                />
+              ) : (
+                <button onClick={() => startEdit(item.id, 'actual', item.actual)} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  ${item.actual.toLocaleString()}
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -100,26 +155,55 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
 const PackingView = ({ onBack }: { onBack: () => void }) => {
   const [items, setItems] = useState<PackingItem[]>(samplePacking);
   const [newItem, setNewItem] = useState('');
+  const [newTraveler, setNewTraveler] = useState('');
   const toggle = (id: string) => setItems(items.map(i => i.id === id ? { ...i, packed: !i.packed } : i));
-  const add = () => { if (!newItem.trim()) return; setItems([...items, { id: Date.now().toString(), text: newItem, packed: false }]); setNewItem(''); };
+  const add = () => { if (!newItem.trim()) return; setItems([...items, { id: Date.now().toString(), text: newItem, packed: false, traveler: newTraveler || undefined }]); setNewItem(''); setNewTraveler(''); };
   const packed = items.filter(i => i.packed).length;
+  const travelers = [...new Set(items.map(i => i.traveler).filter(Boolean))];
 
   return (
     <div>
       <DetailHeader title="Packing" onBack={onBack} />
       <p className="text-sm text-muted-foreground mb-4">{packed} of {items.length} packed</p>
-      <div className="flex gap-2 mb-6">
-        <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add item..." className="flex-1 bg-card border border-foreground/5 pill-shape px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
-        <button onClick={add} className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch"><Plus size={16} strokeWidth={1.8} className="text-primary-foreground" /></button>
+      <div className="space-y-2 mb-6">
+        <div className="flex gap-2">
+          <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add item..." className="flex-1 bg-card border border-foreground/5 pill-shape px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
+          <button onClick={add} className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch"><Plus size={16} strokeWidth={1.8} className="text-primary-foreground" /></button>
+        </div>
+        <input value={newTraveler} onChange={(e) => setNewTraveler(e.target.value)} placeholder="Assign to traveler (optional)" className="w-full bg-card border border-foreground/5 pill-shape px-5 py-3 text-xs font-body focus:outline-none focus:border-primary transition-colors" />
       </div>
-      <div className="space-y-2.5">
-        {items.map((item) => (
-          <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
-            <span className={`font-body text-sm ${item.packed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
-          </button>
-        ))}
-      </div>
+
+      {/* Group by traveler */}
+      {travelers.length > 0 ? (
+        <>
+          {[...travelers, undefined].map((traveler) => {
+            const travelerItems = items.filter(i => i.traveler === traveler);
+            if (travelerItems.length === 0) return null;
+            return (
+              <div key={traveler ?? 'unassigned'} className="mb-5">
+                <p className="text-label mb-2">{traveler ?? 'Unassigned'}</p>
+                <div className="space-y-2.5">
+                  {travelerItems.map((item) => (
+                    <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
+                      <span className={`font-body text-sm ${item.packed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <div className="space-y-2.5">
+          {items.map((item) => (
+            <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
+              <span className={`font-body text-sm ${item.packed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -270,6 +354,71 @@ const MapView = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
+// ── Traveler Info ──
+const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
+  const [travelers, setTravelers] = useState<TravelerInfo[]>([
+    { id: '1', name: 'Elena', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
+    { id: '2', name: 'Julian', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
+  ]);
+
+  const updateTraveler = (id: string, field: keyof TravelerInfo, value: string) => {
+    setTravelers(travelers.map(t => t.id === id ? { ...t, [field]: value } : t));
+  };
+
+  const addTraveler = () => {
+    setTravelers([...travelers, { id: Date.now().toString(), name: '', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' }]);
+  };
+
+  const removeTraveler = (id: string) => {
+    setTravelers(travelers.filter(t => t.id !== id));
+  };
+
+  const inputClass = 'w-full bg-card border border-foreground/5 rounded-xl px-4 py-3 text-sm font-body focus:outline-none focus:border-primary transition-colors';
+
+  return (
+    <div>
+      <DetailHeader title="Traveler Info" onBack={onBack} />
+      <div className="space-y-6">
+        {travelers.map((traveler) => (
+          <div key={traveler.id} className="bg-card rounded-2xl p-5 shadow-soft relative">
+            <button onClick={() => removeTraveler(traveler.id)} className="absolute top-4 right-4">
+              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
+            </button>
+            <div className="space-y-3">
+              <div>
+                <label className="text-label mb-1 block">Name</label>
+                <input value={traveler.name} onChange={(e) => updateTraveler(traveler.id, 'name', e.target.value)} placeholder="Full name" className={inputClass} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-label mb-1 block">Passport #</label>
+                  <input value={traveler.passportNumber} onChange={(e) => updateTraveler(traveler.id, 'passportNumber', e.target.value)} placeholder="Passport number" className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-label mb-1 block">Expiry</label>
+                  <input value={traveler.passportExpiry} onChange={(e) => updateTraveler(traveler.id, 'passportExpiry', e.target.value)} placeholder="MM/YYYY" className={inputClass} />
+                </div>
+              </div>
+              <div>
+                <label className="text-label mb-1 block">Date of Birth</label>
+                <input value={traveler.dateOfBirth} onChange={(e) => updateTraveler(traveler.id, 'dateOfBirth', e.target.value)} placeholder="MM/DD/YYYY" className={inputClass} />
+              </div>
+              <div>
+                <label className="text-label mb-1 block">Notes</label>
+                <textarea value={traveler.notes} onChange={(e) => updateTraveler(traveler.id, 'notes', e.target.value)} placeholder="Allergies, preferences, etc." rows={2} className={`${inputClass} resize-none`} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={addTraveler} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Plus size={14} strokeWidth={1.5} />
+        <span className="font-body">Add traveler</span>
+      </button>
+    </div>
+  );
+};
+
 // ── Main ──
 const DetailViewComponent = ({ view, onBack }: DetailViewProps) => {
   if (!view) return null;
@@ -290,6 +439,7 @@ const DetailViewComponent = ({ view, onBack }: DetailViewProps) => {
       {view === 'activities' && <ActivitiesView onBack={onBack} />}
       {view === 'reservations' && <ReservationsView onBack={onBack} />}
       {view === 'map' && <MapView onBack={onBack} />}
+      {view === 'travelerInfo' && <TravelerInfoView onBack={onBack} />}
     </motion.div>
   );
 };
