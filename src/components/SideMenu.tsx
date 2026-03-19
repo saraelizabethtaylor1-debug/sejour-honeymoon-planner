@@ -19,7 +19,7 @@ const menuItems = [
   { icon: Settings, label: 'Settings', action: 'settings' as const },
 ];
 
-const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail, onGoToSettings }: SideMenuProps) => {
+const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings }: SideMenuProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
