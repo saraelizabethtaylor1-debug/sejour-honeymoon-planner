@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plane, Bed, Sparkles, CalendarCheck, MapPin } from 'lucide-react';
+import { Plane, Hotel, Sparkles, CalendarHeart, MapPin } from 'lucide-react';
 import type { DetailView } from '@/types/honeymoon';
 
 interface OverviewTabProps {
