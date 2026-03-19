@@ -30,14 +30,14 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
   return (
     <div className="bg-background z-10">
       <header className="px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-3 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <button onClick={onMenuToggle} className="shrink-0">
             <Menu className="text-foreground/70" size={20} strokeWidth={1.8} />
           </button>
-          <div className="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0">
+          <div className="relative w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] shrink-0">
             <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-[10px] sm:text-xs tracking-wider text-foreground/70 -translate-x-[1px]">
+              <span className="font-serif text-xs sm:text-sm tracking-wider text-foreground/70 -translate-x-[1px]">
                 {initials}
               </span>
             </div>
