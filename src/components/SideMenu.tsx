@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Home, ClipboardList, Map, CalendarDays, Settings, Users } from 'lucide-react';
+import { X, ClipboardList, Map, CalendarDays, Settings, Users } from 'lucide-react';
 import type { DashboardTab, DetailView } from '@/types/honeymoon';
 
 interface SideMenuProps {
