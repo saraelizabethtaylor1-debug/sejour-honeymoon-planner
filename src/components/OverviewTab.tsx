@@ -34,7 +34,7 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
         variants={container}
         initial="hidden"
         animate="show"
-        className="flex flex-col gap-3 md:gap-4"
+        className="flex flex-col gap-2.5 md:gap-3"
       >
         {items.map((itm) => (
           <motion.button
