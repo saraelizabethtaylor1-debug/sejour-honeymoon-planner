@@ -47,14 +47,14 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
       </div>
 
       {/* Right Content */}
-      <div className="flex-1 flex flex-col items-center md:items-start md:justify-between md:self-stretch gap-8 md:gap-0 md:pt-2">
+      <div className="flex-1 flex flex-col items-center md:items-start md:justify-end md:self-stretch gap-4 md:gap-5">
         {/* Headline */}
-        <div className="text-center md:text-left whitespace-nowrap">
+        <div className="text-center md:text-left max-w-full">
           <span className="font-script text-4xl sm:text-5xl lg:text-[3.4rem] text-foreground/80 leading-[1.2]">
             happily ever after
           </span>
           <span
-            className="font-serif text-2xl sm:text-3xl lg:text-[2.4rem] text-foreground/60 ml-2"
+            className="font-serif text-2xl sm:text-3xl lg:text-[2.4rem] text-foreground/60 ml-2 inline"
             style={{ letterSpacing: '0.08em', fontWeight: 300 }}
           >
             starts here.

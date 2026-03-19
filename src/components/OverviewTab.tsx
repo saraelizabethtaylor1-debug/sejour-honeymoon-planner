@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plane, Building2, Sparkles, CalendarCheck, MapPin } from 'lucide-react';
+import { Plane, Bed, Sparkles, CalendarCheck, MapPin } from 'lucide-react';
 import type { DetailView } from '@/types/honeymoon';
 
 interface OverviewTabProps {
@@ -8,7 +8,7 @@ interface OverviewTabProps {
 
 const items: { label: string; view: DetailView; icon: typeof Plane }[] = [
   { label: 'Transportation', view: 'transportation', icon: Plane },
-  { label: 'Accommodations', view: 'accommodations', icon: Building2 },
+  { label: 'Accommodations', view: 'accommodations', icon: Bed },
   { label: 'Activities', view: 'activities', icon: Sparkles },
   { label: 'Reservations', view: 'reservations', icon: CalendarCheck },
   { label: 'Map', view: 'map', icon: MapPin },
@@ -39,9 +39,9 @@ const OverviewTab = ({ onOpenDetail }: OverviewTabProps) => {
           whileHover={{ y: -2, transition: { duration: 0.2 } }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onOpenDetail(itm.view)}
-          className="w-full flex items-center gap-4 px-5 sm:px-6 py-4 sm:py-5 bg-secondary pill-shape shadow-soft transition-shadow duration-300 hover:shadow-card"
+          className="w-full flex items-center gap-4 px-5 sm:px-6 py-4 sm:py-5 bg-primary/60 pill-shape shadow-soft transition-shadow duration-300 hover:shadow-card"
         >
-          <itm.icon size={18} strokeWidth={1.5} className="text-muted-foreground" />
+          <itm.icon size={18} strokeWidth={1.5} className="text-primary-foreground" />
           <span className="font-serif text-lg sm:text-xl tracking-wide text-foreground">{itm.label}</span>
         </motion.button>
       ))}
