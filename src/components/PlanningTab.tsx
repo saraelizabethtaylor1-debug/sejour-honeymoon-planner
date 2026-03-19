@@ -47,19 +47,24 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
       </div>
 
       {/* Right Content */}
-      <div className="flex-1 flex flex-col items-center md:items-start md:justify-end md:self-stretch gap-4 md:gap-5">
+      <div className="flex-1 flex flex-col items-center md:items-start md:justify-center md:self-stretch gap-3 md:gap-4">
         {/* Headline */}
-        <div className="text-center md:text-left max-w-full">
-          <span className="font-script text-4xl sm:text-5xl lg:text-[3.4rem] text-foreground/80 leading-[1.2]">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="text-center md:text-left max-w-full leading-[1.1]"
+        >
+          <span className="font-script text-4xl sm:text-5xl lg:text-[3.4rem] text-foreground/80">
             happily ever after
           </span>
           <span
-            className="font-serif text-2xl sm:text-3xl lg:text-[2.4rem] text-foreground/60 ml-2 inline"
+            className="font-serif text-2xl sm:text-3xl lg:text-[2.4rem] text-foreground/50 ml-2 inline"
             style={{ letterSpacing: '0.08em', fontWeight: 300 }}
           >
             starts here.
           </span>
-        </div>
+        </motion.div>
 
         {/* Cards */}
         <motion.div
@@ -72,19 +77,19 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
             <motion.button
               key={card.title}
               variants={item}
-              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              whileHover={{ scale: 1.02, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.12)', transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="flex flex-col items-center justify-end gap-3 w-full pb-5 bg-primary/60 rounded-xl transition-shadow duration-200 hover:shadow-card"
+              className="flex flex-col items-center justify-end gap-3 w-full pb-5 bg-primary/60 rounded-xl transition-shadow duration-200"
               style={{
                 aspectRatio: '1 / 1.3',
-                boxShadow: '0 2px 12px -3px hsl(0 16% 43% / 0.06)',
+                boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
             >
               <card.icon
                 size={28}
                 strokeWidth={1.4}
-                className="text-primary-foreground/50"
+                className="text-primary-foreground/65"
               />
               <span
                 className="font-body text-xs text-foreground/70 uppercase"
