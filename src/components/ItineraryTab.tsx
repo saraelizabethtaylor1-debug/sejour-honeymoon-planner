@@ -48,19 +48,19 @@ const extractTime = (dateTimeStr: string): string => {
 };
 
 /** Extract date portion and parse to midnight Date for comparison */
-const extractDateForComparison = (dateStr: string): Date | null => {
-  // Try parsing as-is first
-  let parsed = parseDateString(dateStr);
-  if (parsed) return parsed;
-  // Try extracting just the date part from "Sept 16, 4:00 PM" → "Sept 16, 2025"
-  // Remove time portion
+const extractDateForComparison = (dateStr: string, fallbackYear: number): Date | null => {
+  // Remove time portion first: "Sept 14, 10:30 PM" → "Sept 14"
   const withoutTime = dateStr.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim();
-  // If no year, try adding current year
-  parsed = parseDateString(withoutTime);
+  // Try with year present
+  let parsed = parseDateString(withoutTime);
   if (parsed) return parsed;
-  // Try with a guessed year
-  const withYear = withoutTime.replace(/,?\s*$/, '') + ', 2025';
-  return parseDateString(withYear);
+  // Use fallback year from trip data
+  parsed = parseDateString(withoutTime, fallbackYear);
+  if (parsed) return parsed;
+  // Try original string (might have year)
+  parsed = parseDateString(dateStr);
+  if (parsed) return parsed;
+  return parseDateString(dateStr, fallbackYear);
 };
 
 const isSameDay = (a: Date, b: Date): boolean => {
