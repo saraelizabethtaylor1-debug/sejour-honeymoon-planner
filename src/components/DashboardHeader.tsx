@@ -22,7 +22,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
   const initials = (() => {
     const parts = tripData.names.split('&').map((s) => s.trim());
     return parts.length === 2
-      ? `${parts[0].charAt(0).toLowerCase()} & ${parts[1].charAt(0).toLowerCase()}`
+      ? `${parts[0].charAt(0).toLowerCase()}  &  ${parts[1].charAt(0).toLowerCase()}`
       : tripData.names;
   })();
 
