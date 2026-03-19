@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, GripVertical, ImagePlus } from 'lucide-react';
+import { ChevronDown, Plus, X, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
