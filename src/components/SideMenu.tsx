@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ClipboardList, Map, CalendarDays, Settings, Users } from 'lucide-react';
 import type { DashboardTab, DetailView } from '@/types/honeymoon';
+import moonLogo from '@/assets/moon-logo.png';
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface SideMenuProps {
   onNavigate: (tab: DashboardTab) => void;
   onOpenDetail?: (view: DetailView) => void;
   onGoToSettings?: () => void;
+  initials?: string;
 }
 
 const menuItems = [
@@ -18,7 +20,7 @@ const menuItems = [
   { icon: Settings, label: 'Settings', action: 'settings' as const },
 ];
 
-const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings }: SideMenuProps) => {
+const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings, initials }: SideMenuProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -41,7 +43,18 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings }:
               <X size={20} strokeWidth={1.5} className="text-foreground/40" />
             </button>
 
-            <h2 className="font-script text-4xl text-foreground mb-12">honeymoon</h2>
+            <div className="flex flex-col items-center mb-12">
+              <div className="relative w-20 h-20 mb-3">
+                <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
+                {initials && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="font-serif text-sm tracking-wider text-foreground/70 -translate-x-0.5">
+                      {initials}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
 
             <nav className="space-y-1.5">
               {menuItems.map((item) => (
