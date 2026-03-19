@@ -47,7 +47,7 @@ const Index = () => {
 
           <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             {tab === 'planning' && <PlanningTab onOpenDetail={setDetailView} tripData={tripData} />}
-            {tab === 'overview' && <OverviewTab onOpenDetail={setDetailView} />}
+            {tab === 'overview' && <OverviewTab onOpenDetail={setDetailView} tripData={tripData} />}
             {tab === 'itinerary' && (
               <ItineraryTab
                 days={sampleItinerary}
