@@ -3,7 +3,6 @@ import { AnimatePresence } from 'framer-motion';
 import type { TripData, AppView, DashboardTab, DetailView, TransportItem, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
 import { defaultTripData, sampleItinerary, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
 import WelcomeScreen from '@/components/WelcomeScreen';
-import CoverScreen from '@/components/CoverScreen';
 import DashboardHeader from '@/components/DashboardHeader';
 import SideMenu from '@/components/SideMenu';
 import PlanningTab from '@/components/PlanningTab';
@@ -26,7 +25,7 @@ const Index = () => {
 
   const handleWelcomeComplete = (data: TripData) => {
     setTripData(data);
-    setView('home');
+    setView('dashboard');
   };
 
   return (
@@ -36,8 +35,6 @@ const Index = () => {
           <WelcomeScreen key="welcome" onComplete={handleWelcomeComplete} />
         )}
       </AnimatePresence>
-
-
 
       {view === 'dashboard' && (
         <div className="h-screen flex flex-col">
@@ -70,7 +67,6 @@ const Index = () => {
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
         onNavigate={(t) => { setTab(t); setView('dashboard'); }}
-        onGoHome={() => setView('home')}
         onOpenDetail={setDetailView}
         onGoToSettings={() => setView('welcome')}
       />
