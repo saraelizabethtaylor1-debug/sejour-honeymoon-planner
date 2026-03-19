@@ -100,7 +100,7 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
         </button>
 
         {/* Script text */}
-        <p className="font-script text-base md:text-lg lg:text-xl xl:text-[22px] text-foreground/25 mt-4 md:mt-5 text-center tracking-tight">
+        <p className="font-script text-xl md:text-2xl lg:text-[28px] xl:text-[32px] text-foreground/35 mt-4 md:mt-5 text-center tracking-tight lowercase">
           {quote}
         </p>
       </motion.div>
