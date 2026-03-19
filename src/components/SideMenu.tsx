@@ -44,11 +44,11 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings, i
             </button>
 
             <div className="flex flex-col items-center mb-12">
-              <div className="relative w-20 h-20 mb-3">
+              <div className="relative w-24 h-24 mb-3">
                 <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
                 {initials && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="font-serif text-sm tracking-wider text-foreground/70 -translate-x-0.5">
+                    <span className="font-serif text-base tracking-widest text-foreground/75 -translate-x-[2px]">
                       {initials}
                     </span>
                   </div>
