@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus } from 'lucide-react';
+import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -17,8 +17,8 @@ interface ItineraryTabProps {
   onAddActivity?: (activity: ActivityItem) => void;
 }
 
-const iconMap: Record<string, typeof Hotel> = {
-  hotel: Hotel,
+const iconMap: Record<string, typeof Bed> = {
+  hotel: Bed,
   flight: Plane,
   dining: UtensilsCrossed,
   activity: Sparkles,
