@@ -96,8 +96,8 @@ const buildSyncedActivities = (
   // Accommodations - span across days
   for (const a of accommodationItems) {
     if (!a.name) continue;
-    const checkInDate = extractDateForComparison(a.checkIn);
-    const checkOutDate = extractDateForComparison(a.checkOut);
+    const checkInDate = extractDateForComparison(a.checkIn, fallbackYear);
+    const checkOutDate = extractDateForComparison(a.checkOut, fallbackYear);
     if (!checkInDate || !checkOutDate) continue;
 
     if (isSameDay(dayDate, checkInDate)) {
