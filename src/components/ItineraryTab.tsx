@@ -130,7 +130,7 @@ const buildSyncedActivities = (
   // Activities
   for (const act of activityItems) {
     if (!act.name || !act.time) continue;
-    const itemDate = extractDateForComparison(act.time);
+    const itemDate = extractDateForComparison(act.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
         time: extractTime(act.time) || act.time,
