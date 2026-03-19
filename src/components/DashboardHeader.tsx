@@ -22,7 +22,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
   const initials = (() => {
     const parts = tripData.names.split('&').map((s) => s.trim());
     return parts.length === 2
-      ? `${parts[0].charAt(0).toLowerCase()} & ${parts[1].charAt(0).toLowerCase()}`
+      ? `${parts[0].charAt(0).toLowerCase()}  &  ${parts[1].charAt(0).toLowerCase()}`
       : tripData.names;
   })();
 
@@ -52,20 +52,20 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         </div>
       </header>
 
-      <div className="flex px-4 sm:px-6 lg:px-8 gap-6 sm:gap-10 border-b border-foreground/5">
+      <div className="flex px-4 sm:px-6 lg:px-8 gap-8 sm:gap-12 border-b border-foreground/5">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
             className={`pb-4 text-[10px] uppercase tracking-[0.25em] relative transition-colors duration-200 ${
-              tab === t.key ? 'text-foreground' : 'text-foreground/30'
+              tab === t.key ? 'text-foreground/80' : 'text-foreground/25'
             }`}
           >
             {t.label}
             {tab === t.key && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-primary"
+                className="absolute bottom-0 left-0 right-0 h-px bg-foreground/20"
                 transition={{ type: 'spring', stiffness: 400, damping: 35 }}
               />
             )}
