@@ -26,8 +26,8 @@ const item = {
 const PlanningTab = ({ onOpenDetail }: PlanningTabProps) => {
   return (
     <div>
-      <p className="font-serif italic text-foreground/40 text-center text-lg sm:text-xl leading-relaxed mb-6 sm:mb-8">
-        "you are my greatest adventure yet."
+      <p className="font-script text-foreground/40 text-center text-2xl sm:text-3xl leading-relaxed mb-6 sm:mb-8">
+        you are my greatest adventure yet
       </p>
       <motion.div
         variants={container}
