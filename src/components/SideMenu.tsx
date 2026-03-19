@@ -11,7 +11,6 @@ interface SideMenuProps {
 }
 
 const menuItems = [
-  { icon: Home, label: 'Home', action: 'home' as const },
   { icon: ClipboardList, label: 'Planning', action: 'planning' as const },
   { icon: Map, label: 'Trip Overview', action: 'overview' as const },
   { icon: CalendarDays, label: 'Itinerary', action: 'itinerary' as const },
