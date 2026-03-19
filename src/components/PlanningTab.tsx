@@ -9,10 +9,10 @@ interface PlanningTabProps {
 }
 
 const archCards = [
-  { title: 'to-dos', icon: CheckCircle2, view: 'todos' as DetailView },
-  { title: 'budget', icon: DollarSign, view: 'budget' as DetailView },
+  { title: 'to-dos', icon: Heart, view: 'todos' as DetailView },
+  { title: 'budget', icon: Wallet, view: 'budget' as DetailView },
   { title: 'packing', icon: Briefcase, view: 'packing' as DetailView },
-  { title: 'notes', icon: StickyNote, view: 'notes' as DetailView },
+  { title: 'notes', icon: PenLine, view: 'notes' as DetailView },
 ];
 
 const container = {
