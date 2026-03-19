@@ -35,7 +35,7 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
         <div
           className="w-full aspect-[3/4] arch-shape overflow-hidden border-[8px] border-card"
           style={{
-            boxShadow: '0 8px 32px -6px hsl(0 16% 43% / 0.08), 0 2px 12px -2px hsl(0 16% 43% / 0.04)',
+            boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
           }}
         >
           <img
@@ -47,15 +47,15 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
       </div>
 
       {/* Right Content */}
-      <div className="flex-1 flex flex-col items-center md:items-start gap-8 md:gap-10 md:pt-6">
+      <div className="flex-1 flex flex-col items-center md:items-start md:justify-between md:self-stretch gap-8 md:gap-0 md:pt-2">
         {/* Headline */}
-        <div className="text-center md:text-left leading-[1.15]">
-          <span className="font-initials text-4xl sm:text-5xl lg:text-[3.4rem] text-foreground block">
+        <div className="text-center md:text-left whitespace-nowrap">
+          <span className="font-script text-4xl sm:text-5xl lg:text-[3.4rem] text-foreground/80 leading-[1.2]">
             happily ever after
           </span>
           <span
-            className="font-serif text-3xl sm:text-4xl lg:text-[2.8rem] text-foreground/80 block mt-1"
-            style={{ letterSpacing: '0.06em', fontWeight: 300 }}
+            className="font-serif text-2xl sm:text-3xl lg:text-[2.4rem] text-foreground/60 ml-2"
+            style={{ letterSpacing: '0.08em', fontWeight: 300 }}
           >
             starts here.
           </span>
@@ -75,15 +75,16 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
               whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="flex flex-col items-center justify-center gap-3 w-full aspect-square bg-primary/60 rounded-xl transition-shadow duration-200 hover:shadow-card"
+              className="flex flex-col items-center justify-end gap-3 w-full pb-5 bg-primary/60 rounded-xl transition-shadow duration-200 hover:shadow-card"
               style={{
+                aspectRatio: '1 / 1.3',
                 boxShadow: '0 2px 12px -3px hsl(0 16% 43% / 0.06)',
               }}
             >
               <card.icon
                 size={28}
                 strokeWidth={1.4}
-                className="text-primary-foreground/40"
+                className="text-primary-foreground/50"
               />
               <span
                 className="font-body text-xs text-foreground/70 uppercase"
