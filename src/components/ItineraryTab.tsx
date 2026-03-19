@@ -81,7 +81,7 @@ const buildSyncedActivities = (
   // Transportation
   for (const t of transportItems) {
     if (!t.time || !t.type) continue;
-    const itemDate = extractDateForComparison(t.time);
+    const itemDate = extractDateForComparison(t.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
         time: extractTime(t.time) || t.time,
