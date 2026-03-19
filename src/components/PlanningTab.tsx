@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { CheckCircle2, DollarSign, Briefcase, StickyNote } from 'lucide-react';
+import { Heart, Wallet, Briefcase, PenLine } from 'lucide-react';
 import type { DetailView, TripData } from '@/types/honeymoon';
 import santoriniCover from '@/assets/santorini-cover.jpg';
 
