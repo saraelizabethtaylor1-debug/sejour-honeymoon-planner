@@ -6,7 +6,6 @@ interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (tab: DashboardTab) => void;
-  onGoHome: () => void;
   onOpenDetail?: (view: DetailView) => void;
   onGoToSettings?: () => void;
 }
