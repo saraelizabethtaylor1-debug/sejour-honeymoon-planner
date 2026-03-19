@@ -93,7 +93,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
 
           {/* Cover Photo */}
           <div className="space-y-1.5">
-            <label className="text-label pl-1">Cover Photo</label>
+            <label className="text-label pl-1">Trip inspiration cover photo</label>
             <button
               onClick={() => fileRef.current?.click()}
               className="w-full flex items-center gap-3 border-b border-input py-3 text-foreground/40 hover:text-foreground/60 transition-colors"
