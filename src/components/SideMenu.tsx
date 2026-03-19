@@ -13,7 +13,7 @@ interface SideMenuProps {
 }
 
 const menuItems = [
-  { icon: ClipboardList, label: 'Planning', action: 'planning' as const },
+  { icon: Heart, label: 'Planning', action: 'planning' as const },
   { icon: Map, label: 'Trip Overview', action: 'overview' as const },
   { icon: CalendarDays, label: 'Itinerary', action: 'itinerary' as const },
   { icon: Users, label: 'Traveler Info', action: 'travelerInfo' as const },
