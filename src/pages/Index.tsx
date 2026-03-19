@@ -61,6 +61,7 @@ const Index = () => {
                 accommodationItems={accommodationItems}
                 activityItems={activityItems}
                 reservationItems={reservationItems}
+                onAddActivity={(newAct) => setActivityItems(prev => [...prev, newAct])}
               />
             )}
           </main>

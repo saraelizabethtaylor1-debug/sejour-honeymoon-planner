@@ -1,7 +1,7 @@
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, X, Hotel, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus } from 'lucide-react';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { ItineraryDay, ItineraryActivity, TransportItem, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
@@ -14,6 +14,7 @@ interface ItineraryTabProps {
   accommodationItems?: AccommodationItem[];
   activityItems?: ActivityItem[];
   reservationItems?: ReservationItem[];
+  onAddActivity?: (activity: ActivityItem) => void;
 }
 
 const iconMap: Record<string, typeof Hotel> = {
@@ -63,6 +64,14 @@ const extractDateForComparison = (dateStr: string, fallbackYear: number): Date |
 const isSameDay = (a: Date, b: Date): boolean =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
+interface TaggedActivity extends ItineraryActivity {
+  _uid: string;
+  _synced: boolean;
+}
+
+let uidCounter = 0;
+const nextUid = () => `itact-${++uidCounter}-${Date.now()}`;
+
 const buildSyncedActivities = (
   dayDate: Date,
   transportItems: TransportItem[],
@@ -70,14 +79,16 @@ const buildSyncedActivities = (
   activityItems: ActivityItem[],
   reservationItems: ReservationItem[],
   fallbackYear: number,
-): ItineraryActivity[] => {
-  const activities: ItineraryActivity[] = [];
+): TaggedActivity[] => {
+  const activities: TaggedActivity[] = [];
 
   for (const t of transportItems) {
     if (!t.time || !t.type) continue;
     const itemDate = extractDateForComparison(t.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
+        _uid: `sync-transport-${t.id}`,
+        _synced: true,
         time: extractTime(t.time) || t.time,
         title: `${t.type}${t.details ? ': ' + t.details : ''}`,
         location: '',
@@ -94,6 +105,8 @@ const buildSyncedActivities = (
     if (!checkInDate || !checkOutDate) continue;
     if (isSameDay(dayDate, checkInDate)) {
       activities.push({
+        _uid: `sync-acc-checkin-${a.id}`,
+        _synced: true,
         time: a.checkInTime || 'Check-in',
         title: `Check-in at ${a.name}`,
         location: a.address,
@@ -102,6 +115,8 @@ const buildSyncedActivities = (
       });
     } else if (isSameDay(dayDate, checkOutDate)) {
       activities.push({
+        _uid: `sync-acc-checkout-${a.id}`,
+        _synced: true,
         time: a.checkOutTime || 'Check-out',
         title: `Check-out from ${a.name}`,
         location: a.address,
@@ -110,6 +125,8 @@ const buildSyncedActivities = (
       });
     } else if (dayDate > checkInDate && dayDate < checkOutDate) {
       activities.push({
+        _uid: `sync-acc-stay-${a.id}`,
+        _synced: true,
         time: '',
         title: `Stay at ${a.name}`,
         location: a.address,
@@ -124,6 +141,8 @@ const buildSyncedActivities = (
     const itemDate = extractDateForComparison(act.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
+        _uid: `sync-activity-${act.id}`,
+        _synced: true,
         time: extractTime(act.time) || act.time,
         title: act.name,
         location: '',
@@ -138,6 +157,8 @@ const buildSyncedActivities = (
     const itemDate = extractDateForComparison(r.date, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
+        _uid: `sync-reservation-${r.id}`,
+        _synced: true,
         time: r.time || '',
         title: r.name,
         location: '',
@@ -158,15 +179,14 @@ const buildSyncedActivities = (
 
 /* ── Sortable Activity Card ── */
 interface SortableActivityProps {
-  activity: ItineraryActivity;
+  activity: TaggedActivity;
   id: string;
-  isSynced: boolean;
   onUpdate: (fields: Partial<ItineraryActivity>) => void;
   onImageUpload: (file: File) => void;
   onRemoveImage: () => void;
 }
 
-const SortableActivityCard = ({ activity: act, id, isSynced, onUpdate, onImageUpload, onRemoveImage }: SortableActivityProps) => {
+const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage }: SortableActivityProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : undefined, opacity: isDragging ? 0.5 : 1 };
   const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
@@ -201,8 +221,8 @@ const SortableActivityCard = ({ activity: act, id, isSynced, onUpdate, onImageUp
       </div>
 
       {/* Content card */}
-      <div className={`flex-1 min-w-0 bg-card rounded-l-2xl sm:rounded-2xl p-4 shadow-soft -mr-6 sm:mr-0 pr-12 sm:pr-12 relative ${isSynced ? 'border-l-2 border-primary/30' : ''}`}>
-        {/* Time - editable */}
+      <div className={`flex-1 min-w-0 bg-card rounded-l-2xl sm:rounded-2xl p-4 shadow-soft -mr-6 sm:mr-0 pr-12 sm:pr-12 relative ${act._synced ? 'border-l-2 border-primary/30' : ''}`}>
+        {/* Time */}
         {editingField === 'time' ? (
           <input
             autoFocus
@@ -219,7 +239,7 @@ const SortableActivityCard = ({ activity: act, id, isSynced, onUpdate, onImageUp
           </button>
         )}
 
-        {/* Title - editable */}
+        {/* Title */}
         {editingField === 'title' ? (
           <input
             autoFocus
@@ -234,7 +254,7 @@ const SortableActivityCard = ({ activity: act, id, isSynced, onUpdate, onImageUp
           </button>
         )}
 
-        {/* Location - editable */}
+        {/* Location */}
         {editingField === 'location' ? (
           <input
             autoFocus
@@ -252,7 +272,7 @@ const SortableActivityCard = ({ activity: act, id, isSynced, onUpdate, onImageUp
           </button>
         )}
 
-        {/* Notes - editable */}
+        {/* Notes */}
         {editingField === 'notes' ? (
           <input
             autoFocus
@@ -272,11 +292,11 @@ const SortableActivityCard = ({ activity: act, id, isSynced, onUpdate, onImageUp
           </button>
         )}
 
-        {/* Drag handle */}
+        {/* Drag handle — always rendered, visible on hover */}
         <div
           {...attributes}
           {...listeners}
-          className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-4 opacity-0 group-hover/item:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-1"
+          className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-4 opacity-0 group-hover/item:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2 touch-none"
         >
           <div className="grid grid-cols-2 gap-[3px]">
             <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
@@ -302,89 +322,123 @@ const SortableActivityCard = ({ activity: act, id, isSynced, onUpdate, onImageUp
 };
 
 /* ── Itinerary Day Item ── */
-const ItineraryItem = ({ day: initialDay, syncedActivities }: { day: ItineraryDay; syncedActivities: ItineraryActivity[] }) => {
+const ItineraryItem = ({
+  day: initialDay,
+  syncedActivities,
+  dayDateStr,
+  onAddActivity,
+}: {
+  day: ItineraryDay;
+  syncedActivities: TaggedActivity[];
+  dayDateStr: string;
+  onAddActivity?: (activity: ActivityItem) => void;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [manualActivities, setManualActivities] = useState<ItineraryActivity[]>(() =>
-    initialDay.activities.map(a => ({
-      ...a,
-      iconType: (a.iconType || guessIconType(a.title)) as ItineraryActivity['iconType'],
-    }))
-  );
   const [editingTitle, setEditingTitle] = useState(false);
   const [destination, setDestination] = useState(initialDay.destination);
 
-  // Merge synced + manual, deduplicate by title
-  const allActivities = useMemo(() => {
-    const syncedTitles = new Set(syncedActivities.map(a => a.title.toLowerCase()));
-    const uniqueManual = manualActivities.filter(a => !syncedTitles.has(a.title.toLowerCase()));
-    const merged = [...syncedActivities, ...uniqueManual];
+  // Maintain a single ordered list of all activities with stable UIDs
+  const [orderedActivities, setOrderedActivities] = useState<TaggedActivity[]>([]);
+  const [initialized, setInitialized] = useState(false);
+
+  // Build initial list from synced + manual (from initialDay.activities)
+  useEffect(() => {
+    const manualTagged: TaggedActivity[] = initialDay.activities.map(a => ({
+      ...a,
+      _uid: nextUid(),
+      _synced: false,
+      iconType: (a.iconType || guessIconType(a.title)) as ItineraryActivity['iconType'],
+    }));
+
+    // Merge: synced first, then manual, sorted by time initially
+    const merged = [...syncedActivities, ...manualTagged];
     merged.sort((a, b) => {
       if (!a.time) return 1;
       if (!b.time) return -1;
       return a.time.localeCompare(b.time);
     });
-    return merged;
-  }, [syncedActivities, manualActivities]);
+    setOrderedActivities(merged);
+    setInitialized(true);
+    // Only run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Generate stable IDs for dnd-kit
-  const activityIds = useMemo(() => allActivities.map((_, i) => `act-${i}`), [allActivities]);
+  // Update synced activities when they change (external data), preserving manual order
+  useEffect(() => {
+    if (!initialized) return;
+    setOrderedActivities(prev => {
+      const manualItems = prev.filter(a => !a._synced);
+      const merged = [...syncedActivities, ...manualItems];
+      // Don't re-sort — keep synced sorted, manual at end in their order
+      return merged;
+    });
+  }, [syncedActivities, initialized]);
+
+  const activityIds = useMemo(() => orderedActivities.map(a => a._uid), [orderedActivities]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
-  const handleDragEnd = useCallback((event: any) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = activityIds.indexOf(active.id);
-    const newIndex = activityIds.indexOf(over.id);
-    // Only reorder manual activities
-    const syncCount = syncedActivities.length;
-    const oldManualIdx = oldIndex - syncCount;
-    const newManualIdx = newIndex - syncCount;
-    if (oldManualIdx >= 0 && newManualIdx >= 0) {
-      setManualActivities(prev => arrayMove(prev, oldManualIdx, newManualIdx));
-    }
-  }, [activityIds, syncedActivities.length]);
-
-  const updateActivity = useCallback((index: number, fields: Partial<ItineraryActivity>) => {
-    const manualIdx = index - syncedActivities.length;
-    if (manualIdx < 0) return;
-    setManualActivities(prev => {
-      const updated = [...prev];
-      updated[manualIdx] = { ...updated[manualIdx], ...fields };
-      if (fields.title) {
-        updated[manualIdx].iconType = guessIconType(fields.title);
-      }
-      return updated;
+    setOrderedActivities(prev => {
+      const oldIndex = prev.findIndex(a => a._uid === active.id);
+      const newIndex = prev.findIndex(a => a._uid === over.id);
+      if (oldIndex === -1 || newIndex === -1) return prev;
+      return arrayMove(prev, oldIndex, newIndex);
     });
-  }, [syncedActivities.length]);
+  }, []);
 
-  const handleImageUpload = useCallback((index: number, file: File) => {
+  const updateActivity = useCallback((uid: string, fields: Partial<ItineraryActivity>) => {
+    setOrderedActivities(prev =>
+      prev.map(a => {
+        if (a._uid !== uid) return a;
+        const updated = { ...a, ...fields };
+        if (fields.title) updated.iconType = guessIconType(fields.title);
+        return updated;
+      })
+    );
+  }, []);
+
+  const handleImageUpload = useCallback((uid: string, file: File) => {
     const url = URL.createObjectURL(file);
-    const manualIdx = index - syncedActivities.length;
-    if (manualIdx >= 0) {
-      setManualActivities(prev => {
-        const updated = [...prev];
-        updated[manualIdx] = { ...updated[manualIdx], imageUrl: url };
-        return updated;
-      });
-    }
-  }, [syncedActivities.length]);
+    setOrderedActivities(prev =>
+      prev.map(a => a._uid === uid ? { ...a, imageUrl: url } : a)
+    );
+  }, []);
 
-  const removeImage = useCallback((index: number) => {
-    const manualIdx = index - syncedActivities.length;
-    if (manualIdx >= 0) {
-      setManualActivities(prev => {
-        const updated = [...prev];
-        updated[manualIdx] = { ...updated[manualIdx], imageUrl: undefined };
-        return updated;
-      });
-    }
-  }, [syncedActivities.length]);
+  const removeImage = useCallback((uid: string) => {
+    setOrderedActivities(prev =>
+      prev.map(a => a._uid === uid ? { ...a, imageUrl: undefined } : a)
+    );
+  }, []);
 
   const addActivity = () => {
-    const newAct: ItineraryActivity = { time: '', title: 'New Activity', location: '', notes: '', iconType: 'activity' };
-    setManualActivities(prev => [...prev, newAct]);
+    const newUid = nextUid();
+    const newAct: TaggedActivity = {
+      _uid: newUid,
+      _synced: false,
+      time: '',
+      title: 'New Activity',
+      location: '',
+      notes: '',
+      iconType: 'activity',
+    };
+    setOrderedActivities(prev => [...prev, newAct]);
     if (!isOpen) setIsOpen(true);
+
+    // Also add to activities list for Trip Overview
+    if (onAddActivity) {
+      const newActivityItem: ActivityItem = {
+        id: newUid,
+        name: 'New Activity',
+        notes: '',
+        time: dayDateStr,
+        confirmation: '',
+        cost: 0,
+      };
+      onAddActivity(newActivityItem);
+    }
   };
 
   return (
@@ -403,8 +457,8 @@ const ItineraryItem = ({ day: initialDay, syncedActivities }: { day: ItineraryDa
           <span className="font-serif text-primary-foreground/65 truncate">{destination}</span>
         </div>
         <div className="flex items-center gap-2">
-          {allActivities.length > 0 && (
-            <span className="text-xs text-primary-foreground/40 font-body">{allActivities.length}</span>
+          {orderedActivities.length > 0 && (
+            <span className="text-xs text-primary-foreground/40 font-body">{orderedActivities.length}</span>
           )}
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
             <ChevronDown size={18} className="text-primary-foreground/60" />
@@ -420,7 +474,7 @@ const ItineraryItem = ({ day: initialDay, syncedActivities }: { day: ItineraryDa
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            {/* Editable destination - hover to edit, no helper text */}
+            {/* Editable destination */}
             <div className="pt-5 pb-2 px-2">
               {editingTitle ? (
                 <input
@@ -445,7 +499,7 @@ const ItineraryItem = ({ day: initialDay, syncedActivities }: { day: ItineraryDa
 
             {/* Timeline */}
             <div className="py-4 relative">
-              {allActivities.length === 0 ? (
+              {orderedActivities.length === 0 ? (
                 <p className="text-muted-foreground font-serif italic px-2">No activities planned yet</p>
               ) : (
                 <div className="relative">
@@ -453,20 +507,16 @@ const ItineraryItem = ({ day: initialDay, syncedActivities }: { day: ItineraryDa
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={activityIds} strategy={verticalListSortingStrategy}>
                       <div className="space-y-3">
-                        {allActivities.map((act, i) => {
-                          const isSynced = i < syncedActivities.length;
-                          return (
-                            <SortableActivityCard
-                              key={activityIds[i]}
-                              id={activityIds[i]}
-                              activity={act}
-                              isSynced={isSynced}
-                              onUpdate={(fields) => updateActivity(i, fields)}
-                              onImageUpload={(file) => handleImageUpload(i, file)}
-                              onRemoveImage={() => removeImage(i)}
-                            />
-                          );
-                        })}
+                        {orderedActivities.map((act) => (
+                          <SortableActivityCard
+                            key={act._uid}
+                            id={act._uid}
+                            activity={act}
+                            onUpdate={(fields) => updateActivity(act._uid, fields)}
+                            onImageUpload={(file) => handleImageUpload(act._uid, file)}
+                            onRemoveImage={() => removeImage(act._uid)}
+                          />
+                        ))}
                       </div>
                     </SortableContext>
                   </DndContext>
@@ -506,7 +556,16 @@ const generateDaysFromTrip = (tripData: { date: string; days: number; destinatio
   });
 };
 
-const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [] }: ItineraryTabProps) => {
+const formatDayDate = (tripData: { date: string; days: number }, dayIndex: number): string => {
+  const startDate = parseDateString(tripData.date);
+  if (!startDate) return '';
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + dayIndex);
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+  return `${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+};
+
+const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity }: ItineraryTabProps) => {
   const displayDays = tripData ? generateDaysFromTrip(tripData) : days;
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
@@ -522,8 +581,15 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
         const syncedActivities = dayDate
           ? buildSyncedActivities(dayDate, transportItems, accommodationItems, activityItems, reservationItems, fallbackYear)
           : [];
+        const dayDateStr = tripData ? formatDayDate(tripData, i) : '';
         return (
-          <ItineraryItem key={day.id} day={day} syncedActivities={syncedActivities} />
+          <ItineraryItem
+            key={day.id}
+            day={day}
+            syncedActivities={syncedActivities}
+            dayDateStr={dayDateStr}
+            onAddActivity={onAddActivity}
+          />
         );
       })}
     </div>
