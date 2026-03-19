@@ -2,11 +2,19 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Check, Pencil } from 'lucide-react';
 import type { DetailView, TodoItem, BudgetItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
-import { sampleTodos, sampleBudget, samplePacking, sampleNotes, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
+import { sampleTodos, sampleBudget, samplePacking, sampleNotes } from '@/data/sampleData';
 
 interface DetailViewProps {
   view: DetailView;
   onBack: () => void;
+  transportItems: TransportItem[];
+  setTransportItems: React.Dispatch<React.SetStateAction<TransportItem[]>>;
+  accommodationItems: AccommodationItem[];
+  setAccommodationItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>>;
+  activityItems: ActivityItem[];
+  setActivityItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>;
+  reservationItems: ReservationItem[];
+  setReservationItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>;
 }
 
 const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
@@ -98,8 +106,6 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
         )}
         <p className="text-sm text-foreground/45 mt-1.5">Spent: {formatCost(totalAct)}</p>
       </div>
-
-      {/* Column headers */}
       <div className="flex items-center justify-between px-4 sm:px-5 pb-2 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
         <span>Category</span>
         <div className="flex gap-6 sm:gap-8">
@@ -107,41 +113,20 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
           <span>Actual</span>
         </div>
       </div>
-
       <div className="space-y-3">
         {items.map((item) => (
           <div key={item.id} className="flex items-center justify-between px-4 sm:px-5 py-4 bg-card pill-shape shadow-soft">
             <span className="font-serif text-foreground">{item.category}</span>
             <div className="flex gap-4 sm:gap-6 items-center">
               {editingCell?.id === item.id && editingCell.field === 'estimated' ? (
-                <input
-                  type="number"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onBlur={commitEdit}
-                  onKeyDown={(e) => e.key === 'Enter' && commitEdit()}
-                  autoFocus
-                  className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body"
-                />
+                <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={commitEdit} onKeyDown={(e) => e.key === 'Enter' && commitEdit()} autoFocus className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body" />
               ) : (
-                <button onClick={() => startEdit(item.id, 'estimated', item.estimated)} className="text-sm text-foreground hover:text-primary transition-colors">
-                  {formatCost(item.estimated)}
-                </button>
+                <button onClick={() => startEdit(item.id, 'estimated', item.estimated)} className="text-sm text-foreground hover:text-primary transition-colors">{formatCost(item.estimated)}</button>
               )}
               {editingCell?.id === item.id && editingCell.field === 'actual' ? (
-                <input
-                  type="number"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onBlur={commitEdit}
-                  onKeyDown={(e) => e.key === 'Enter' && commitEdit()}
-                  autoFocus
-                  className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body"
-                />
+                <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={commitEdit} onKeyDown={(e) => e.key === 'Enter' && commitEdit()} autoFocus className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body" />
               ) : (
-                <button onClick={() => startEdit(item.id, 'actual', item.actual)} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  {formatCost(item.actual)}
-                </button>
+                <button onClick={() => startEdit(item.id, 'actual', item.actual)} className="text-sm text-muted-foreground hover:text-primary transition-colors">{formatCost(item.actual)}</button>
               )}
             </div>
           </div>
@@ -172,7 +157,6 @@ const PackingView = ({ onBack }: { onBack: () => void }) => {
         </div>
         <input value={newTraveler} onChange={(e) => setNewTraveler(e.target.value)} placeholder="Assign to traveler (optional)" className="w-full bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3 text-xs font-body focus:outline-none focus:border-primary transition-colors" />
       </div>
-
       {travelers.length > 0 ? (
         <>
           {[...travelers, undefined].map((traveler) => {
@@ -242,8 +226,7 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Transportation ──
-const TransportView = ({ onBack }: { onBack: () => void }) => {
-  const [items, setItems] = useState<TransportItem[]>(sampleTransport);
+const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>> }) => {
   const add = () => {
     setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', time: '', cost: 0 }]);
   };
@@ -269,7 +252,7 @@ const TransportView = ({ onBack }: { onBack: () => void }) => {
               </div>
               <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
-                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time" className={inputClass} />
+                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 14, 10:30 PM)" className={inputClass} />
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
                   <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
@@ -288,10 +271,9 @@ const TransportView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Accommodations ──
-const AccommodationsView = ({ onBack }: { onBack: () => void }) => {
-  const [items, setItems] = useState<AccommodationItem[]>(sampleAccommodations);
+const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>> }) => {
   const add = () => {
-    setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkOut: '', confirmation: '', cost: 0 }]);
+    setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 }]);
   };
   const remove = (id: string) => setItems(items.filter(i => i.id !== id));
   const update = (id: string, field: keyof AccommodationItem, value: string | number) => {
@@ -312,8 +294,12 @@ const AccommodationsView = ({ onBack }: { onBack: () => void }) => {
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={inputClass} />
               <input value={item.address} onChange={(e) => update(item.id, 'address', e.target.value)} placeholder="Address" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
-                <input value={item.checkIn} onChange={(e) => update(item.id, 'checkIn', e.target.value)} placeholder="Check-in" className={inputClass} />
-                <input value={item.checkOut} onChange={(e) => update(item.id, 'checkOut', e.target.value)} placeholder="Check-out" className={inputClass} />
+                <input value={item.checkIn} onChange={(e) => update(item.id, 'checkIn', e.target.value)} placeholder="Check-in date (e.g. Sept 15)" className={inputClass} />
+                <input value={item.checkInTime} onChange={(e) => update(item.id, 'checkInTime', e.target.value)} placeholder="Check-in time (e.g. 2:00 PM)" className={inputClass} />
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <input value={item.checkOut} onChange={(e) => update(item.id, 'checkOut', e.target.value)} placeholder="Check-out date (e.g. Sept 20)" className={inputClass} />
+                <input value={item.checkOutTime} onChange={(e) => update(item.id, 'checkOutTime', e.target.value)} placeholder="Check-out time (e.g. 11:00 AM)" className={inputClass} />
               </div>
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
@@ -335,8 +321,7 @@ const AccommodationsView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Activities ──
-const ActivitiesView = ({ onBack }: { onBack: () => void }) => {
-  const [items, setItems] = useState<ActivityItem[]>(sampleActivities);
+const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>> }) => {
   const add = () => {
     setItems([...items, { id: Date.now().toString(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
   };
@@ -358,7 +343,7 @@ const ActivitiesView = ({ onBack }: { onBack: () => void }) => {
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Activity name" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
-                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time" className={inputClass} />
+                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 16, 4:00 PM)" className={inputClass} />
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
               </div>
               <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
@@ -379,8 +364,7 @@ const ActivitiesView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Reservations ──
-const ReservationsView = ({ onBack }: { onBack: () => void }) => {
-  const [items, setItems] = useState<ReservationItem[]>(sampleReservations);
+const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>> }) => {
   const add = () => {
     setItems([...items, { id: Date.now().toString(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 }]);
   };
@@ -402,8 +386,8 @@ const ReservationsView = ({ onBack }: { onBack: () => void }) => {
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Restaurant / Venue" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
-                <input value={item.date} onChange={(e) => update(item.id, 'date', e.target.value)} placeholder="Date" className={inputClass} />
-                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Time" className={inputClass} />
+                <input value={item.date} onChange={(e) => update(item.id, 'date', e.target.value)} placeholder="Date (e.g. Sept 16)" className={inputClass} />
+                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Time (e.g. 7:30 PM)" className={inputClass} />
               </div>
               <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
               <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
@@ -504,7 +488,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Main ──
-const DetailViewComponent = ({ view, onBack }: DetailViewProps) => {
+const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, accommodationItems, setAccommodationItems, activityItems, setActivityItems, reservationItems, setReservationItems }: DetailViewProps) => {
   if (!view) return null;
   return (
     <motion.div
@@ -518,10 +502,10 @@ const DetailViewComponent = ({ view, onBack }: DetailViewProps) => {
       {view === 'budget' && <BudgetView onBack={onBack} />}
       {view === 'packing' && <PackingView onBack={onBack} />}
       {view === 'notes' && <NotesView onBack={onBack} />}
-      {view === 'transportation' && <TransportView onBack={onBack} />}
-      {view === 'accommodations' && <AccommodationsView onBack={onBack} />}
-      {view === 'activities' && <ActivitiesView onBack={onBack} />}
-      {view === 'reservations' && <ReservationsView onBack={onBack} />}
+      {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} />}
+      {view === 'accommodations' && <AccommodationsView onBack={onBack} items={accommodationItems} setItems={setAccommodationItems} />}
+      {view === 'activities' && <ActivitiesView onBack={onBack} items={activityItems} setItems={setActivityItems} />}
+      {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} />}
       {view === 'map' && <MapView onBack={onBack} />}
       {view === 'travelerInfo' && <TravelerInfoView onBack={onBack} />}
     </motion.div>

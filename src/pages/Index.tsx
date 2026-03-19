@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import type { TripData, AppView, DashboardTab, DetailView } from '@/types/honeymoon';
-import { defaultTripData, sampleItinerary } from '@/data/sampleData';
+import type { TripData, AppView, DashboardTab, DetailView, TransportItem, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+import { defaultTripData, sampleItinerary, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import CoverScreen from '@/components/CoverScreen';
 import DashboardHeader from '@/components/DashboardHeader';
@@ -17,6 +17,12 @@ const Index = () => {
   const [tripData, setTripData] = useState<TripData>(defaultTripData);
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailView, setDetailView] = useState<DetailView>(null);
+
+  // Lifted state for overview data
+  const [transportItems, setTransportItems] = useState<TransportItem[]>(sampleTransport);
+  const [accommodationItems, setAccommodationItems] = useState<AccommodationItem[]>(sampleAccommodations);
+  const [activityItems, setActivityItems] = useState<ActivityItem[]>(sampleActivities);
+  const [reservationItems, setReservationItems] = useState<ReservationItem[]>(sampleReservations);
 
   const handleWelcomeComplete = (data: TripData) => {
     setTripData(data);
@@ -47,7 +53,16 @@ const Index = () => {
           <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             {tab === 'planning' && <PlanningTab onOpenDetail={setDetailView} />}
             {tab === 'overview' && <OverviewTab onOpenDetail={setDetailView} />}
-            {tab === 'itinerary' && <ItineraryTab days={sampleItinerary} tripData={tripData} />}
+            {tab === 'itinerary' && (
+              <ItineraryTab
+                days={sampleItinerary}
+                tripData={tripData}
+                transportItems={transportItems}
+                accommodationItems={accommodationItems}
+                activityItems={activityItems}
+                reservationItems={reservationItems}
+              />
+            )}
           </main>
         </div>
       )}
@@ -67,6 +82,14 @@ const Index = () => {
             key={detailView}
             view={detailView}
             onBack={() => setDetailView(null)}
+            transportItems={transportItems}
+            setTransportItems={setTransportItems}
+            accommodationItems={accommodationItems}
+            setAccommodationItems={setAccommodationItems}
+            activityItems={activityItems}
+            setActivityItems={setActivityItems}
+            reservationItems={reservationItems}
+            setReservationItems={setReservationItems}
           />
         )}
       </AnimatePresence>
