@@ -214,8 +214,8 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
             onClick={() => fileRef.current?.click()}
             className="w-[62px] h-[62px] rounded-full bg-card flex items-center justify-center border-2 border-primary/40 shadow-soft cursor-pointer hover:border-primary/60 transition-colors relative group/icon"
           >
-            <IconComponent size={24} strokeWidth={1.8} className="text-primary-foreground group-hover/icon:opacity-0 transition-opacity" />
-            <ImagePlus size={20} strokeWidth={1.5} className="text-primary-foreground/50 absolute opacity-0 group-hover/icon:opacity-100 transition-opacity" />
+            <IconComponent size={22} strokeWidth={1.2} className="text-primary-foreground group-hover/icon:opacity-0 transition-opacity" />
+            <ImagePlus size={18} strokeWidth={1.2} className="text-primary-foreground/50 absolute opacity-0 group-hover/icon:opacity-100 transition-opacity" />
           </button>
         )}
       </div>
@@ -450,11 +450,11 @@ const ItineraryItem = ({
         className="w-full flex items-center justify-between px-4 sm:px-6 py-5 bg-primary rounded-2xl shadow-arch transition-shadow hover:shadow-lift"
       >
         <div className="flex items-center gap-2.5 overflow-hidden">
-          <span className="font-serif text-lg text-primary-foreground whitespace-nowrap">{initialDay.dayLabel}</span>
+          <span className="font-serif text-base sm:text-lg text-primary-foreground whitespace-nowrap">{initialDay.dayLabel}</span>
           <span className="text-primary-foreground/25">|</span>
-          <span className="font-serif text-sm text-primary-foreground/50 whitespace-nowrap">{initialDay.date}</span>
+          <span className="font-serif text-base sm:text-lg text-primary-foreground/50 whitespace-nowrap">{initialDay.date}</span>
           <span className="text-primary-foreground/25">|</span>
-          <span className="font-serif text-primary-foreground/65 truncate">{destination}</span>
+          <span className="font-serif text-base sm:text-lg text-primary-foreground/65 truncate">{destination}</span>
         </div>
         <div className="flex items-center gap-2">
           {orderedActivities.length > 0 && (

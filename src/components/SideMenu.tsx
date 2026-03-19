@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ClipboardList, Map, CalendarDays, Settings, Users } from 'lucide-react';
+import { X, Heart, Map, CalendarDays, Settings, Users } from 'lucide-react';
 import type { DashboardTab, DetailView } from '@/types/honeymoon';
 import moonLogo from '@/assets/moon-logo.png';
 
@@ -13,7 +13,7 @@ interface SideMenuProps {
 }
 
 const menuItems = [
-  { icon: ClipboardList, label: 'Planning', action: 'planning' as const },
+  { icon: Heart, label: 'Planning', action: 'planning' as const },
   { icon: Map, label: 'Trip Overview', action: 'overview' as const },
   { icon: CalendarDays, label: 'Itinerary', action: 'itinerary' as const },
   { icon: Users, label: 'Traveler Info', action: 'travelerInfo' as const },
@@ -70,7 +70,7 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings, i
                   }}
                   className="w-full flex items-center gap-4 px-4 py-3.5 pill-shape text-foreground/60 hover:bg-primary/20 hover:text-foreground transition-all duration-200"
                 >
-                  <item.icon size={18} strokeWidth={1.4} />
+                  <item.icon size={18} strokeWidth={1.2} />
                   <span className="font-serif text-lg tracking-wide">{item.label}</span>
                 </button>
               ))}
