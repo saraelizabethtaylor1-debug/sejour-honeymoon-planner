@@ -74,6 +74,7 @@ const buildSyncedActivities = (
   accommodationItems: AccommodationItem[],
   activityItems: ActivityItem[],
   reservationItems: ReservationItem[],
+  fallbackYear: number,
 ): ItineraryActivity[] => {
   const activities: ItineraryActivity[] = [];
 
