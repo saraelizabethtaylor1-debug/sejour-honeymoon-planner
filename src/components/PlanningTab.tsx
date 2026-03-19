@@ -87,8 +87,8 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
               }}
             >
               <card.icon
-                size={24}
-                strokeWidth={1.2}
+                size={22}
+                strokeWidth={1}
                 className="text-primary-foreground/70"
               />
               <span

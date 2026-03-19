@@ -214,8 +214,8 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
             onClick={() => fileRef.current?.click()}
             className="w-[62px] h-[62px] rounded-full bg-card flex items-center justify-center border-2 border-primary/40 shadow-soft cursor-pointer hover:border-primary/60 transition-colors relative group/icon"
           >
-            <IconComponent size={24} strokeWidth={1.8} className="text-primary-foreground group-hover/icon:opacity-0 transition-opacity" />
-            <ImagePlus size={20} strokeWidth={1.5} className="text-primary-foreground/50 absolute opacity-0 group-hover/icon:opacity-100 transition-opacity" />
+            <IconComponent size={22} strokeWidth={1.2} className="text-primary-foreground group-hover/icon:opacity-0 transition-opacity" />
+            <ImagePlus size={18} strokeWidth={1.2} className="text-primary-foreground/50 absolute opacity-0 group-hover/icon:opacity-100 transition-opacity" />
           </button>
         )}
       </div>
