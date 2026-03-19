@@ -51,8 +51,7 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings }:
                   onClick={() => {
                     if (item.action === 'settings') {
                       onGoToSettings?.();
-                    } else if (item.action === 'home') onGoHome();
-                    else if (item.action === 'travelerInfo') {
+                    } else if (item.action === 'travelerInfo') {
                       onOpenDetail?.('travelerInfo');
                     } else onNavigate(item.action);
                     onClose();
