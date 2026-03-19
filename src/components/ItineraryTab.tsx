@@ -430,6 +430,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
 
   // For each day, compute synced activities
   const startDate = tripData ? parseDateString(tripData.date) : null;
+  const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
 
   return (
     <div className="space-y-4 pb-20">
@@ -441,7 +442,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
         }
 
         const syncedActivities = dayDate
-          ? buildSyncedActivities(dayDate, transportItems, accommodationItems, activityItems, reservationItems)
+          ? buildSyncedActivities(dayDate, transportItems, accommodationItems, activityItems, reservationItems, fallbackYear)
           : [];
 
         return (
