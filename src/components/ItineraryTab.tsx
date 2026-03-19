@@ -145,7 +145,7 @@ const buildSyncedActivities = (
   // Reservations
   for (const r of reservationItems) {
     if (!r.name) continue;
-    const itemDate = extractDateForComparison(r.date);
+    const itemDate = extractDateForComparison(r.date, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
         time: r.time || '',
