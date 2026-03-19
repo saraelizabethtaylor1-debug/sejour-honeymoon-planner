@@ -1,18 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Home, ClipboardList, Map, CalendarDays, Settings, Users } from 'lucide-react';
+import { X, ClipboardList, Map, CalendarDays, Settings, Users } from 'lucide-react';
 import type { DashboardTab, DetailView } from '@/types/honeymoon';
 
 interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (tab: DashboardTab) => void;
-  onGoHome: () => void;
   onOpenDetail?: (view: DetailView) => void;
   onGoToSettings?: () => void;
 }
 
 const menuItems = [
-  { icon: Home, label: 'Home', action: 'home' as const },
   { icon: ClipboardList, label: 'Planning', action: 'planning' as const },
   { icon: Map, label: 'Trip Overview', action: 'overview' as const },
   { icon: CalendarDays, label: 'Itinerary', action: 'itinerary' as const },
@@ -20,7 +18,7 @@ const menuItems = [
   { icon: Settings, label: 'Settings', action: 'settings' as const },
 ];
 
-const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail, onGoToSettings }: SideMenuProps) => {
+const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings }: SideMenuProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -52,8 +50,7 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onGoHome, onOpenDetail, onGoToS
                   onClick={() => {
                     if (item.action === 'settings') {
                       onGoToSettings?.();
-                    } else if (item.action === 'home') onGoHome();
-                    else if (item.action === 'travelerInfo') {
+                    } else if (item.action === 'travelerInfo') {
                       onOpenDetail?.('travelerInfo');
                     } else onNavigate(item.action);
                     onClose();
