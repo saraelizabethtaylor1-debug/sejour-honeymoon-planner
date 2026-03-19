@@ -8,9 +8,9 @@ interface OverviewTabProps {
 
 const items: { label: string; view: DetailView; icon: typeof Plane }[] = [
   { label: 'Transportation', view: 'transportation', icon: Plane },
-  { label: 'Accommodations', view: 'accommodations', icon: Bed },
+  { label: 'Accommodations', view: 'accommodations', icon: Hotel },
   { label: 'Activities', view: 'activities', icon: Sparkles },
-  { label: 'Reservations', view: 'reservations', icon: CalendarCheck },
+  { label: 'Reservations', view: 'reservations', icon: CalendarHeart },
   { label: 'Map', view: 'map', icon: MapPin },
 ];
 
