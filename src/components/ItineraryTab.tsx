@@ -48,19 +48,19 @@ const extractTime = (dateTimeStr: string): string => {
 };
 
 /** Extract date portion and parse to midnight Date for comparison */
-const extractDateForComparison = (dateStr: string): Date | null => {
-  // Try parsing as-is first
-  let parsed = parseDateString(dateStr);
-  if (parsed) return parsed;
-  // Try extracting just the date part from "Sept 16, 4:00 PM" → "Sept 16, 2025"
-  // Remove time portion
+const extractDateForComparison = (dateStr: string, fallbackYear: number): Date | null => {
+  // Remove time portion first: "Sept 14, 10:30 PM" → "Sept 14"
   const withoutTime = dateStr.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim();
-  // If no year, try adding current year
-  parsed = parseDateString(withoutTime);
+  // Try with year present
+  let parsed = parseDateString(withoutTime);
   if (parsed) return parsed;
-  // Try with a guessed year
-  const withYear = withoutTime.replace(/,?\s*$/, '') + ', 2025';
-  return parseDateString(withYear);
+  // Use fallback year from trip data
+  parsed = parseDateString(withoutTime, fallbackYear);
+  if (parsed) return parsed;
+  // Try original string (might have year)
+  parsed = parseDateString(dateStr);
+  if (parsed) return parsed;
+  return parseDateString(dateStr, fallbackYear);
 };
 
 const isSameDay = (a: Date, b: Date): boolean => {
@@ -74,13 +74,14 @@ const buildSyncedActivities = (
   accommodationItems: AccommodationItem[],
   activityItems: ActivityItem[],
   reservationItems: ReservationItem[],
+  fallbackYear: number,
 ): ItineraryActivity[] => {
   const activities: ItineraryActivity[] = [];
 
   // Transportation
   for (const t of transportItems) {
     if (!t.time || !t.type) continue;
-    const itemDate = extractDateForComparison(t.time);
+    const itemDate = extractDateForComparison(t.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
         time: extractTime(t.time) || t.time,
@@ -95,8 +96,8 @@ const buildSyncedActivities = (
   // Accommodations - span across days
   for (const a of accommodationItems) {
     if (!a.name) continue;
-    const checkInDate = extractDateForComparison(a.checkIn);
-    const checkOutDate = extractDateForComparison(a.checkOut);
+    const checkInDate = extractDateForComparison(a.checkIn, fallbackYear);
+    const checkOutDate = extractDateForComparison(a.checkOut, fallbackYear);
     if (!checkInDate || !checkOutDate) continue;
 
     if (isSameDay(dayDate, checkInDate)) {
@@ -129,7 +130,7 @@ const buildSyncedActivities = (
   // Activities
   for (const act of activityItems) {
     if (!act.name || !act.time) continue;
-    const itemDate = extractDateForComparison(act.time);
+    const itemDate = extractDateForComparison(act.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
         time: extractTime(act.time) || act.time,
@@ -144,7 +145,7 @@ const buildSyncedActivities = (
   // Reservations
   for (const r of reservationItems) {
     if (!r.name) continue;
-    const itemDate = extractDateForComparison(r.date);
+    const itemDate = extractDateForComparison(r.date, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       activities.push({
         time: r.time || '',
@@ -429,6 +430,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
 
   // For each day, compute synced activities
   const startDate = tripData ? parseDateString(tripData.date) : null;
+  const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
 
   return (
     <div className="space-y-4 pb-20">
@@ -440,7 +442,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
         }
 
         const syncedActivities = dayDate
-          ? buildSyncedActivities(dayDate, transportItems, accommodationItems, activityItems, reservationItems)
+          ? buildSyncedActivities(dayDate, transportItems, accommodationItems, activityItems, reservationItems, fallbackYear)
           : [];
 
         return (
