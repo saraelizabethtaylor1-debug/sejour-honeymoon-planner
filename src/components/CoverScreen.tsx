@@ -46,7 +46,7 @@ const CoverScreen = ({ tripData, onEnter }: CoverScreenProps) => {
             className="absolute inset-0 bg-foreground/30 flex items-center justify-center"
           >
             <div className="bg-card/90 px-8 py-3 pill-shape shadow-card">
-              <span className="font-serif text-lg text-foreground tracking-wide">Trip inspiration cover photo</span>
+              <span className="font-serif text-lg text-foreground tracking-wide">Enter Trip Here</span>
             </div>
           </motion.div>
           <div className="absolute inset-0 bg-foreground/5 pointer-events-none" />
