@@ -18,7 +18,7 @@ interface ItineraryTabProps {
 }
 
 const iconMap: Record<string, typeof Hotel> = {
-  hotel: Hotel,
+  hotel: Bed,
   flight: Plane,
   dining: UtensilsCrossed,
   activity: Sparkles,
