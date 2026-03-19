@@ -17,7 +17,7 @@ interface ItineraryTabProps {
   onAddActivity?: (activity: ActivityItem) => void;
 }
 
-const iconMap: Record<string, typeof Hotel> = {
+const iconMap: Record<string, typeof Bed> = {
   hotel: Bed,
   flight: Plane,
   dining: UtensilsCrossed,
