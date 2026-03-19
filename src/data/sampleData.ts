@@ -48,8 +48,8 @@ export const sampleTransport: TransportItem[] = [
 ];
 
 export const sampleAccommodations: AccommodationItem[] = [
-  { id: '1', name: 'Canaves Oia Suites', address: 'Oia, Santorini', checkIn: 'Sept 15', checkOut: 'Sept 20', confirmation: 'CNV-88291', cost: 2800 },
-  { id: '2', name: 'Cavo Tagoo Mykonos', address: 'Tagoo, Mykonos', checkIn: 'Sept 20', checkOut: 'Sept 25', confirmation: 'CTV-44102', cost: 1400 },
+  { id: '1', name: 'Canaves Oia Suites', address: 'Oia, Santorini', checkIn: 'Sept 15', checkInTime: '2:00 PM', checkOut: 'Sept 20', checkOutTime: '11:00 AM', confirmation: 'CNV-88291', cost: 2800 },
+  { id: '2', name: 'Cavo Tagoo Mykonos', address: 'Tagoo, Mykonos', checkIn: 'Sept 20', checkInTime: '3:00 PM', checkOut: 'Sept 25', checkOutTime: '12:00 PM', confirmation: 'CTV-44102', cost: 1400 },
 ];
 
 export const sampleActivities: ActivityItem[] = [

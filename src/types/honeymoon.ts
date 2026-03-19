@@ -49,7 +49,9 @@ export interface AccommodationItem {
   name: string;
   address: string;
   checkIn: string;
+  checkInTime: string;
   checkOut: string;
+  checkOutTime: string;
   confirmation: string;
   cost: number;
 }
