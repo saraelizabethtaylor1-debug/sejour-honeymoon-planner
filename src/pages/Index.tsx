@@ -37,9 +37,7 @@ const Index = () => {
         )}
       </AnimatePresence>
 
-      {view === 'home' && (
-        <CoverScreen tripData={tripData} onEnter={() => setView('dashboard')} />
-      )}
+
 
       {view === 'dashboard' && (
         <div className="h-screen flex flex-col">
