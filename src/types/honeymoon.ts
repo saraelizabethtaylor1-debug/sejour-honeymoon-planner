@@ -42,6 +42,7 @@ export interface TransportItem {
   confirmation: string;
   time: string;
   cost: number;
+  location?: string;
 }
 
 export interface AccommodationItem {
