@@ -29,7 +29,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
 
   return (
     <div className="bg-background z-10">
-      <header className="px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-3 flex items-center justify-between gap-2">
+      <header className="px-4 sm:px-6 lg:px-8 pt-3 sm:pt-5 pb-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <button onClick={onMenuToggle} className="shrink-0">
             <Menu className="text-foreground/70" size={20} strokeWidth={1.8} />
