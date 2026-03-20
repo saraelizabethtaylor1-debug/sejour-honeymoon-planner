@@ -388,7 +388,7 @@ const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; ite
             </button>
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Restaurant / Venue" className={inputClass} />
-              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.date} onChange={(e) => update(item.id, 'date', e.target.value)} placeholder="Date (e.g. Sept 16)" className={inputClass} />
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Time (e.g. 7:30 PM)" className={inputClass} />
