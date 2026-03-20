@@ -16,7 +16,7 @@ interface OverviewTabProps {
 type FilterCategory = 'accommodations' | 'activities' | 'reservations' | 'transportation' | null;
 
 const items: { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory }[] = [
-  { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: null },
+  { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: 'transportation' as FilterCategory },
   { label: 'Accommodations', view: 'accommodations', icon: Hotel, filterKey: 'accommodations' },
   { label: 'Activities', view: 'activities', icon: Sparkles, filterKey: 'activities' },
   { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
