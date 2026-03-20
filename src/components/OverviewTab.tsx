@@ -53,7 +53,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="flex flex-col justify-between gap-4 md:gap-0"
+          className="flex flex-col justify-between gap-5 md:gap-0"
         >
           {items.map((itm) => (
             <motion.button
@@ -81,7 +81,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.5 }}
-          className="min-h-[240px] md:min-h-0 md:max-h-[400px] lg:max-h-[420px] rounded-2xl overflow-hidden border border-border"
+          className="min-h-[280px] md:min-h-0 md:max-h-[460px] lg:max-h-[480px] rounded-2xl overflow-hidden border border-border"
         >
           <GoogleMap
             destination={tripData.destination}
