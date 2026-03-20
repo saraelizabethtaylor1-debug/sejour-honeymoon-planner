@@ -1,6 +1,6 @@
 /// <reference types="@types/google.maps" />
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+import type { AccommodationItem, ActivityItem, ReservationItem, TransportItem } from '@/types/honeymoon';
 
 declare global {
   interface Window {
@@ -10,7 +10,6 @@ declare global {
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCc4A2sU57cT4ICbxwqv4f9NP_fgbu-Iyg';
 
-// Desaturated, elegant map style
 const mapStyles: google.maps.MapTypeStyle[] = [
   { elementType: 'geometry', stylers: [{ color: '#f5f1ee' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#9e8e82' }] },
@@ -31,7 +30,7 @@ const mapStyles: google.maps.MapTypeStyle[] = [
 ];
 
 interface CategoryMarker {
-  category: 'accommodations' | 'activities' | 'reservations';
+  category: 'accommodations' | 'activities' | 'reservations' | 'transportation';
   name: string;
   details: string;
   address: string;
@@ -42,20 +41,25 @@ interface GoogleMapProps {
   accommodations: AccommodationItem[];
   activities: ActivityItem[];
   reservations: ReservationItem[];
+  transportItems?: TransportItem[];
   activeFilter: string | null;
+  highlightedItem?: string | null;
 }
 
-// SVG marker for elegant pink pins
-function createMarkerIcon(category: string): string {
+function createMarkerIcon(category: string, highlighted = false): string {
   const colors: Record<string, string> = {
     accommodations: '#d4a0a0',
     activities: '#c9a0b8',
     reservations: '#b8a0c9',
+    transportation: '#a0b8c9',
   };
   const color = colors[category] || '#d4a0a0';
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
-    <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z" fill="${color}" opacity="0.85"/>
-    <circle cx="14" cy="13" r="5" fill="white" opacity="0.9"/>
+  const size = highlighted ? 36 : 28;
+  const innerR = highlighted ? 7 : 5;
+  const cy = highlighted ? 15 : 13;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${Math.round(size * 1.28)}" viewBox="0 0 ${size} ${Math.round(size * 1.28)}">
+    <path d="M${size/2} 0C${size*0.224} 0 0 ${size*0.224} 0 ${size/2}c0 ${Math.round(size*0.375)} ${size/2} ${Math.round(size*0.786)} ${size/2} ${Math.round(size*0.786)}s${size/2}-${Math.round(size*0.411)} ${size/2}-${Math.round(size*0.786)}C${size} ${size*0.224} ${size*0.776} 0 ${size/2} 0z" fill="${color}" opacity="${highlighted ? '1' : '0.85'}"/>
+    <circle cx="${size/2}" cy="${cy}" r="${innerR}" fill="white" opacity="0.9"/>
   </svg>`;
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -79,7 +83,7 @@ function loadGoogleMaps(): Promise<void> {
   return googleMapsPromise;
 }
 
-const GoogleMap = ({ destination, accommodations, activities, reservations, activeFilter }: GoogleMapProps) => {
+const GoogleMap = ({ destination, accommodations, activities, reservations, transportItems = [], activeFilter, highlightedItem }: GoogleMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
@@ -87,7 +91,6 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, acti
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Build marker data from props
   const buildMarkers = useCallback((): CategoryMarker[] => {
     const markers: CategoryMarker[] = [];
 
@@ -105,7 +108,7 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, acti
         category: 'activities',
         name: a.name,
         details: a.notes || a.time,
-        address: a.name,
+        address: a.location || a.name,
       });
     });
 
@@ -114,12 +117,23 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, acti
         category: 'reservations',
         name: r.name,
         details: `${r.date} at ${r.time}`,
-        address: r.name,
+        address: r.location || r.name,
       });
     });
 
+    transportItems.forEach(t => {
+      if (t.location) {
+        markers.push({
+          category: 'transportation',
+          name: t.type || 'Transport',
+          details: t.details || t.time,
+          address: t.location,
+        });
+      }
+    });
+
     return markers;
-  }, [accommodations, activities, reservations]);
+  }, [accommodations, activities, reservations, transportItems]);
 
   // Initialize map
   useEffect(() => {
@@ -136,7 +150,7 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, acti
 
           const center = status === 'OK' && results?.[0]
             ? results[0].geometry.location
-            : { lat: 36.4618, lng: 25.3753 }; // Default: Santorini
+            : { lat: 36.4618, lng: 25.3753 };
 
           mapInstance.current = new google.maps.Map(mapRef.current, {
             center,
@@ -160,11 +174,9 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, acti
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination]);
 
-  // Place / update markers
   const placeMarkers = useCallback(() => {
     if (!mapInstance.current || !loaded) return;
 
-    // Clear existing
     markersRef.current.forEach(m => m.setMap(null));
     markersRef.current = [];
 
@@ -174,26 +186,35 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, acti
       ? data.filter(d => d.category === activeFilter)
       : data;
 
+    const bounds = new google.maps.LatLngBounds();
+    let boundsCount = 0;
+
     filtered.forEach((item) => {
       geocoder.geocode({ address: `${item.address}, ${destination}` }, (results, status) => {
         if (status === 'OK' && results?.[0] && mapInstance.current) {
+          const position = results[0].geometry.location;
+          const isHighlighted = highlightedItem === item.name;
+
           const marker = new google.maps.Marker({
             map: mapInstance.current,
-            position: results[0].geometry.location,
+            position,
             title: item.name,
             icon: {
-              url: createMarkerIcon(item.category),
-              scaledSize: new google.maps.Size(28, 36),
+              url: createMarkerIcon(item.category, isHighlighted),
+              scaledSize: new google.maps.Size(isHighlighted ? 36 : 28, isHighlighted ? 46 : 36),
             },
             animation: google.maps.Animation.DROP,
+            zIndex: isHighlighted ? 999 : 1,
           });
 
           marker.addListener('click', () => {
             if (infoWindowRef.current && mapInstance.current) {
               infoWindowRef.current.setContent(`
-                <div style="font-family: serif; padding: 4px 2px; min-width: 140px;">
-                  <div style="font-size: 14px; font-weight: 600; color: #5a4a42; margin-bottom: 2px;">${item.name}</div>
+                <div style="font-family: serif; padding: 6px 4px; min-width: 160px;">
+                  <div style="font-size: 14px; font-weight: 600; color: #5a4a42; margin-bottom: 3px;">${item.name}</div>
+                  <div style="font-size: 11px; color: #b09888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">${item.category}</div>
                   <div style="font-size: 12px; color: #9e8e82;">${item.details}</div>
+                  <div style="font-size: 11px; color: #a89888; margin-top: 2px;">${item.address}</div>
                 </div>
               `);
               infoWindowRef.current.open(mapInstance.current, marker);
@@ -201,12 +222,21 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, acti
           });
 
           markersRef.current.push(marker);
+
+          bounds.extend(position);
+          boundsCount++;
+
+          // Fit bounds after all markers placed (approximation via timeout)
+          setTimeout(() => {
+            if (boundsCount > 1 && mapInstance.current) {
+              mapInstance.current.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
+            }
+          }, 300);
         }
       });
     });
-  }, [buildMarkers, activeFilter, destination, loaded]);
+  }, [buildMarkers, activeFilter, destination, loaded, highlightedItem]);
 
-  // Re-place markers when filter or data changes
   useEffect(() => {
     if (loaded && mapInstance.current) {
       placeMarkers();

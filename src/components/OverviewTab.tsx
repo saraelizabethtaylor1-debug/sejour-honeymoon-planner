@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plane, Hotel, Sparkles, CalendarHeart } from 'lucide-react';
-import type { DetailView, TripData, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+import type { DetailView, TripData, AccommodationItem, ActivityItem, ReservationItem, TransportItem } from '@/types/honeymoon';
 import GoogleMap from '@/components/GoogleMap';
 
 interface OverviewTabProps {
@@ -10,12 +10,13 @@ interface OverviewTabProps {
   accommodationItems: AccommodationItem[];
   activityItems: ActivityItem[];
   reservationItems: ReservationItem[];
+  transportItems: TransportItem[];
 }
 
-type FilterCategory = 'accommodations' | 'activities' | 'reservations' | null;
+type FilterCategory = 'accommodations' | 'activities' | 'reservations' | 'transportation' | null;
 
 const items: { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory }[] = [
-  { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: null },
+  { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: 'transportation' as FilterCategory },
   { label: 'Accommodations', view: 'accommodations', icon: Hotel, filterKey: 'accommodations' },
   { label: 'Activities', view: 'activities', icon: Sparkles, filterKey: 'activities' },
   { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
@@ -31,7 +32,7 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems }: OverviewTabProps) => {
+const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems, transportItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
   const [activeFilter, setActiveFilter] = useState<FilterCategory>(null);
 
@@ -88,6 +89,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
             accommodations={accommodationItems}
             activities={activityItems}
             reservations={reservationItems}
+            transportItems={transportItems}
             activeFilter={activeFilter}
           />
         </motion.div>

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Check, Pencil } from 'lucide-react';
 import type { DetailView, TodoItem, BudgetItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
 import { sampleTodos, sampleBudget, samplePacking, sampleNotes } from '@/data/sampleData';
+import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 
 interface DetailViewProps {
   view: DetailView;
@@ -251,6 +252,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
               </div>
               <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 14, 10:30 PM)" className={inputClass} />
                 <div className="relative">
@@ -342,6 +344,7 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
             </button>
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Activity name" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 16, 4:00 PM)" className={inputClass} />
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
@@ -385,6 +388,7 @@ const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; ite
             </button>
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Restaurant / Venue" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.date} onChange={(e) => update(item.id, 'date', e.target.value)} placeholder="Date (e.g. Sept 16)" className={inputClass} />
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Time (e.g. 7:30 PM)" className={inputClass} />
