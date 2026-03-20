@@ -98,7 +98,7 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
       {/* Script text — below grid, centered to map on desktop */}
       <div className="md:grid md:grid-cols-[280px_1fr] lg:grid-cols-[340px_1fr] md:gap-6 lg:gap-10 xl:gap-14">
         <div className="hidden md:block" />
-        <p className="font-script text-2xl md:text-3xl lg:text-[36px] xl:text-[42px] text-foreground/40 text-center tracking-tight lowercase leading-tight">
+        <p className="font-script text-2xl md:text-3xl lg:text-[36px] xl:text-[42px] text-foreground/55 text-center tracking-tight lowercase leading-tight">
           {quote}
         </p>
       </div>
