@@ -45,10 +45,10 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
               whileHover={{ y: -1, backgroundColor: 'hsl(0 30% 88% / 0.5)' }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onOpenDetail(itm.view)}
-              className="w-full flex items-center gap-4 px-5 py-4 md:py-[18px] bg-primary/40 rounded-2xl transition-all duration-200"
+              className="w-full flex items-center gap-4 px-6 py-5 md:py-6 bg-primary/50 border border-foreground/[0.04] rounded-2xl shadow-[0_2px_12px_-4px_hsl(0_16%_43%/0.06)] transition-all duration-200"
             >
-              <itm.icon size={20} strokeWidth={1.1} className="text-primary-foreground/70 shrink-0" />
-              <span className="font-serif text-base md:text-[17px] lg:text-lg tracking-wide text-foreground/80">
+              <itm.icon size={20} strokeWidth={1.1} className="text-primary-foreground/60 shrink-0" />
+              <span className="font-serif text-base md:text-[17px] lg:text-lg tracking-wide text-foreground/70">
                 {itm.label}
               </span>
             </motion.button>
