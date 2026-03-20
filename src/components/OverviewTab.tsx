@@ -1,31 +1,48 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plane, Hotel, Sparkles, CalendarHeart } from 'lucide-react';
-import type { DetailView, TripData } from '@/types/honeymoon';
+import type { DetailView, TripData, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+import GoogleMap from '@/components/GoogleMap';
 
 interface OverviewTabProps {
   onOpenDetail: (view: DetailView) => void;
   tripData: TripData;
+  accommodationItems: AccommodationItem[];
+  activityItems: ActivityItem[];
+  reservationItems: ReservationItem[];
 }
 
-const items: { label: string; view: DetailView; icon: typeof Plane }[] = [
-  { label: 'Transportation', view: 'transportation', icon: Plane },
-  { label: 'Accommodations', view: 'accommodations', icon: Hotel },
-  { label: 'Activities', view: 'activities', icon: Sparkles },
-  { label: 'Reservations', view: 'reservations', icon: CalendarHeart },
+type FilterCategory = 'accommodations' | 'activities' | 'reservations' | null;
+
+const items: { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory }[] = [
+  { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: null },
+  { label: 'Accommodations', view: 'accommodations', icon: Hotel, filterKey: 'accommodations' },
+  { label: 'Activities', view: 'activities', icon: Sparkles, filterKey: 'activities' },
+  { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
 ];
 
-const container = {
+const containerVariants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06 } },
 };
 
-const item = {
+const itemVariants = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0 },
 };
 
-const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
+const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
+  const [activeFilter, setActiveFilter] = useState<FilterCategory>(null);
+
+  const handleCardClick = (itm: typeof items[0]) => {
+    // Toggle filter on the map
+    if (itm.filterKey) {
+      setActiveFilter(prev => prev === itm.filterKey ? null : itm.filterKey);
+    }
+    // Also open the detail view
+    onOpenDetail(itm.view);
+  };
 
   return (
     <div className="max-w-[1100px] mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex flex-col gap-3 md:gap-4">
@@ -33,7 +50,7 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-5 md:gap-6 lg:gap-8 xl:gap-10 items-stretch">
         {/* Left Column — Cards */}
         <motion.div
-          variants={container}
+          variants={containerVariants}
           initial="hidden"
           animate="show"
           className="flex flex-col justify-between gap-3 md:gap-0"
@@ -41,11 +58,15 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
           {items.map((itm) => (
             <motion.button
               key={itm.label}
-              variants={item}
+              variants={itemVariants}
               whileHover={{ y: -1, backgroundColor: 'hsl(0 30% 88% / 0.5)' }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => onOpenDetail(itm.view)}
-              className="w-full flex items-center gap-4 px-5 py-4 md:py-[18px] bg-primary/50 border border-foreground/[0.04] rounded-2xl shadow-[0_2px_12px_-4px_hsl(0_16%_43%/0.06)] transition-all duration-200"
+              onClick={() => handleCardClick(itm)}
+              className={`w-full flex items-center gap-4 px-5 py-4 md:py-[18px] border rounded-2xl shadow-[0_2px_12px_-4px_hsl(0_16%_43%/0.06)] transition-all duration-200 ${
+                activeFilter === itm.filterKey && itm.filterKey
+                  ? 'bg-primary/70 border-primary-foreground/10'
+                  : 'bg-primary/50 border-foreground/[0.04]'
+              }`}
             >
               <itm.icon size={19} strokeWidth={1.1} className="text-primary-foreground/60 shrink-0" />
               <span className="font-serif text-[15px] md:text-base lg:text-[17px] tracking-wide text-foreground/70">
@@ -55,43 +76,20 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
           ))}
         </motion.div>
 
-        {/* Right Column — Map (constrained height) */}
+        {/* Right Column — Google Map */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.5 }}
-          className="min-h-[220px] md:min-h-0 md:max-h-[340px] lg:max-h-[360px]"
+          className="min-h-[220px] md:min-h-0 md:max-h-[340px] lg:max-h-[360px] rounded-2xl overflow-hidden border border-border"
         >
-          <button
-            onClick={() => onOpenDetail('map')}
-            className="w-full h-full rounded-2xl overflow-hidden bg-accent/40 border border-border relative group cursor-pointer"
-          >
-            <svg
-              viewBox="0 0 800 500"
-              className="w-full h-full text-primary-foreground/20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {Array.from({ length: 12 }).map((_, i) => (
-                <line key={`v${i}`} x1={i * 70} y1="0" x2={i * 70} y2="500" stroke="currentColor" strokeWidth="0.5" />
-              ))}
-              {Array.from({ length: 8 }).map((_, i) => (
-                <line key={`h${i}`} x1="0" y1={i * 70} x2="800" y2={i * 70} stroke="currentColor" strokeWidth="0.5" />
-              ))}
-              <path d="M100 350 Q200 300 280 320 Q380 350 420 280 Q480 200 560 230 Q640 260 700 200" stroke="currentColor" strokeWidth="1" />
-              <path d="M50 400 Q180 340 300 360 Q420 390 500 300 Q580 220 680 250 Q740 270 800 220" stroke="currentColor" strokeWidth="0.8" />
-              <path d="M150 280 Q240 240 340 260 Q440 290 520 220 Q580 170 660 180" stroke="currentColor" strokeWidth="0.8" />
-              <path d="M200 200 Q300 160 400 180 Q480 200 540 160 Q600 120 700 140" stroke="currentColor" strokeWidth="0.6" />
-              <path d="M120 380 Q300 200 500 250 Q650 290 750 180" stroke="currentColor" strokeWidth="1.2" strokeDasharray="8 6" />
-              <circle cx="180" cy="330" r="4" fill="currentColor" opacity="0.4" />
-              <circle cx="420" cy="270" r="4" fill="currentColor" opacity="0.4" />
-              <circle cx="600" cy="230" r="4" fill="currentColor" opacity="0.4" />
-              <circle cx="700" cy="190" r="4" fill="currentColor" opacity="0.4" />
-              <circle cx="300" cy="300" r="3" fill="currentColor" opacity="0.3" />
-              <circle cx="520" cy="240" r="3" fill="currentColor" opacity="0.3" />
-            </svg>
-            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/[0.02] transition-colors duration-300" />
-          </button>
+          <GoogleMap
+            destination={tripData.destination}
+            accommodations={accommodationItems}
+            activities={activityItems}
+            reservations={reservationItems}
+            activeFilter={activeFilter}
+          />
         </motion.div>
       </div>
 
