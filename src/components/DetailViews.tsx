@@ -252,7 +252,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
               </div>
               <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
-              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 14, 10:30 PM)" className={inputClass} />
                 <div className="relative">
@@ -294,7 +294,7 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
             </button>
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={inputClass} />
-              <input value={item.address} onChange={(e) => update(item.id, 'address', e.target.value)} placeholder="Address" className={inputClass} />
+              <PlacesAutocomplete value={item.address} onChange={(v) => update(item.id, 'address', v)} onPlaceSelect={(r) => { update(item.id, 'address', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Address (search or type)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.checkIn} onChange={(e) => update(item.id, 'checkIn', e.target.value)} placeholder="Check-in date (e.g. Sept 15)" className={inputClass} />
                 <input value={item.checkInTime} onChange={(e) => update(item.id, 'checkInTime', e.target.value)} placeholder="Check-in time (e.g. 2:00 PM)" className={inputClass} />
@@ -344,7 +344,7 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
             </button>
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Activity name" className={inputClass} />
-              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 16, 4:00 PM)" className={inputClass} />
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
@@ -388,7 +388,7 @@ const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; ite
             </button>
             <div className="space-y-2.5">
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Restaurant / Venue" className={inputClass} />
-              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.date} onChange={(e) => update(item.id, 'date', e.target.value)} placeholder="Date (e.g. Sept 16)" className={inputClass} />
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Time (e.g. 7:30 PM)" className={inputClass} />

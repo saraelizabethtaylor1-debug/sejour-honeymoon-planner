@@ -43,6 +43,8 @@ export interface TransportItem {
   time: string;
   cost: number;
   location?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface AccommodationItem {
@@ -55,6 +57,8 @@ export interface AccommodationItem {
   checkOutTime: string;
   confirmation: string;
   cost: number;
+  lat?: number;
+  lng?: number;
 }
 
 export interface ActivityItem {
@@ -65,6 +69,8 @@ export interface ActivityItem {
   confirmation: string;
   cost: number;
   location?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface ReservationItem {
@@ -76,6 +82,8 @@ export interface ReservationItem {
   notes: string;
   cost: number;
   location?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface ItineraryActivity {
