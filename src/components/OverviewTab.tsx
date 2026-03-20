@@ -89,6 +89,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
             accommodations={accommodationItems}
             activities={activityItems}
             reservations={reservationItems}
+            transportItems={transportItems}
             activeFilter={activeFilter}
           />
         </motion.div>
