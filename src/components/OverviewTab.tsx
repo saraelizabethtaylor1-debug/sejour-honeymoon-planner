@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plane, Hotel, Sparkles, CalendarHeart } from 'lucide-react';
-import type { DetailView, TripData, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+import type { DetailView, TripData, AccommodationItem, ActivityItem, ReservationItem, TransportItem } from '@/types/honeymoon';
 import GoogleMap from '@/components/GoogleMap';
 
 interface OverviewTabProps {
