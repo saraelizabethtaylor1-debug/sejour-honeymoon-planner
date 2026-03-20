@@ -252,7 +252,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
               </div>
               <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
-              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} placeholder="Location (search or type address)" className={inputClass} />
+              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 14, 10:30 PM)" className={inputClass} />
                 <div className="relative">
