@@ -75,6 +75,7 @@ export interface ReservationItem {
   confirmation: string;
   notes: string;
   cost: number;
+  location?: string;
 }
 
 export interface ItineraryActivity {
