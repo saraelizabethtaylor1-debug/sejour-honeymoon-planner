@@ -1,5 +1,12 @@
+/// <reference types="@types/google.maps" />
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+
+declare global {
+  interface Window {
+    google?: typeof google;
+  }
+}
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCc4A2sU57cT4ICbxwqv4f9NP_fgbu-Iyg';
 
