@@ -54,6 +54,7 @@ const Index = () => {
                 accommodationItems={accommodationItems}
                 activityItems={activityItems}
                 reservationItems={reservationItems}
+                transportItems={transportItems}
               />
             )}
             {tab === 'itinerary' && (
