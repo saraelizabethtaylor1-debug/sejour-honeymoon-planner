@@ -28,9 +28,9 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
 
   return (
-    <div className="max-w-[1300px] mx-auto px-2 sm:px-4 md:px-10 lg:px-16 xl:px-20 flex flex-col gap-3 md:gap-4">
+    <div className="max-w-[1100px] mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex flex-col gap-3 md:gap-4">
       {/* Grid: Cards + Map (same height) */}
-      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr] gap-5 md:gap-6 lg:gap-10 xl:gap-12 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-5 md:gap-6 lg:gap-8 xl:gap-10 items-stretch">
         {/* Left Column — Cards */}
         <motion.div
           variants={container}
@@ -45,22 +45,22 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
               whileHover={{ y: -1, backgroundColor: 'hsl(0 30% 88% / 0.5)' }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onOpenDetail(itm.view)}
-              className="w-full flex items-center gap-4 px-6 py-4 md:py-5 bg-primary/50 border border-foreground/[0.04] rounded-2xl shadow-[0_2px_12px_-4px_hsl(0_16%_43%/0.06)] transition-all duration-200"
+              className="w-full flex items-center gap-4 px-5 py-4 md:py-[18px] bg-primary/50 border border-foreground/[0.04] rounded-2xl shadow-[0_2px_12px_-4px_hsl(0_16%_43%/0.06)] transition-all duration-200"
             >
-              <itm.icon size={20} strokeWidth={1.1} className="text-primary-foreground/60 shrink-0" />
-              <span className="font-serif text-base md:text-[17px] lg:text-lg tracking-wide text-foreground/70">
+              <itm.icon size={19} strokeWidth={1.1} className="text-primary-foreground/60 shrink-0" />
+              <span className="font-serif text-[15px] md:text-base lg:text-[17px] tracking-wide text-foreground/70">
                 {itm.label}
               </span>
             </motion.button>
           ))}
         </motion.div>
 
-        {/* Right Column — Map only */}
+        {/* Right Column — Map (constrained height) */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.5 }}
-          className="min-h-[240px] md:min-h-0"
+          className="min-h-[220px] md:min-h-0 md:max-h-[340px] lg:max-h-[360px]"
         >
           <button
             onClick={() => onOpenDetail('map')}
@@ -96,9 +96,9 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
       </div>
 
       {/* Script text — below grid, centered to map on desktop */}
-      <div className="md:grid md:grid-cols-[260px_1fr] lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr] md:gap-6 lg:gap-10 xl:gap-12">
+      <div className="md:grid md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] md:gap-6 lg:gap-8 xl:gap-10">
         <div className="hidden md:block" />
-        <p className="font-script text-2xl md:text-3xl lg:text-[36px] xl:text-[42px] text-foreground/55 text-center tracking-tight lowercase leading-tight">
+        <p className="font-script text-2xl md:text-3xl lg:text-[34px] xl:text-[38px] text-foreground/55 text-center tracking-tight lowercase leading-tight">
           {quote}
         </p>
       </div>
