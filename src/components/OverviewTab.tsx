@@ -53,7 +53,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="flex flex-col justify-between gap-4 md:gap-0"
+          className="flex flex-col justify-between gap-5 md:gap-0"
         >
           {items.map((itm) => (
             <motion.button
