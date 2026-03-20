@@ -32,7 +32,7 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems }: OverviewTabProps) => {
+const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems, transportItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
   const [activeFilter, setActiveFilter] = useState<FilterCategory>(null);
 
