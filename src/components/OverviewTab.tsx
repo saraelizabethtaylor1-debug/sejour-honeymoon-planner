@@ -28,7 +28,7 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
 
   return (
-    <div className="flex flex-col gap-5 md:gap-6">
+    <div className="flex flex-col gap-3 md:gap-4">
       {/* Grid: Cards + Map (same height) */}
       <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[340px_1fr] gap-5 md:gap-6 lg:gap-10 xl:gap-14 items-stretch">
         {/* Left Column — Cards */}
@@ -98,7 +98,7 @@ const OverviewTab = ({ onOpenDetail, tripData }: OverviewTabProps) => {
       {/* Script text — below grid, centered to map on desktop */}
       <div className="md:grid md:grid-cols-[280px_1fr] lg:grid-cols-[340px_1fr] md:gap-6 lg:gap-10 xl:gap-14">
         <div className="hidden md:block" />
-        <p className="font-script text-2xl md:text-3xl lg:text-[36px] xl:text-[42px] text-foreground/40 text-center tracking-tight lowercase leading-tight">
+        <p className="font-script text-2xl md:text-3xl lg:text-[36px] xl:text-[42px] text-foreground/55 text-center tracking-tight lowercase leading-tight">
           {quote}
         </p>
       </div>
