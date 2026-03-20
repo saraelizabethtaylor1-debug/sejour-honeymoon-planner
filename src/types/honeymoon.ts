@@ -64,6 +64,7 @@ export interface ActivityItem {
   time: string;
   confirmation: string;
   cost: number;
+  location?: string;
 }
 
 export interface ReservationItem {
