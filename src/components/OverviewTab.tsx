@@ -45,31 +45,31 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
   };
 
   return (
-    <div className="max-w-[1100px] mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex flex-col gap-3 md:gap-4">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex flex-col gap-4 md:gap-5">
       {/* Grid: Cards + Map (same height) */}
-      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-5 md:gap-6 lg:gap-8 xl:gap-10 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] gap-5 md:gap-6 lg:gap-7 xl:gap-8 items-stretch">
         {/* Left Column — Cards */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="flex flex-col justify-between gap-3 md:gap-0"
+          className="flex flex-col justify-between gap-4 md:gap-0"
         >
           {items.map((itm) => (
             <motion.button
               key={itm.label}
               variants={itemVariants}
-              whileHover={{ y: -1, backgroundColor: 'hsl(0 30% 88% / 0.5)' }}
+              whileHover={{ y: -1, backgroundColor: 'hsl(0 30% 86% / 0.55)' }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleCardClick(itm)}
-              className={`w-full flex items-center gap-4 px-5 py-4 md:py-[18px] border rounded-2xl shadow-[0_2px_12px_-4px_hsl(0_16%_43%/0.06)] transition-all duration-200 ${
+              className={`w-full flex items-center gap-4 px-5 py-5 md:py-[22px] border rounded-2xl shadow-[0_2px_14px_-4px_hsl(0_16%_43%/0.08)] transition-all duration-200 ${
                 activeFilter === itm.filterKey && itm.filterKey
-                  ? 'bg-primary/70 border-primary-foreground/10'
-                  : 'bg-primary/50 border-foreground/[0.04]'
+                  ? 'bg-primary/75 border-primary-foreground/12'
+                  : 'bg-primary/55 border-foreground/[0.05]'
               }`}
             >
-              <itm.icon size={19} strokeWidth={1.1} className="text-primary-foreground/60 shrink-0" />
-              <span className="font-serif text-[15px] md:text-base lg:text-[17px] tracking-wide text-foreground/70">
+              <itm.icon size={19} strokeWidth={1.1} className="text-primary-foreground/75 shrink-0" />
+              <span className="font-serif text-[15px] md:text-base lg:text-[17px] tracking-wide text-foreground/80">
                 {itm.label}
               </span>
             </motion.button>
@@ -81,7 +81,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.5 }}
-          className="min-h-[220px] md:min-h-0 md:max-h-[340px] lg:max-h-[360px] rounded-2xl overflow-hidden border border-border"
+          className="min-h-[240px] md:min-h-0 md:max-h-[400px] lg:max-h-[420px] rounded-2xl overflow-hidden border border-border"
         >
           <GoogleMap
             destination={tripData.destination}
@@ -94,9 +94,9 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       </div>
 
       {/* Script text — below grid, centered to map on desktop */}
-      <div className="md:grid md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] md:gap-6 lg:gap-8 xl:gap-10">
+      <div className="md:grid md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] md:gap-6 lg:gap-7 xl:gap-8">
         <div className="hidden md:block" />
-        <p className="font-script text-2xl md:text-3xl lg:text-[34px] xl:text-[38px] text-foreground/55 text-center tracking-tight lowercase leading-tight">
+        <p className="font-script text-[26px] md:text-[32px] lg:text-[38px] xl:text-[42px] text-foreground/60 text-center tracking-tight lowercase leading-tight">
           {quote}
         </p>
       </div>
