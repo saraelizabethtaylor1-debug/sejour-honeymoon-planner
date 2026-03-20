@@ -10,6 +10,7 @@ interface OverviewTabProps {
   accommodationItems: AccommodationItem[];
   activityItems: ActivityItem[];
   reservationItems: ReservationItem[];
+  transportItems: TransportItem[];
 }
 
 type FilterCategory = 'accommodations' | 'activities' | 'reservations' | null;
