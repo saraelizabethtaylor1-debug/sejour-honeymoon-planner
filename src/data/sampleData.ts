@@ -43,26 +43,26 @@ export const sampleNotes: NoteItem[] = [
 
 export const sampleTransport: TransportItem[] = [
   { id: '1', type: 'Flight', details: 'NYC → Athens (Delta DL412)', confirmation: 'DL8829', time: 'Sept 14, 10:30 PM', cost: 1800 },
-  { id: '2', type: 'Flight', details: 'Athens → Santorini (Aegean A3354)', confirmation: 'AE2241', time: 'Sept 15, 2:15 PM', cost: 280 },
-  { id: '3', type: 'Ferry', details: 'Santorini → Mykonos (SeaJets)', confirmation: 'SJ7712', time: 'Sept 20, 9:00 AM', cost: 200 },
+  { id: '2', type: 'Flight', details: 'Athens → Santorini (Aegean A3354)', confirmation: 'AE2241', time: 'Sept 15, 2:15 PM', cost: 280, location: 'Athens International Airport', lat: 37.9364, lng: 23.9445 },
+  { id: '3', type: 'Ferry', details: 'Santorini → Mykonos (SeaJets)', confirmation: 'SJ7712', time: 'Sept 20, 9:00 AM', cost: 200, location: 'Athinios Port, Santorini', lat: 36.3850, lng: 25.4310 },
 ];
 
 export const sampleAccommodations: AccommodationItem[] = [
-  { id: '1', name: 'Canaves Oia Suites', address: 'Oia, Santorini', checkIn: 'Sept 15', checkInTime: '2:00 PM', checkOut: 'Sept 20', checkOutTime: '11:00 AM', confirmation: 'CNV-88291', cost: 2800 },
-  { id: '2', name: 'Cavo Tagoo Mykonos', address: 'Tagoo, Mykonos', checkIn: 'Sept 20', checkInTime: '3:00 PM', checkOut: 'Sept 25', checkOutTime: '12:00 PM', confirmation: 'CTV-44102', cost: 1400 },
+  { id: '1', name: 'Canaves Oia Suites', address: 'Oia, Santorini', checkIn: 'Sept 15', checkInTime: '2:00 PM', checkOut: 'Sept 20', checkOutTime: '11:00 AM', confirmation: 'CNV-88291', cost: 2800, lat: 36.4618, lng: 25.3753 },
+  { id: '2', name: 'Cavo Tagoo Mykonos', address: 'Tagoo, Mykonos', checkIn: 'Sept 20', checkInTime: '3:00 PM', checkOut: 'Sept 25', checkOutTime: '12:00 PM', confirmation: 'CTV-44102', cost: 1400, lat: 37.4520, lng: 25.3275 },
 ];
 
 export const sampleActivities: ActivityItem[] = [
-  { id: '1', name: 'Sunset Catamaran Cruise', notes: 'BBQ dinner included, bring swimsuit', time: 'Sept 16, 4:00 PM', confirmation: 'CAT-301', cost: 350 },
-  { id: '2', name: 'Wine Tasting in Pyrgos', notes: 'Santo Wines Winery, 4 varietals', time: 'Sept 17, 11:00 AM', confirmation: 'SW-112', cost: 120 },
-  { id: '3', name: 'Couples Spa at Canaves', notes: 'Deep tissue + aromatherapy', time: 'Sept 18, 10:00 AM', confirmation: 'SPA-455', cost: 280 },
-  { id: '4', name: 'Delos Island Day Trip', notes: 'Ferry from Mykonos Old Port', time: 'Sept 22, 8:30 AM', confirmation: 'DEL-778', cost: 50 },
+  { id: '1', name: 'Sunset Catamaran Cruise', notes: 'BBQ dinner included, bring swimsuit', time: 'Sept 16, 4:00 PM', confirmation: 'CAT-301', cost: 350, location: 'Vlychada Port, Santorini', lat: 36.3470, lng: 25.4290 },
+  { id: '2', name: 'Wine Tasting in Pyrgos', notes: 'Santo Wines Winery, 4 varietals', time: 'Sept 17, 11:00 AM', confirmation: 'SW-112', cost: 120, location: 'Pyrgos, Santorini', lat: 36.3735, lng: 25.4510 },
+  { id: '3', name: 'Couples Spa at Canaves', notes: 'Deep tissue + aromatherapy', time: 'Sept 18, 10:00 AM', confirmation: 'SPA-455', cost: 280, location: 'Oia, Santorini', lat: 36.4610, lng: 25.3760 },
+  { id: '4', name: 'Delos Island Day Trip', notes: 'Ferry from Mykonos Old Port', time: 'Sept 22, 8:30 AM', confirmation: 'DEL-778', cost: 50, location: 'Mykonos Old Port', lat: 37.4467, lng: 25.3262 },
 ];
 
 export const sampleReservations: ReservationItem[] = [
-  { id: '1', name: 'Ambrosia Restaurant', date: 'Sept 16', time: '7:30 PM', confirmation: 'AMB-221', notes: 'Cliffside table for 2', cost: 0 },
-  { id: '2', name: 'Lycabettus Restaurant', date: 'Sept 17', time: '8:00 PM', confirmation: 'LYC-445', notes: 'Tasting menu requested', cost: 0 },
-  { id: '3', name: 'Nammos Beach Club', date: 'Sept 21', time: '12:00 PM', confirmation: 'NMM-882', notes: 'Sunbed reservation', cost: 0 },
+  { id: '1', name: 'Ambrosia Restaurant', date: 'Sept 16', time: '7:30 PM', confirmation: 'AMB-221', notes: 'Cliffside table for 2', cost: 0, location: 'Oia, Santorini', lat: 36.4615, lng: 25.3748 },
+  { id: '2', name: 'Lycabettus Restaurant', date: 'Sept 17', time: '8:00 PM', confirmation: 'LYC-445', notes: 'Tasting menu requested', cost: 0, location: 'Oia, Santorini', lat: 36.4620, lng: 25.3755 },
+  { id: '3', name: 'Nammos Beach Club', date: 'Sept 21', time: '12:00 PM', confirmation: 'NMM-882', notes: 'Sunbed reservation', cost: 0, location: 'Psarou Beach, Mykonos', lat: 37.4230, lng: 25.3480 },
 ];
 
 export const sampleItinerary: ItineraryDay[] = [

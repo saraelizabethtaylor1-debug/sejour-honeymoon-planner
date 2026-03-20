@@ -29,11 +29,28 @@ const mapStyles: google.maps.MapTypeStyle[] = [
   { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#a0b0c0' }] },
 ];
 
+// Destination fallback coordinates (no geocoding needed)
+const DESTINATION_COORDS: Record<string, { lat: number; lng: number }> = {
+  'santorini': { lat: 36.3932, lng: 25.4615 },
+  'mykonos': { lat: 37.4467, lng: 25.3289 },
+  'santorini & mykonos': { lat: 36.8, lng: 25.4 },
+};
+
+function getDestinationCenter(destination: string): { lat: number; lng: number } {
+  const key = destination.toLowerCase().trim();
+  for (const [k, v] of Object.entries(DESTINATION_COORDS)) {
+    if (key.includes(k)) return v;
+  }
+  return { lat: 36.4618, lng: 25.3753 }; // Default Santorini
+}
+
 interface CategoryMarker {
   category: 'accommodations' | 'activities' | 'reservations' | 'transportation';
   name: string;
   details: string;
   address: string;
+  lat: number;
+  lng: number;
 }
 
 interface GoogleMapProps {
@@ -91,43 +108,58 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, tran
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Build markers from items that have lat/lng coordinates
   const buildMarkers = useCallback((): CategoryMarker[] => {
     const markers: CategoryMarker[] = [];
 
     accommodations.forEach(a => {
-      markers.push({
-        category: 'accommodations',
-        name: a.name,
-        details: `${a.checkIn} – ${a.checkOut}`,
-        address: a.address || a.name,
-      });
+      if (a.lat != null && a.lng != null) {
+        markers.push({
+          category: 'accommodations',
+          name: a.name,
+          details: `${a.checkIn} – ${a.checkOut}`,
+          address: a.address || a.name,
+          lat: a.lat,
+          lng: a.lng,
+        });
+      }
     });
 
     activities.forEach(a => {
-      markers.push({
-        category: 'activities',
-        name: a.name,
-        details: a.notes || a.time,
-        address: a.location || a.name,
-      });
+      if (a.lat != null && a.lng != null) {
+        markers.push({
+          category: 'activities',
+          name: a.name,
+          details: a.notes || a.time,
+          address: a.location || a.name,
+          lat: a.lat,
+          lng: a.lng,
+        });
+      }
     });
 
     reservations.forEach(r => {
-      markers.push({
-        category: 'reservations',
-        name: r.name,
-        details: `${r.date} at ${r.time}`,
-        address: r.location || r.name,
-      });
+      if (r.lat != null && r.lng != null) {
+        markers.push({
+          category: 'reservations',
+          name: r.name,
+          details: `${r.date} at ${r.time}`,
+          address: r.location || r.name,
+          lat: r.lat,
+          lng: r.lng,
+        });
+      }
     });
 
     transportItems.forEach(t => {
-      if (t.location) {
+      if (t.lat != null && t.lng != null) {
         markers.push({
           category: 'transportation',
           name: t.type || 'Transport',
           details: t.details || t.time,
-          address: t.location,
+          address: t.location || '',
+          lat: t.lat,
+          lng: t.lng,
         });
       }
     });
@@ -135,7 +167,7 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, tran
     return markers;
   }, [accommodations, activities, reservations, transportItems]);
 
-  // Initialize map
+  // Initialize map — no geocoding, use hardcoded destination center
   useEffect(() => {
     let cancelled = false;
 
@@ -144,27 +176,20 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, tran
         if (cancelled || !mapRef.current) return;
         setLoaded(true);
 
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ address: destination }, (results, status) => {
-          if (cancelled || !mapRef.current) return;
+        const center = getDestinationCenter(destination);
 
-          const center = status === 'OK' && results?.[0]
-            ? results[0].geometry.location
-            : { lat: 36.4618, lng: 25.3753 };
-
-          mapInstance.current = new google.maps.Map(mapRef.current, {
-            center,
-            zoom: 12,
-            styles: mapStyles,
-            disableDefaultUI: true,
-            zoomControl: true,
-            zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
-            gestureHandling: 'cooperative',
-          });
-
-          infoWindowRef.current = new google.maps.InfoWindow();
-          placeMarkers();
+        mapInstance.current = new google.maps.Map(mapRef.current, {
+          center,
+          zoom: 11,
+          styles: mapStyles,
+          disableDefaultUI: true,
+          zoomControl: true,
+          zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
+          gestureHandling: 'cooperative',
         });
+
+        infoWindowRef.current = new google.maps.InfoWindow();
+        placeMarkers();
       })
       .catch(() => {
         if (!cancelled) setError('Could not load map');
@@ -177,65 +202,61 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, tran
   const placeMarkers = useCallback(() => {
     if (!mapInstance.current || !loaded) return;
 
+    // Clear old markers
     markersRef.current.forEach(m => m.setMap(null));
     markersRef.current = [];
 
-    const geocoder = new google.maps.Geocoder();
     const data = buildMarkers();
     const filtered = activeFilter
       ? data.filter(d => d.category === activeFilter)
       : data;
 
+    if (filtered.length === 0) return;
+
     const bounds = new google.maps.LatLngBounds();
-    let boundsCount = 0;
 
     filtered.forEach((item) => {
-      geocoder.geocode({ address: `${item.address}, ${destination}` }, (results, status) => {
-        if (status === 'OK' && results?.[0] && mapInstance.current) {
-          const position = results[0].geometry.location;
-          const isHighlighted = highlightedItem === item.name;
+      const position = { lat: item.lat, lng: item.lng };
+      const isHighlighted = highlightedItem === item.name;
 
-          const marker = new google.maps.Marker({
-            map: mapInstance.current,
-            position,
-            title: item.name,
-            icon: {
-              url: createMarkerIcon(item.category, isHighlighted),
-              scaledSize: new google.maps.Size(isHighlighted ? 36 : 28, isHighlighted ? 46 : 36),
-            },
-            animation: google.maps.Animation.DROP,
-            zIndex: isHighlighted ? 999 : 1,
-          });
+      const marker = new google.maps.Marker({
+        map: mapInstance.current!,
+        position,
+        title: item.name,
+        icon: {
+          url: createMarkerIcon(item.category, isHighlighted),
+          scaledSize: new google.maps.Size(isHighlighted ? 36 : 28, isHighlighted ? 46 : 36),
+        },
+        animation: google.maps.Animation.DROP,
+        zIndex: isHighlighted ? 999 : 1,
+      });
 
-          marker.addListener('click', () => {
-            if (infoWindowRef.current && mapInstance.current) {
-              infoWindowRef.current.setContent(`
-                <div style="font-family: serif; padding: 6px 4px; min-width: 160px;">
-                  <div style="font-size: 14px; font-weight: 600; color: #5a4a42; margin-bottom: 3px;">${item.name}</div>
-                  <div style="font-size: 11px; color: #b09888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">${item.category}</div>
-                  <div style="font-size: 12px; color: #9e8e82;">${item.details}</div>
-                  <div style="font-size: 11px; color: #a89888; margin-top: 2px;">${item.address}</div>
-                </div>
-              `);
-              infoWindowRef.current.open(mapInstance.current, marker);
-            }
-          });
-
-          markersRef.current.push(marker);
-
-          bounds.extend(position);
-          boundsCount++;
-
-          // Fit bounds after all markers placed (approximation via timeout)
-          setTimeout(() => {
-            if (boundsCount > 1 && mapInstance.current) {
-              mapInstance.current.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
-            }
-          }, 300);
+      marker.addListener('click', () => {
+        if (infoWindowRef.current && mapInstance.current) {
+          infoWindowRef.current.setContent(`
+            <div style="font-family: serif; padding: 6px 4px; min-width: 160px;">
+              <div style="font-size: 14px; font-weight: 600; color: #5a4a42; margin-bottom: 3px;">${item.name}</div>
+              <div style="font-size: 11px; color: #b09888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">${item.category}</div>
+              <div style="font-size: 12px; color: #9e8e82;">${item.details}</div>
+              <div style="font-size: 11px; color: #a89888; margin-top: 2px;">${item.address}</div>
+            </div>
+          `);
+          infoWindowRef.current.open(mapInstance.current, marker);
         }
       });
+
+      markersRef.current.push(marker);
+      bounds.extend(position);
     });
-  }, [buildMarkers, activeFilter, destination, loaded, highlightedItem]);
+
+    // Fit bounds to show all markers
+    if (filtered.length > 1) {
+      mapInstance.current.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
+    } else if (filtered.length === 1) {
+      mapInstance.current.setCenter({ lat: filtered[0].lat, lng: filtered[0].lng });
+      mapInstance.current.setZoom(14);
+    }
+  }, [buildMarkers, activeFilter, loaded, highlightedItem]);
 
   useEffect(() => {
     if (loaded && mapInstance.current) {
