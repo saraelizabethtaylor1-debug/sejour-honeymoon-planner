@@ -13,7 +13,7 @@ interface OverviewTabProps {
   transportItems: TransportItem[];
 }
 
-type FilterCategory = 'accommodations' | 'activities' | 'reservations' | null;
+type FilterCategory = 'accommodations' | 'activities' | 'reservations' | 'transportation' | null;
 
 const items: { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory }[] = [
   { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: null },
