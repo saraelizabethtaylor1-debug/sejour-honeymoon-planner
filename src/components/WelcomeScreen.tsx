@@ -23,10 +23,10 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
 
   const handleSubmit = () => {
     onComplete({
-      destination: destination || 'Santorini & Mykonos',
-      days: parseInt(days) || 12,
-      date: date || 'Sept 14, 2025',
-      names: names || 'Elena & Julian',
+      destination: destination || 'My Trip',
+      days: parseInt(days) || 7,
+      date: date || '',
+      names: names || '',
       quote: '"You are my greatest adventure yet"',
       coverImage,
       clockFormat,
