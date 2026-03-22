@@ -422,6 +422,19 @@ const ItineraryItem = ({
     );
   }, []);
 
+  const deleteActivity = useCallback((uid: string) => {
+    setOrderedActivities(prev => prev.filter(a => a._uid !== uid));
+    // If it was synced from activities, remove from overview too
+    if (uid.startsWith('sync-activity-')) {
+      const actId = uid.replace('sync-activity-', '');
+      onRemoveActivity?.(actId);
+    }
+    // If it was manually added and pushed to overview
+    if (uid.startsWith('itact-')) {
+      onRemoveActivity?.(uid);
+    }
+  }, [onRemoveActivity]);
+
   const addActivity = () => {
     const newUid = nextUid();
     const newAct: TaggedActivity = {
