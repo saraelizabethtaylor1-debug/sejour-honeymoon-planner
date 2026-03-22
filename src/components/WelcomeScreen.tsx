@@ -34,7 +34,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
   };
 
   const inputClass =
-    'w-full bg-transparent border-b border-input py-3 font-serif text-lg sm:text-xl text-foreground focus:outline-none focus:border-primary transition-colors placeholder:text-foreground/25';
+    'w-full bg-transparent border-b border-input py-3 font-serif text-lg sm:text-xl text-foreground focus:outline-none focus:border-primary transition-colors placeholder:text-foreground/40';
 
   return (
     <motion.div
