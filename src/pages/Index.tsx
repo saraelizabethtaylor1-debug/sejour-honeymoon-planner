@@ -18,10 +18,10 @@ const Index = () => {
   const [detailView, setDetailView] = useState<DetailView>(null);
 
   // Lifted state for overview data
-  const [transportItems, setTransportItems] = useState<TransportItem[]>(sampleTransport);
-  const [accommodationItems, setAccommodationItems] = useState<AccommodationItem[]>(sampleAccommodations);
-  const [activityItems, setActivityItems] = useState<ActivityItem[]>(sampleActivities);
-  const [reservationItems, setReservationItems] = useState<ReservationItem[]>(sampleReservations);
+  const [transportItems, setTransportItems] = useState<TransportItem[]>([]);
+  const [accommodationItems, setAccommodationItems] = useState<AccommodationItem[]>([]);
+  const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
+  const [reservationItems, setReservationItems] = useState<ReservationItem[]>([]);
 
   const handleWelcomeComplete = (data: TripData) => {
     setTripData(data);
