@@ -44,7 +44,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   return (
     <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-8 md:gap-12 lg:gap-16">
       {/* Arched Cover Image or Camera Placeholder */}
-      <div className="flex-shrink-0 w-full max-w-[300px] sm:max-w-[340px] md:max-w-[400px]">
+      <div className="flex-shrink-0 w-full max-w-[260px] sm:max-w-[280px] md:max-w-[320px]">
         <input
           ref={fileInputRef}
           type="file"
@@ -98,7 +98,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-5 w-full max-w-[360px] sm:max-w-[620px]"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-5 w-full"
         >
           {archCards.map((card) => (
             <motion.button
@@ -107,9 +107,8 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               whileHover={{ scale: 1.02, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.12)', transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="flex flex-col items-center justify-end gap-2.5 w-full pb-4 bg-primary/60 rounded-xl transition-shadow duration-200"
+              className="flex flex-col items-center justify-end gap-2.5 w-full min-w-[140px] sm:min-w-[220px] pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[200px] md:h-[clamp(180px,28vh,280px)]"
               style={{
-                minHeight: '280px',
                 boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
             >
