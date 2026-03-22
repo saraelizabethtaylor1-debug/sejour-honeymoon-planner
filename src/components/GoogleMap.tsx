@@ -11,22 +11,22 @@ declare global {
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCc4A2sU57cT4ICbxwqv4f9NP_fgbu-Iyg';
 
 const mapStyles: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ color: '#f5f1ee' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#9e8e82' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#f5f1ee' }] },
-  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#e0d6cf' }] },
-  { featureType: 'administrative.land_parcel', elementType: 'labels.text.fill', stylers: [{ color: '#c4b5a9' }] },
-  { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#f0ebe6' }] },
-  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#eae3dc' }] },
-  { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#a89888' }] },
-  { featureType: 'poi.park', elementType: 'geometry.fill', stylers: [{ color: '#e2ddd6' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ede7e0' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#e0d8d0' }] },
-  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#e8e0d8' }] },
-  { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#ddd4cb' }] },
-  { featureType: 'transit.line', elementType: 'geometry', stylers: [{ color: '#e0d8d0' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d4dce4' }] },
-  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#a0b0c0' }] },
+  { elementType: 'geometry', stylers: [{ color: '#e8d5cc' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#6b4c45' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#f5ede9' }] },
+  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#d4b5ad' }] },
+  { featureType: 'administrative.land_parcel', elementType: 'labels.text.fill', stylers: [{ color: '#9e7e75' }] },
+  { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#ede0da' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#e5d3cc' }] },
+  { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#8a6860' }] },
+  { featureType: 'poi.park', elementType: 'geometry.fill', stylers: [{ color: '#e0d0c8' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f0ddd8' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#e0ccc5' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ebd5ce' }] },
+  { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#d8c0b8' }] },
+  { featureType: 'transit.line', elementType: 'geometry', stylers: [{ color: '#e0ccc5' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d4b5ad' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#9e7e75' }] },
 ];
 
 // Destination fallback coordinates (no geocoding needed)
