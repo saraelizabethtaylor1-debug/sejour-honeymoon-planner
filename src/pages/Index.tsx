@@ -45,7 +45,7 @@ const Index = () => {
             onMenuToggle={() => setMenuOpen(true)}
           />
 
-          <main className={`flex-1 overflow-hidden px-4 sm:px-6 lg:px-8 py-4 sm:py-5 ${tab === 'overview' ? 'flex flex-col' : ''}`}>
+          <main className={`flex-1 overflow-hidden px-4 sm:px-6 lg:px-8 ${tab === 'planning' ? 'py-2 flex flex-col' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col' : 'py-4 sm:py-5'}`}>
             {tab === 'planning' && (
               <PlanningTab
                 onOpenDetail={setDetailView}
