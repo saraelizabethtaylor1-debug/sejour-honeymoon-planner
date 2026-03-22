@@ -377,8 +377,13 @@ const ItineraryItem = ({
     if (!initialized) return;
     setOrderedActivities(prev => {
       const manualItems = prev.filter(a => !a._synced);
-      const merged = [...syncedActivities, ...manualItems];
-      // Don't re-sort — keep synced sorted, manual at end in their order
+      const manualIds = new Set(manualItems.map(a => a._uid));
+      // Filter out synced activities whose source ID matches a manual item
+      const filteredSynced = syncedActivities.filter(s => {
+        const sourceId = s._uid.replace('sync-activity-', '');
+        return !manualIds.has(sourceId);
+      });
+      const merged = [...filteredSynced, ...manualItems];
       return merged;
     });
   }, [syncedActivities, initialized]);
