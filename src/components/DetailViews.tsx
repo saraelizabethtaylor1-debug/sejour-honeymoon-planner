@@ -429,8 +429,8 @@ const MapView = ({ onBack }: { onBack: () => void }) => {
 // ── Traveler Info ──
 const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   const [travelers, setTravelers] = useState<TravelerInfo[]>([
-    { id: '1', name: 'Elena', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
-    { id: '2', name: 'Julian', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
+    { id: '1', name: '', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
+    { id: '2', name: '', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
   ]);
 
   const updateTraveler = (id: string, field: keyof TravelerInfo, value: string) => {

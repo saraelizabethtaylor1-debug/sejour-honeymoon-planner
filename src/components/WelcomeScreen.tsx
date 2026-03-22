@@ -84,7 +84,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
             <label className="text-label pl-1">Travelers</label>
             <input
               type="text"
-              placeholder="Elena & Julian"
+              placeholder="Your names"
               value={names}
               onChange={(e) => setNames(e.target.value)}
               className={inputClass}
