@@ -588,7 +588,7 @@ const formatDayDate = (tripData: { date: string; days: number }, dayIndex: numbe
   return `${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 };
 
-const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity }: ItineraryTabProps) => {
+const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity }: ItineraryTabProps) => {
   const displayDays = tripData ? generateDaysFromTrip(tripData) : days;
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
@@ -612,6 +612,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
             syncedActivities={syncedActivities}
             dayDateStr={dayDateStr}
             onAddActivity={onAddActivity}
+            onRemoveActivity={onRemoveActivity}
           />
         );
       })}
