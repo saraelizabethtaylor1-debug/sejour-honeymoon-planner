@@ -47,7 +47,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           </div>
         </div>
         <div className="text-right shrink-0">
-          <p className="font-script text-lg sm:text-xl lowercase leading-tight truncate max-w-[140px] sm:max-w-none ml-auto" style={{ color: 'hsl(0 20% 32%)' }}>
+          <p className="font-script text-2xl sm:text-3xl font-semibold lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto" style={{ color: 'hsl(0 20% 32%)' }}>
             {tripData.destination}
           </p>
           {dateLine && (
