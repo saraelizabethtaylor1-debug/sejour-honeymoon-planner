@@ -23,6 +23,15 @@ const menuItems = [
 ];
 
 const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings, initials }: SideMenuProps) => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut();
+    onClose();
+    navigate('/auth');
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -76,6 +85,16 @@ const SideMenu = ({ isOpen, onClose, onNavigate, onOpenDetail, onGoToSettings, i
                   <span className="font-serif text-lg tracking-wide">{item.label}</span>
                 </button>
               ))}
+
+              <div className="border-t border-foreground/5 mt-4 pt-4">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-4 px-4 py-3.5 pill-shape text-foreground/40 hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
+                >
+                  <LogOut size={18} strokeWidth={1.2} />
+                  <span className="font-serif text-lg tracking-wide">Log Out</span>
+                </button>
+              </div>
             </nav>
 
           </motion.div>
