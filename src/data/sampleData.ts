@@ -1,10 +1,10 @@
 import type { TripData, TodoItem, BudgetItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, ItineraryDay } from '@/types/honeymoon';
 
 export const defaultTripData: TripData = {
-  destination: 'Santorini & Mykonos',
-  days: 12,
-  date: 'Sept 14, 2025',
-  names: 'Elena & Julian',
+  destination: '',
+  days: 7,
+  date: '',
+  names: '',
   quote: '"You are my greatest adventure yet"',
 };
 
