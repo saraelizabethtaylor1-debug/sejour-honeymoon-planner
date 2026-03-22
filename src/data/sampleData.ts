@@ -12,14 +12,7 @@ export const sampleTodos: TodoItem[] = [];
 
 export const sampleBudget: BudgetItem[] = [];
 
-export const sampleBudget: BudgetItem[] = [
-  { id: '1', category: 'Flights', estimated: 2400, actual: 2280 },
-  { id: '2', category: 'Accommodations', estimated: 4500, actual: 4200 },
-  { id: '3', category: 'Activities', estimated: 1200, actual: 800 },
-  { id: '4', category: 'Dining', estimated: 1500, actual: 0 },
-  { id: '5', category: 'Transportation', estimated: 600, actual: 350 },
-  { id: '6', category: 'Shopping', estimated: 800, actual: 0 },
-];
+export const samplePacking: PackingItem[] = [];
 
 export const samplePacking: PackingItem[] = [
   { id: '1', text: 'Passports & travel docs', packed: true },
