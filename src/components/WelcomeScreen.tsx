@@ -63,7 +63,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
               <label className="text-label pl-1">Date</label>
               <input
                 type="text"
-                placeholder="09.14.25"
+                placeholder="MM/DD/YYYY"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className={inputClass}
