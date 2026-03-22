@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus } from 'lucide-react';
+import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2 } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -15,6 +15,7 @@ interface ItineraryTabProps {
   activityItems?: ActivityItem[];
   reservationItems?: ReservationItem[];
   onAddActivity?: (activity: ActivityItem) => void;
+  onRemoveActivity?: (id: string) => void;
 }
 
 const iconMap: Record<string, typeof Bed> = {
@@ -184,9 +185,10 @@ interface SortableActivityProps {
   onUpdate: (fields: Partial<ItineraryActivity>) => void;
   onImageUpload: (file: File) => void;
   onRemoveImage: () => void;
+  onDelete: () => void;
 }
 
-const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage }: SortableActivityProps) => {
+const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage, onDelete }: SortableActivityProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : undefined, opacity: isDragging ? 0.5 : 1 };
   const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
@@ -292,17 +294,22 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
           </button>
         )}
 
-        {/* Drag handle — always rendered, visible on hover */}
-        <div
-          {...attributes}
-          {...listeners}
-          className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-4 opacity-0 group-hover/item:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2 touch-none"
-        >
-          <div className="grid grid-cols-2 gap-[3px]">
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+        {/* Actions — delete + drag handle */}
+        <div className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-4 flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+          <button onClick={onDelete} className="p-1.5 hover:bg-destructive/10 rounded-lg transition-colors">
+            <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
+          </button>
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1.5 touch-none"
+          >
+            <div className="grid grid-cols-2 gap-[3px]">
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+            </div>
           </div>
         </div>
       </div>
@@ -327,11 +334,13 @@ const ItineraryItem = ({
   syncedActivities,
   dayDateStr,
   onAddActivity,
+  onRemoveActivity,
 }: {
   day: ItineraryDay;
   syncedActivities: TaggedActivity[];
   dayDateStr: string;
   onAddActivity?: (activity: ActivityItem) => void;
+  onRemoveActivity?: (id: string) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
@@ -412,6 +421,19 @@ const ItineraryItem = ({
       prev.map(a => a._uid === uid ? { ...a, imageUrl: undefined } : a)
     );
   }, []);
+
+  const deleteActivity = useCallback((uid: string) => {
+    setOrderedActivities(prev => prev.filter(a => a._uid !== uid));
+    // If it was synced from activities, remove from overview too
+    if (uid.startsWith('sync-activity-')) {
+      const actId = uid.replace('sync-activity-', '');
+      onRemoveActivity?.(actId);
+    }
+    // If it was manually added and pushed to overview
+    if (uid.startsWith('itact-')) {
+      onRemoveActivity?.(uid);
+    }
+  }, [onRemoveActivity]);
 
   const addActivity = () => {
     const newUid = nextUid();
@@ -515,6 +537,7 @@ const ItineraryItem = ({
                             onUpdate={(fields) => updateActivity(act._uid, fields)}
                             onImageUpload={(file) => handleImageUpload(act._uid, file)}
                             onRemoveImage={() => removeImage(act._uid)}
+                            onDelete={() => deleteActivity(act._uid)}
                           />
                         ))}
                       </div>
@@ -565,7 +588,7 @@ const formatDayDate = (tripData: { date: string; days: number }, dayIndex: numbe
   return `${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 };
 
-const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity }: ItineraryTabProps) => {
+const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity }: ItineraryTabProps) => {
   const displayDays = tripData ? generateDaysFromTrip(tripData) : days;
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
@@ -589,6 +612,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
             syncedActivities={syncedActivities}
             dayDateStr={dayDateStr}
             onAddActivity={onAddActivity}
+            onRemoveActivity={onRemoveActivity}
           />
         );
       })}

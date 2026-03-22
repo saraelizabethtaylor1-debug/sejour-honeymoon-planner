@@ -23,10 +23,10 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
 
   const handleSubmit = () => {
     onComplete({
-      destination: destination || 'Santorini & Mykonos',
-      days: parseInt(days) || 12,
-      date: date || 'Sept 14, 2025',
-      names: names || 'Elena & Julian',
+      destination: destination || 'My Trip',
+      days: parseInt(days) || 7,
+      date: date || '',
+      names: names || '',
       quote: '"You are my greatest adventure yet"',
       coverImage,
       clockFormat,
@@ -52,7 +52,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
             <label className="text-label pl-1">Destination</label>
             <input
               type="text"
-              placeholder="Santorini, Greece"
+              placeholder="Where are you going?"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               className={inputClass}
@@ -63,7 +63,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
               <label className="text-label pl-1">Date</label>
               <input
                 type="text"
-                placeholder="09.14.25"
+                placeholder="MM/DD/YYYY"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className={inputClass}
@@ -73,7 +73,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
               <label className="text-label pl-1">Days</label>
               <input
                 type="text"
-                placeholder="12"
+                placeholder="How many?"
                 value={days}
                 onChange={(e) => setDays(e.target.value)}
                 className={inputClass}
@@ -84,7 +84,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
             <label className="text-label pl-1">Travelers</label>
             <input
               type="text"
-              placeholder="Elena & Julian"
+              placeholder="Your names"
               value={names}
               onChange={(e) => setNames(e.target.value)}
               className={inputClass}
