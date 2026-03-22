@@ -595,27 +595,34 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
 
   return (
     <div className="space-y-4 pb-20">
-      {displayDays.map((day, i) => {
-        let dayDate: Date | null = null;
-        if (startDate) {
-          dayDate = new Date(startDate);
-          dayDate.setDate(dayDate.getDate() + i);
-        }
-        const syncedActivities = dayDate
-          ? buildSyncedActivities(dayDate, transportItems, accommodationItems, activityItems, reservationItems, fallbackYear)
-          : [];
-        const dayDateStr = tripData ? formatDayDate(tripData, i) : '';
-        return (
-          <ItineraryItem
-            key={day.id}
-            day={day}
-            syncedActivities={syncedActivities}
-            dayDateStr={dayDateStr}
-            onAddActivity={onAddActivity}
-            onRemoveActivity={onRemoveActivity}
-          />
-        );
-      })}
+      {displayDays.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <p className="font-serif text-lg text-foreground/50 mb-2">No itinerary yet</p>
+          <p className="text-sm text-muted-foreground">Enter your trip dates on the welcome screen to generate your itinerary days.</p>
+        </div>
+      ) : (
+        displayDays.map((day, i) => {
+          let dayDate: Date | null = null;
+          if (startDate) {
+            dayDate = new Date(startDate);
+            dayDate.setDate(dayDate.getDate() + i);
+          }
+          const syncedActivities = dayDate
+            ? buildSyncedActivities(dayDate, transportItems, accommodationItems, activityItems, reservationItems, fallbackYear)
+            : [];
+          const dayDateStr = tripData ? formatDayDate(tripData, i) : '';
+          return (
+            <ItineraryItem
+              key={day.id}
+              day={day}
+              syncedActivities={syncedActivities}
+              dayDateStr={dayDateStr}
+              onAddActivity={onAddActivity}
+              onRemoveActivity={onRemoveActivity}
+            />
+          );
+        })
+      )}
     </div>
   );
 };
