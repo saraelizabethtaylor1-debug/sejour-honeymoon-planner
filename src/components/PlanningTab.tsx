@@ -30,7 +30,7 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
   return (
     <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-8 md:gap-12 lg:gap-16">
       {/* Arched Cover Image or Camera Placeholder */}
-      <div className="flex-shrink-0 w-full max-w-[240px] sm:max-w-[260px] md:max-w-[300px]">
+      <div className="flex-shrink-0 w-full max-w-[300px] sm:max-w-[340px] md:max-w-[400px]">
         <div
           className="w-full aspect-[3/4] arch-shape overflow-hidden border-[8px] border-card"
           style={{
