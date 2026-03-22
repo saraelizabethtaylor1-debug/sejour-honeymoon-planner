@@ -14,7 +14,261 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accommodation_items: {
+        Row: {
+          address: string | null
+          check_in: string | null
+          check_in_time: string | null
+          check_out: string | null
+          check_out_time: string | null
+          confirmation: string | null
+          cost: number | null
+          created_at: string
+          id: string
+          lat: number | null
+          lng: number | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          check_in?: string | null
+          check_in_time?: string | null
+          check_out?: string | null
+          check_out_time?: string | null
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          check_in?: string | null
+          check_in_time?: string | null
+          check_out?: string | null
+          check_out_time?: string | null
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      activity_items: {
+        Row: {
+          confirmation: string | null
+          cost: number | null
+          created_at: string
+          id: string
+          lat: number | null
+          lng: number | null
+          location: string | null
+          name: string
+          notes: string | null
+          time: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          name?: string
+          notes?: string | null
+          time?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          name?: string
+          notes?: string | null
+          time?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          clock_format: string | null
+          cover_image: string | null
+          created_at: string
+          days: number | null
+          destination: string | null
+          display_name: string | null
+          id: string
+          names: string | null
+          quote: string | null
+          trip_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          clock_format?: string | null
+          cover_image?: string | null
+          created_at?: string
+          days?: number | null
+          destination?: string | null
+          display_name?: string | null
+          id?: string
+          names?: string | null
+          quote?: string | null
+          trip_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          clock_format?: string | null
+          cover_image?: string | null
+          created_at?: string
+          days?: number | null
+          destination?: string | null
+          display_name?: string | null
+          id?: string
+          names?: string | null
+          quote?: string | null
+          trip_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reservation_items: {
+        Row: {
+          confirmation: string | null
+          cost: number | null
+          created_at: string
+          date: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          location: string | null
+          name: string
+          notes: string | null
+          time: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          date?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          name?: string
+          notes?: string | null
+          time?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          date?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          name?: string
+          notes?: string | null
+          time?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transport_items: {
+        Row: {
+          arrival_lat: number | null
+          arrival_lng: number | null
+          arrival_location: string | null
+          confirmation: string | null
+          cost: number | null
+          created_at: string
+          departure_lat: number | null
+          departure_lng: number | null
+          departure_location: string | null
+          details: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          location: string | null
+          time: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arrival_lat?: number | null
+          arrival_lng?: number | null
+          arrival_location?: string | null
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          departure_lat?: number | null
+          departure_lng?: number | null
+          departure_location?: string | null
+          details?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          time?: string | null
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arrival_lat?: number | null
+          arrival_lng?: number | null
+          arrival_location?: string | null
+          confirmation?: string | null
+          cost?: number | null
+          created_at?: string
+          departure_lat?: number | null
+          departure_lng?: number | null
+          departure_location?: string | null
+          details?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location?: string | null
+          time?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
