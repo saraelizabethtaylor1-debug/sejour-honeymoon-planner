@@ -293,17 +293,22 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
           </button>
         )}
 
-        {/* Drag handle — always rendered, visible on hover */}
-        <div
-          {...attributes}
-          {...listeners}
-          className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-4 opacity-0 group-hover/item:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2 touch-none"
-        >
-          <div className="grid grid-cols-2 gap-[3px]">
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+        {/* Actions — delete + drag handle */}
+        <div className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-4 flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+          <button onClick={onDelete} className="p-1.5 hover:bg-destructive/10 rounded-lg transition-colors">
+            <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
+          </button>
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1.5 touch-none"
+          >
+            <div className="grid grid-cols-2 gap-[3px]">
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+            </div>
           </div>
         </div>
       </div>
