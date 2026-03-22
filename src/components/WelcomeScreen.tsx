@@ -52,7 +52,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
             <label className="text-label pl-1">Destination</label>
             <input
               type="text"
-              placeholder="Santorini, Greece"
+              placeholder="Where are you going?"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               className={inputClass}
