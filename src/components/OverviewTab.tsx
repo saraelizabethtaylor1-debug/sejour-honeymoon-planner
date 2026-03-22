@@ -83,6 +83,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.5 }}
           className="min-h-[280px] md:h-[380px] lg:h-[420px] xl:h-[450px] rounded-2xl overflow-hidden border border-border"
+          style={{ filter: 'sepia(30%) saturate(0.8) brightness(1.05)' }}
         >
           <GoogleMap
             destination={tripData.destination}
