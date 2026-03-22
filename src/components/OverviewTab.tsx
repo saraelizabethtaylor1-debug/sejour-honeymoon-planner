@@ -46,9 +46,9 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex flex-col h-full">
+    <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 flex flex-col h-full">
       {/* Grid: Cards + Map — fill available height */}
-      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] gap-5 md:gap-6 lg:gap-7 xl:gap-8 flex-1 min-h-0">
+      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[220px_1fr] xl:grid-cols-[240px_1fr] gap-4 md:gap-5 lg:gap-6 flex-1 min-h-0">
         {/* Left Column — Cards stretch to match map */}
         <motion.div
           variants={containerVariants}
@@ -97,7 +97,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       </div>
 
       {/* Script text — near bottom */}
-      <div className="md:grid md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] md:gap-6 lg:gap-7 xl:gap-8 py-4 md:py-5">
+      <div className="md:grid md:grid-cols-[200px_1fr] lg:grid-cols-[220px_1fr] xl:grid-cols-[240px_1fr] md:gap-5 lg:gap-6 py-4 md:py-5">
         <div className="hidden md:block" />
         <p className="font-script text-[26px] md:text-[32px] lg:text-[38px] xl:text-[42px] text-center tracking-tight lowercase leading-tight" style={{ color: 'hsl(0 20% 42%)' }}>
           {quote}
