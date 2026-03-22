@@ -73,7 +73,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
               <label className="text-label pl-1">Days</label>
               <input
                 type="text"
-                placeholder="12"
+                placeholder="How many?"
                 value={days}
                 onChange={(e) => setDays(e.target.value)}
                 className={inputClass}
