@@ -8,14 +8,9 @@ export const defaultTripData: TripData = {
   quote: '"You are my greatest adventure yet"',
 };
 
-export const sampleTodos: TodoItem[] = [
-  { id: '1', text: 'Book flights to Athens', completed: true },
-  { id: '2', text: 'Reserve hotel in Oia', completed: true },
-  { id: '3', text: 'Purchase travel insurance', completed: false },
-  { id: '4', text: 'Get passport photos', completed: false },
-  { id: '5', text: 'Book sunset catamaran cruise', completed: false },
-  { id: '6', text: 'Make dinner reservations', completed: false },
-];
+export const sampleTodos: TodoItem[] = [];
+
+export const sampleBudget: BudgetItem[] = [];
 
 export const sampleBudget: BudgetItem[] = [
   { id: '1', category: 'Flights', estimated: 2400, actual: 2280 },
