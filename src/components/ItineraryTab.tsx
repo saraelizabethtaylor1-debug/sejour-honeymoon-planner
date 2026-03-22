@@ -15,6 +15,7 @@ interface ItineraryTabProps {
   activityItems?: ActivityItem[];
   reservationItems?: ReservationItem[];
   onAddActivity?: (activity: ActivityItem) => void;
+  onRemoveActivity?: (id: string) => void;
 }
 
 const iconMap: Record<string, typeof Bed> = {
