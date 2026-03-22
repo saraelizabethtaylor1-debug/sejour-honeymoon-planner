@@ -46,15 +46,15 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex flex-col gap-4 md:gap-5">
-      {/* Grid: Cards + Map (same height) */}
-      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] gap-5 md:gap-6 lg:gap-7 xl:gap-8">
-        {/* Left Column — Cards */}
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex flex-col h-full">
+      {/* Grid: Cards + Map — fill available height */}
+      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] gap-5 md:gap-6 lg:gap-7 xl:gap-8 flex-1 min-h-0">
+        {/* Left Column — Cards stretch to match map */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="flex flex-col justify-between gap-5 md:gap-4 md:h-[380px] lg:h-[420px] xl:h-[450px]"
+          className="flex flex-col justify-between gap-5 md:gap-0"
         >
           {items.map((itm) => (
             <motion.button
@@ -77,12 +77,12 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           ))}
         </motion.div>
 
-        {/* Right Column — Google Map */}
+        {/* Right Column — Google Map fills height */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.5 }}
-          className="min-h-[280px] md:h-[380px] lg:h-[420px] xl:h-[450px] overflow-hidden"
+          className="min-h-[280px] overflow-hidden"
           style={{ filter: 'grayscale(80%) brightness(1.05) sepia(20%)', border: '1px solid #E8C8C0', borderRadius: '18px' }}
         >
           <GoogleMap
@@ -96,8 +96,8 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
         </motion.div>
       </div>
 
-      {/* Script text — below grid, centered to map on desktop */}
-      <div className="md:grid md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] md:gap-6 lg:gap-7 xl:gap-8">
+      {/* Script text — near bottom */}
+      <div className="md:grid md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] md:gap-6 lg:gap-7 xl:gap-8 py-4 md:py-5">
         <div className="hidden md:block" />
         <p className="font-script text-[26px] md:text-[32px] lg:text-[38px] xl:text-[42px] text-center tracking-tight lowercase leading-tight" style={{ color: 'hsl(0 20% 42%)' }}>
           {quote}

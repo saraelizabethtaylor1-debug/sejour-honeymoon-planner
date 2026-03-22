@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { Heart, Wallet, Briefcase, PenLine } from 'lucide-react';
+import { Heart, Wallet, Briefcase, PenLine, Camera } from 'lucide-react';
 import type { DetailView, TripData } from '@/types/honeymoon';
-import santoriniCover from '@/assets/santorini-cover.jpg';
 
 interface PlanningTabProps {
   onOpenDetail: (view: DetailView) => void;
@@ -26,11 +25,11 @@ const item = {
 };
 
 const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
-  const coverSrc = tripData.coverImage || santoriniCover;
+  const hasCoverImage = !!tripData.coverImage;
 
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8 md:gap-12 lg:gap-16">
-      {/* Arched Cover Image */}
+    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-8 md:gap-12 lg:gap-16">
+      {/* Arched Cover Image or Camera Placeholder */}
       <div className="flex-shrink-0 w-full max-w-[240px] sm:max-w-[260px] md:max-w-[300px]">
         <div
           className="w-full aspect-[3/4] arch-shape overflow-hidden border-[8px] border-card"
@@ -38,16 +37,22 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
             boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
           }}
         >
-          <img
-            src={coverSrc}
-            className="w-full h-full object-cover"
-            alt={tripData.destination}
-          />
+          {hasCoverImage ? (
+            <img
+              src={tripData.coverImage}
+              className="w-full h-full object-cover"
+              alt={tripData.destination}
+            />
+          ) : (
+            <div className="w-full h-full bg-primary/40 flex items-center justify-center">
+              <Camera size={40} strokeWidth={1} className="text-foreground/25" />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Right Content */}
-      <div className="flex-1 flex flex-col items-center md:items-start md:justify-center md:self-stretch gap-4 sm:gap-5 md:gap-6">
+      {/* Right Content — aligned to bottom of arch */}
+      <div className="flex-1 flex flex-col items-center md:items-start gap-4 sm:gap-5 md:gap-6">
         {/* Headline */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -55,7 +60,7 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="text-center md:text-left max-w-full leading-[1.1] whitespace-nowrap"
         >
-          <span className="font-script text-3xl sm:text-4xl md:text-5xl lg:text-[3.4rem]" style={{ color: 'hsl(10 30% 35%)' }}>
+          <span className="font-script text-3xl sm:text-4xl md:text-5xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
             happily ever after
           </span>
           <span
@@ -92,8 +97,8 @@ const PlanningTab = ({ onOpenDetail, tripData }: PlanningTabProps) => {
                 className="text-primary-foreground/70"
               />
               <span
-                className="font-body text-[10px] text-foreground/70 uppercase"
-                style={{ letterSpacing: '0.12em' }}
+                className="font-body text-[11px] uppercase"
+                style={{ letterSpacing: '0.12em', color: 'hsl(10 8% 22%)' }}
               >
                 {card.title}
               </span>
