@@ -537,6 +537,7 @@ const ItineraryItem = ({
                             onUpdate={(fields) => updateActivity(act._uid, fields)}
                             onImageUpload={(file) => handleImageUpload(act._uid, file)}
                             onRemoveImage={() => removeImage(act._uid)}
+                            onDelete={() => deleteActivity(act._uid)}
                           />
                         ))}
                       </div>
