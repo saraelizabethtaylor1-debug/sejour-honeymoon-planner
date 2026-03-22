@@ -334,11 +334,13 @@ const ItineraryItem = ({
   syncedActivities,
   dayDateStr,
   onAddActivity,
+  onRemoveActivity,
 }: {
   day: ItineraryDay;
   syncedActivities: TaggedActivity[];
   dayDateStr: string;
   onAddActivity?: (activity: ActivityItem) => void;
+  onRemoveActivity?: (id: string) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
