@@ -109,7 +109,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               onClick={() => onOpenDetail(card.view)}
               className="flex flex-col items-center justify-end gap-2.5 w-full pb-4 bg-primary/60 rounded-xl transition-shadow duration-200"
               style={{
-                aspectRatio: '1 / 1.25',
+                minHeight: '280px',
                 boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
             >
