@@ -34,7 +34,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
   };
 
   const inputClass =
-    'w-full bg-transparent border-b border-input py-3 font-serif text-lg sm:text-xl text-foreground focus:outline-none focus:border-primary transition-colors placeholder:text-foreground/25';
+    'w-full bg-transparent border-b border-input py-3 font-serif text-lg sm:text-xl text-foreground focus:outline-none focus:border-primary transition-colors placeholder:text-foreground/40';
 
   return (
     <motion.div
@@ -156,9 +156,9 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
         whileHover={{ scale: 0.98 }}
         whileTap={{ scale: 0.96 }}
         onClick={handleSubmit}
-        className="w-full py-5 bg-primary pill-shape font-serif text-lg text-primary-foreground shadow-arch mt-10 transition-shadow hover:shadow-lift"
+        className="w-full py-5 bg-primary pill-shape font-script text-2xl text-primary-foreground shadow-arch mt-10 transition-shadow hover:shadow-lift"
       >
-        Plan your adventure
+        plan your adventure
       </motion.button>
     </motion.div>
   );

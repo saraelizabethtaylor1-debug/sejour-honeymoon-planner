@@ -83,6 +83,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15, duration: 0.5 }}
           className="min-h-[280px] md:h-[380px] lg:h-[420px] xl:h-[450px] rounded-2xl overflow-hidden border border-border"
+          style={{ filter: 'sepia(30%) saturate(0.8) brightness(1.05)' }}
         >
           <GoogleMap
             destination={tripData.destination}
@@ -98,7 +99,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       {/* Script text — below grid, centered to map on desktop */}
       <div className="md:grid md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] md:gap-6 lg:gap-7 xl:gap-8">
         <div className="hidden md:block" />
-        <p className="font-script text-[26px] md:text-[32px] lg:text-[38px] xl:text-[42px] text-foreground/60 text-center tracking-tight lowercase leading-tight">
+        <p className="font-script text-[26px] md:text-[32px] lg:text-[38px] xl:text-[42px] text-center tracking-tight lowercase leading-tight" style={{ color: 'hsl(0 20% 42%)' }}>
           {quote}
         </p>
       </div>

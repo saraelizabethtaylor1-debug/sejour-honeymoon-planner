@@ -7,25 +7,25 @@
 @layer base {
   :root {
     --background: 25 33% 96%;
-    --foreground: 10 8% 18%;
+    --foreground: 10 8% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 10 8% 18%;
+    --card-foreground: 10 8% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 10 8% 18%;
+    --popover-foreground: 10 8% 12%;
 
     --primary: 0 42% 92%;
-    --primary-foreground: 0 18% 36%;
+    --primary-foreground: 0 18% 30%;
 
     --secondary: 20 16% 90%;
-    --secondary-foreground: 10 8% 18%;
+    --secondary-foreground: 10 8% 12%;
 
     --muted: 30 20% 94%;
-    --muted-foreground: 10 8% 40%;
+    --muted-foreground: 10 8% 32%;
 
     --accent: 0 30% 88%;
-    --accent-foreground: 0 18% 36%;
+    --accent-foreground: 0 18% 30%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -47,12 +47,13 @@
 
     /* Custom tokens */
     --blush: 0 42% 92%;
-    --blush-foreground: 0 18% 36%;
+    --blush-foreground: 0 18% 30%;
     --dusty-rose: 0 30% 88%;
-    --warm-taupe: 10 8% 18%;
-    --deep-rose: 0 18% 36%;
+    --warm-taupe: 10 8% 12%;
+    --deep-rose: 0 18% 30%;
     --alabaster: 25 33% 96%;
     --cream: 30 20% 94%;
+    --script-accent: 0 20% 42%;
 
     --shadow-soft: 0 4px 24px -4px hsl(0 16% 43% / 0.06);
     --shadow-card: 0 8px 40px -8px hsl(0 16% 43% / 0.08);
@@ -91,8 +92,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 300;
-    letter-spacing: 0.05em;
+    font-weight: 400;
+    letter-spacing: 0.04em;
     -webkit-font-smoothing: antialiased;
   }
 }
