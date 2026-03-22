@@ -184,6 +184,7 @@ interface SortableActivityProps {
   onUpdate: (fields: Partial<ItineraryActivity>) => void;
   onImageUpload: (file: File) => void;
   onRemoveImage: () => void;
+  onDelete: () => void;
 }
 
 const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage }: SortableActivityProps) => {
