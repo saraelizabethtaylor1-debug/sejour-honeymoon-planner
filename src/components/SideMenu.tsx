@@ -1,7 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Heart, Map, CalendarDays, Settings, Users } from 'lucide-react';
+import { X, Heart, Map, CalendarDays, Settings, Users, LogOut } from 'lucide-react';
 import type { DashboardTab, DetailView } from '@/types/honeymoon';
 import moonLogo from '@/assets/moon-logo.png';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface SideMenuProps {
   isOpen: boolean;
