@@ -26,6 +26,13 @@ export const parseDateString = (dateStr: string, fallbackYear?: number): Date | 
   return null;
 };
 
+export const getFormattedDate = (dateStr: string): string => {
+  const tripDate = parseDateString(dateStr);
+  if (!tripDate) return dateStr;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[tripDate.getMonth()]} ${tripDate.getDate()}, ${tripDate.getFullYear()}`;
+};
+
 export const getDaysUntilTrip = (dateStr: string): string => {
   const tripDate = parseDateString(dateStr);
   if (tripDate) {

@@ -1,7 +1,7 @@
 import { Menu } from 'lucide-react';
 import type { TripData, DashboardTab } from '@/types/honeymoon';
 import { motion } from 'framer-motion';
-import { getDaysUntilTrip } from '@/lib/dateUtils';
+import { getDaysUntilTrip, getFormattedDate } from '@/lib/dateUtils';
 import moonLogo from '@/assets/moon-logo.png';
 
 interface DashboardHeaderProps {
@@ -19,6 +19,7 @@ const tabs: { key: DashboardTab; label: string }[] = [
 
 const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: DashboardHeaderProps) => {
   const countdown = getDaysUntilTrip(tripData.date);
+  const formattedDate = getFormattedDate(tripData.date);
 
   const initials = (() => {
     const parts = tripData.names.split('&').map((s) => s.trim());
@@ -26,6 +27,8 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
       ? `${parts[0].charAt(0).toUpperCase()} ${parts[1].charAt(0).toUpperCase()}`
       : tripData.names.substring(0, 2).toUpperCase();
   })();
+
+  const dateLine = [formattedDate, countdown].filter(Boolean).join(' · ');
 
   return (
     <div className="bg-background z-10">
@@ -44,15 +47,12 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           </div>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-[7px] sm:text-[9px] uppercase tracking-[0.18em] text-foreground/45 leading-tight truncate max-w-[100px] sm:max-w-none ml-auto">
+          <p className="font-script text-lg sm:text-xl lowercase leading-tight truncate max-w-[140px] sm:max-w-none ml-auto" style={{ color: 'hsl(0 20% 32%)' }}>
             {tripData.destination}
           </p>
-          <p className="text-[7px] sm:text-[9px] uppercase tracking-[0.18em] text-foreground/35 leading-tight">
-            {tripData.date}
-          </p>
-          {countdown && (
-            <p className="text-[9px] sm:text-[11px] font-medium text-primary-foreground mt-0.5">
-              {countdown}
+          {dateLine && (
+            <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.14em] leading-tight mt-0.5" style={{ color: 'hsl(10 8% 28%)' }}>
+              {dateLine}
             </p>
           )}
         </div>
