@@ -42,6 +42,12 @@ export interface TransportItem {
   confirmation: string;
   time: string;
   cost: number;
+  departureLocation?: string;
+  departureLat?: number;
+  departureLng?: number;
+  arrivalLocation?: string;
+  arrivalLat?: number;
+  arrivalLng?: number;
   location?: string;
   lat?: number;
   lng?: number;
