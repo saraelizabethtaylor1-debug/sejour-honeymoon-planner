@@ -107,7 +107,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               whileHover={{ scale: 1.02, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.12)', transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="flex flex-col items-center justify-end gap-2.5 w-full min-w-[140px] sm:min-w-[220px] pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[200px] md:h-[clamp(180px,28vh,280px)]"
+              className="flex flex-col items-center justify-end gap-2.5 w-full pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(120px,22vh,180px)] md:h-[clamp(200px,35vh,320px)]"
               style={{
                 boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
