@@ -187,7 +187,7 @@ interface SortableActivityProps {
   onDelete: () => void;
 }
 
-const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage }: SortableActivityProps) => {
+const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage, onDelete }: SortableActivityProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : undefined, opacity: isDragging ? 0.5 : 1 };
   const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
