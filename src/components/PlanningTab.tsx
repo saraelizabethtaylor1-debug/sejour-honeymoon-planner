@@ -86,7 +86,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
             happily ever after
           </span>
           <span
-            className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-[2.4rem] text-foreground/50 ml-2 inline"
+            className="font-serif text-xl sm:text-2xl md:text-[1.6rem] lg:text-[2.4rem] text-foreground/50 ml-2 inline"
             style={{ letterSpacing: '0.08em', fontWeight: 300 }}
           >
             starts here.
