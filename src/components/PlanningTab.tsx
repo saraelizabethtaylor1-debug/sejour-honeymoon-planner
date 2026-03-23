@@ -42,9 +42,9 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-6 md:gap-8 lg:gap-16 h-full justify-center">
+    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-6 md:gap-8 lg:gap-16 h-full pt-2 md:pt-4">
       {/* Arched Cover Image or Camera Placeholder */}
-      <div className="flex-shrink-0 w-full max-w-[260px] sm:max-w-[35%] md:max-w-[30%] lg:max-w-[320px]">
+      <div className="flex-shrink-0 w-full max-w-[280px] sm:max-w-[40%] md:max-w-[38%] lg:max-w-[400px]">
         <input
           ref={fileInputRef}
           type="file"
@@ -98,7 +98,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3 md:gap-5 w-full"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3 md:gap-4 w-full max-w-[480px] md:max-w-none"
         >
           {archCards.map((card) => (
             <motion.button
