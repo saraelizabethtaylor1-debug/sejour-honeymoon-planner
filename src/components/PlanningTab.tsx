@@ -42,9 +42,9 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="planning-layout flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-6 lg:gap-10" style={{ marginTop: '16px' }}>
+    <div className="planning-layout flex flex-col lg:flex-row items-center lg:items-end gap-6 lg:gap-10" style={{ marginTop: '24px' }}>
       {/* Arched Cover Image or Camera Placeholder */}
-      <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] md:min-w-[300px] md:max-w-[300px] lg:min-w-[420px] lg:max-w-[440px]">
+      <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] lg:min-w-[420px] lg:max-w-[440px]">
         <input
           ref={fileInputRef}
           type="file"
@@ -53,7 +53,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           onChange={handleImageUpload}
         />
         <div
-          className="w-full h-[280px] md:h-[clamp(300px,60vh,480px)] lg:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
+          className="w-full h-[280px] lg:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
           style={{
             boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
           }}
@@ -74,19 +74,19 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
       </div>
 
       {/* Right Content — aligned to bottom of arch */}
-      <div className="flex-1 flex flex-col justify-end items-center md:items-start gap-4 sm:gap-5 md:gap-4">
+      <div className="flex-1 flex flex-col justify-end items-center lg:items-start gap-4 sm:gap-5 lg:gap-4">
         {/* Headline */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="text-center md:text-left max-w-full leading-[1.1] whitespace-nowrap"
+          className="text-center lg:text-left max-w-full leading-[1.1] whitespace-nowrap"
         >
-          <span className="font-script text-3xl sm:text-4xl md:text-[2.4rem] lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
+          <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
             happily ever after
           </span>
           <span
-            className="font-serif text-xl sm:text-2xl md:text-[1.6rem] lg:text-[2.4rem] text-foreground/50 ml-2 inline"
+            className="font-serif text-xl sm:text-2xl lg:text-[2.4rem] text-foreground/50 ml-2 inline"
             style={{ letterSpacing: '0.08em', fontWeight: 300 }}
           >
             starts here.
@@ -98,7 +98,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2 lg:gap-3 w-full max-w-[480px] md:max-w-none"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-2 lg:gap-3 w-full max-w-[480px] lg:max-w-none"
         >
           {archCards.map((card) => (
             <motion.button
@@ -107,7 +107,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               whileHover={{ scale: 1.02, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.12)', transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="planning-card flex flex-col items-center justify-end gap-2.5 pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(140px,28vh,220px)] md:h-[220px] lg:h-[clamp(240px,42vh,380px)] w-full md:w-[180px] md:max-w-[180px] lg:w-[260px] lg:max-w-[260px]"
+              className="planning-card flex flex-col items-center justify-end gap-2.5 pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(140px,28vh,220px)] lg:h-[clamp(240px,42vh,380px)] w-full lg:w-[265px] lg:max-w-[265px]"
               style={{
                 boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
