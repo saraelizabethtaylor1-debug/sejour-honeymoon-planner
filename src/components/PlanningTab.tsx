@@ -98,7 +98,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3 md:gap-4 w-full max-w-[480px] md:max-w-none"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3 md:gap-[12px] w-full max-w-[480px] md:max-w-none"
         >
           {archCards.map((card) => (
             <motion.button
@@ -107,7 +107,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               whileHover={{ scale: 1.02, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.12)', transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="flex flex-col items-center justify-end gap-2.5 pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(140px,28vh,220px)] md:h-[clamp(240px,42vh,380px)] w-full md:max-w-[140px]"
+              className="flex flex-col items-center justify-end gap-2.5 pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(140px,28vh,220px)] md:h-[clamp(240px,42vh,380px)] w-full md:w-[180px] md:max-w-[180px]"
               style={{
                 boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
