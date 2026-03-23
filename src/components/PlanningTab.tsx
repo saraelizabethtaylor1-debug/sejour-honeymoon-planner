@@ -42,7 +42,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-6 md:gap-8 lg:gap-16 h-full">
+    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-6 md:gap-8 lg:gap-16 h-full justify-center">
       {/* Arched Cover Image or Camera Placeholder */}
       <div className="flex-shrink-0 w-full max-w-[260px] sm:max-w-[35%] md:max-w-[30%] lg:max-w-[320px]">
         <input
@@ -53,7 +53,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           onChange={handleImageUpload}
         />
         <div
-          className="w-full aspect-[3/4] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
+          className="w-full h-[clamp(280px,60vh,500px)] sm:h-[clamp(300px,65vh,520px)] md:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
           style={{
             boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
           }}
@@ -107,7 +107,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               whileHover={{ scale: 1.02, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.12)', transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="flex flex-col items-center justify-end gap-2.5 w-full pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(120px,22vh,180px)] md:h-[clamp(200px,35vh,320px)]"
+              className="flex flex-col items-center justify-end gap-2.5 w-full pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(140px,28vh,220px)] md:h-[clamp(240px,42vh,380px)]"
               style={{
                 boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
