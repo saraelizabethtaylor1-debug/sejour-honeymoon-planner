@@ -42,7 +42,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="planning-layout flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 lg:gap-16 md:h-full" style={{ marginTop: '16px' }}>
+    <div className="planning-layout flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 lg:gap-12" style={{ marginTop: '16px' }}>
       {/* Arched Cover Image or Camera Placeholder */}
       <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] md:min-w-[260px] md:max-w-[260px] lg:min-w-[380px] lg:max-w-[400px]">
         <input
