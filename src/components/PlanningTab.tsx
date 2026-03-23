@@ -74,7 +74,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
       </div>
 
       {/* Right Content — aligned to bottom of arch */}
-      <div className="flex-1 flex flex-col justify-end items-center md:items-start gap-4 sm:gap-5 md:gap-4">
+      <div className="flex-1 flex flex-col justify-end items-center lg:items-start gap-4 sm:gap-5 lg:gap-4">
         {/* Headline */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
