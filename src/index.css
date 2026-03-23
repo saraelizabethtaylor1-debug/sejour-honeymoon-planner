@@ -163,12 +163,16 @@
     align-items: center;
   }
   .planning-arch-photo {
-    max-width: 280px !important;
+    max-width: 360px !important;
     min-width: unset !important;
   }
   .planning-card {
     width: auto !important;
     max-width: none !important;
-    height: 140px !important;
+    height: 150px !important;
+  }
+  .planning-layout .grid {
+    max-width: 600px;
+    width: 100%;
   }
 }
