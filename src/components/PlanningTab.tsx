@@ -42,9 +42,9 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 sm:gap-6 md:gap-8 lg:gap-16 h-full" style={{ paddingTop: '16px' }}>
+    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 lg:gap-16 md:h-full" style={{ marginTop: '16px' }}>
       {/* Arched Cover Image or Camera Placeholder */}
-      <div className="flex-shrink-0 w-full max-w-[280px] sm:max-w-[40%] md:min-w-[380px] md:max-w-[38%] lg:max-w-[400px]">
+      <div className="flex-shrink-0 w-full max-w-[280px] md:min-w-[260px] md:max-w-[260px] lg:min-w-[380px] lg:max-w-[400px]">
         <input
           ref={fileInputRef}
           type="file"
@@ -53,7 +53,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           onChange={handleImageUpload}
         />
         <div
-          className="w-full h-[clamp(280px,60vh,500px)] sm:h-[clamp(300px,65vh,520px)] md:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
+          className="w-full h-[280px] md:h-[clamp(300px,60vh,480px)] lg:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
           style={{
             boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
           }}
@@ -82,11 +82,11 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="text-center md:text-left max-w-full leading-[1.1] whitespace-nowrap"
         >
-          <span className="font-script text-3xl sm:text-4xl md:text-5xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
+          <span className="font-script text-3xl sm:text-4xl md:text-[2.4rem] lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
             happily ever after
           </span>
           <span
-            className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-[2.4rem] text-foreground/50 ml-2 inline"
+            className="font-serif text-xl sm:text-2xl md:text-[1.6rem] lg:text-[2.4rem] text-foreground/50 ml-2 inline"
             style={{ letterSpacing: '0.08em', fontWeight: 300 }}
           >
             starts here.
@@ -107,7 +107,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               whileHover={{ scale: 1.02, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.12)', transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onOpenDetail(card.view)}
-              className="flex flex-col items-center justify-end gap-2.5 pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(140px,28vh,220px)] md:h-[clamp(240px,42vh,380px)] w-full md:w-[180px] md:max-w-[180px]"
+              className="flex flex-col items-center justify-end gap-2.5 pb-4 bg-primary/60 rounded-xl transition-shadow duration-200 h-[160px] sm:h-[clamp(140px,28vh,220px)] md:h-[220px] lg:h-[clamp(240px,42vh,380px)] w-full md:w-[160px] md:max-w-[160px] lg:w-[220px] lg:max-w-[220px]"
               style={{
                 boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)',
               }}
