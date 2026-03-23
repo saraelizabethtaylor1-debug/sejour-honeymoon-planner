@@ -42,7 +42,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="planning-layout flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 lg:gap-12" style={{ marginTop: '16px' }}>
+    <div className="planning-layout flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-6 lg:gap-10" style={{ marginTop: '16px' }}>
       {/* Arched Cover Image or Camera Placeholder */}
       <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] md:min-w-[260px] md:max-w-[260px] lg:min-w-[380px] lg:max-w-[400px]">
         <input
@@ -74,7 +74,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
       </div>
 
       {/* Right Content — aligned to bottom of arch */}
-      <div className="flex-1 flex flex-col items-center md:items-start gap-4 sm:gap-5 md:gap-6">
+      <div className="flex-1 flex flex-col justify-end items-center md:items-start gap-4 sm:gap-5 md:gap-4">
         {/* Headline */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -98,7 +98,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-2.5 md:gap-3 w-full max-w-[480px] md:max-w-none"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2 lg:gap-3 w-full max-w-[480px] md:max-w-none"
         >
           {archCards.map((card) => (
             <motion.button
