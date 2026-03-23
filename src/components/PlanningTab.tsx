@@ -44,7 +44,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   return (
     <div className="planning-layout flex flex-col lg:flex-row items-center lg:items-end gap-6 lg:gap-10" style={{ marginTop: '24px' }}>
       {/* Arched Cover Image or Camera Placeholder */}
-      <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] md:min-w-[300px] md:max-w-[300px] lg:min-w-[420px] lg:max-w-[440px]">
+      <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] lg:min-w-[420px] lg:max-w-[440px]">
         <input
           ref={fileInputRef}
           type="file"
