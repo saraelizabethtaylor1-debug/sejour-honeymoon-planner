@@ -53,7 +53,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           onChange={handleImageUpload}
         />
         <div
-          className="w-full aspect-[3/4] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
+          className="w-full h-[clamp(280px,60vh,500px)] sm:h-[clamp(300px,65vh,520px)] md:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
           style={{
             boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
           }}
