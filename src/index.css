@@ -155,27 +155,39 @@
   }
 }
 
-/* Tablet-specific: stack like mobile but wider */
+/* Tablet-specific: stack like mobile but visibly larger */
 @media (min-width: 768px) and (max-width: 1023px) {
   .planning-layout {
     margin-top: 16px;
     flex-direction: column;
     align-items: center;
-    width: 75%;
+    width: min(92vw, 720px);
     margin-left: auto;
     margin-right: auto;
+    gap: 16px;
   }
+
   .planning-arch-photo {
-    max-width: 55% !important;
-    min-width: unset !important;
+    width: min(100%, 420px) !important;
+    max-width: min(100%, 420px) !important;
+    min-width: min(100%, 420px) !important;
   }
-  .planning-card {
-    width: auto !important;
-    max-width: none !important;
-    height: 150px !important;
+
+  .planning-arch-photo .arch-shape {
+    height: 360px !important;
+    max-height: none !important;
   }
+
   .planning-layout .grid {
-    max-width: 100%;
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .planning-card {
+    width: 100% !important;
+    max-width: none !important;
+    height: 180px !important;
   }
 }
