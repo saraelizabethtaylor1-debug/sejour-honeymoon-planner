@@ -98,7 +98,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2 lg:gap-3 w-full max-w-[480px] md:max-w-none"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-2 lg:gap-3 w-full max-w-[480px] lg:max-w-none"
         >
           {archCards.map((card) => (
             <motion.button
