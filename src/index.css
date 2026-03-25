@@ -179,17 +179,15 @@
   }
 
   .planning-layout .grid {
-    display: flex !important;
-    flex-wrap: nowrap !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     width: 100% !important;
     max-width: 100% !important;
     gap: 8px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
   }
 
   .planning-card {
-    flex: 0 0 auto !important;
-    height: 180px !important;
+    width: 100% !important;
+    height: 160px !important;
   }
 }
