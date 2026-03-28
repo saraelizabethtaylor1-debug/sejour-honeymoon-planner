@@ -39,7 +39,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
   return (
     <motion.div
       exit={{ y: -100, opacity: 0 }}
-      className="p-6 sm:p-8 pt-10 sm:pt-14 min-h-screen flex flex-col justify-between bg-subtle-gradient"
+      className="p-6 sm:p-8 pb-10 sm:pb-12 pt-10 sm:pt-14 min-h-screen flex flex-col justify-between bg-subtle-gradient"
     >
       <div className="space-y-10 sm:space-y-14">
         <header className="text-center">
