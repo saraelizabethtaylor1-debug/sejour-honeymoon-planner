@@ -44,12 +44,12 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
       <div className="space-y-10 sm:space-y-14">
         <header className="text-center">
           <h1 className="font-script text-5xl sm:text-6xl text-primary-foreground leading-none">honeymoon</h1>
-          <p className="text-label mt-4">The Planning Suite</p>
+          <p className="text-label mt-4 font-semibold">The Planning Suite</p>
         </header>
 
         <div className="space-y-6 sm:space-y-8">
           <div className="space-y-1.5">
-            <label className="text-label pl-1">Destination</label>
+            <label className="text-label pl-1 text-muted-foreground font-semibold">Destination</label>
             <input
               type="text"
               placeholder="Where are you going?"
@@ -60,7 +60,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
           </div>
           <div className="grid grid-cols-2 gap-6 sm:gap-8">
             <div className="space-y-1.5">
-              <label className="text-label pl-1">Date</label>
+              <label className="text-label pl-1 font-semibold">Date</label>
               <input
                 type="text"
                 placeholder="MM/DD/YYYY"
@@ -70,7 +70,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-label pl-1">Days</label>
+              <label className="text-label pl-1 font-semibold">Days</label>
               <input
                 type="text"
                 placeholder="How many?"
@@ -81,7 +81,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-label pl-1">Travelers</label>
+            <label className="text-label pl-1 font-semibold">Travelers</label>
             <input
               type="text"
               placeholder="Your names"
@@ -93,7 +93,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
 
           {/* Cover Photo */}
           <div className="space-y-1.5">
-            <label className="text-label pl-1">Trip inspiration cover photo</label>
+            <label className="text-label pl-1 font-semibold">Trip inspiration cover photo</label>
             <button
               onClick={() => fileRef.current?.click()}
               className="w-full flex items-center gap-3 border-b border-input py-3 text-foreground/40 hover:text-foreground/60 transition-colors"
@@ -124,7 +124,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
 
           {/* Clock Format */}
           <div className="space-y-1.5">
-            <label className="text-label pl-1">Clock Format</label>
+            <label className="text-label pl-1 font-semibold">Clock Format</label>
             <div className="flex items-center gap-4 py-3">
               <Clock size={18} strokeWidth={1.5} className="text-foreground/40" />
               <button
@@ -156,7 +156,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
         whileHover={{ scale: 0.98 }}
         whileTap={{ scale: 0.96 }}
         onClick={handleSubmit}
-        className="w-full py-5 bg-primary pill-shape font-script text-2xl text-primary-foreground shadow-arch mt-10 transition-shadow hover:shadow-lift"
+        className="w-full py-5 bg-primary pill-shape font-script text-4xl text-primary-foreground shadow-arch mt-10 transition-shadow hover:shadow-lift"
       >
         plan your adventure
       </motion.button>
