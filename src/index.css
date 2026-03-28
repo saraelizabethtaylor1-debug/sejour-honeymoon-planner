@@ -176,8 +176,8 @@
   }
 
   .planning-arch-photo .arch-shape {
-    height: 60vh !important;
-    max-height: 60vh !important;
+    height: 55vh !important;
+    max-height: 55vh !important;
   }
 
   .planning-layout > .flex-1 {
@@ -195,7 +195,7 @@
 
   .planning-card {
     width: 160px !important;
-    height: 160px !important;
+    height: 180px !important;
   }
 
   .planning-layout .font-script {
