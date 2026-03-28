@@ -166,6 +166,7 @@
     margin-right: auto;
     gap: 24px;
     overflow: visible;
+    min-height: calc(100vh - 160px);
   }
 
   .planning-arch-photo {
@@ -182,6 +183,10 @@
 
   .planning-layout > .flex-1 {
     align-items: flex-start !important;
+    overflow: visible !important;
+    padding-right: 24px;
+    justify-content: space-between !important;
+    height: 55vh !important;
   }
 
   .planning-layout .grid {
