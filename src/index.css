@@ -160,24 +160,28 @@
   .planning-layout {
     margin-top: 16px;
     flex-direction: row !important;
-    align-items: flex-end !important;
-    width: min(92vw, 720px);
+    align-items: flex-start !important;
+    width: min(95vw, 780px);
     margin-left: auto;
     margin-right: auto;
-    gap: 16px;
-    overflow: hidden;
+    gap: 24px;
+    overflow: visible;
   }
 
   .planning-arch-photo {
-    width: 280px !important;
-    max-width: 280px !important;
-    min-width: 280px !important;
+    width: 420px !important;
+    max-width: 420px !important;
+    min-width: 420px !important;
     flex-shrink: 0 !important;
   }
 
   .planning-arch-photo .arch-shape {
-    height: 70vh !important;
-    max-height: 70vh !important;
+    height: 60vh !important;
+    max-height: 60vh !important;
+  }
+
+  .planning-layout > .flex-1 {
+    align-items: flex-start !important;
   }
 
   .planning-layout .grid {
@@ -195,7 +199,7 @@
   }
 
   .planning-layout .font-script {
-    font-size: 1.4rem !important;
+    font-size: 2rem !important;
   }
 
   .planning-layout .font-serif {
