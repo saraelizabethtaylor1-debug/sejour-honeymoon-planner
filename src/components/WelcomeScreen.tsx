@@ -41,7 +41,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
       exit={{ y: -100, opacity: 0 }}
       className="p-6 sm:p-8 pt-10 sm:pt-14 min-h-screen sm:h-screen sm:min-h-0 sm:overflow-hidden flex flex-col justify-between bg-subtle-gradient"
     >
-      <div className="space-y-10 sm:space-y-14">
+      <div className="space-y-10 sm:space-y-14 my-0">
         <header className="text-center">
           <h1 className="font-script text-5xl sm:text-6xl text-primary-foreground leading-none">honeymoon</h1>
           <p className="text-label mt-4 font-semibold">The Planning Suite</p>
@@ -156,7 +156,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
         whileHover={{ scale: 0.98 }}
         whileTap={{ scale: 0.96 }}
         onClick={handleSubmit}
-        className="w-full py-5 bg-primary pill-shape font-script text-4xl text-primary-foreground shadow-arch mt-10 transition-shadow hover:shadow-lift"
+        className="w-full py-5 bg-primary pill-shape font-script text-4xl text-primary-foreground shadow-arch mt-10 transition-shadow hover:shadow-lift px-0 my-[20px]"
       >
         plan your adventure
       </motion.button>
