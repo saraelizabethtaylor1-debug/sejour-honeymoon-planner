@@ -181,13 +181,15 @@
   .planning-layout .grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 140% !important;
+    max-width: 140% !important;
     gap: 8px !important;
+    margin-left: -20% !important;
   }
 
   .planning-card {
     width: 100% !important;
     height: 160px !important;
+    padding-bottom: 2.5rem !important;
   }
 }
