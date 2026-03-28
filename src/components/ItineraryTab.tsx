@@ -602,7 +602,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
     <div className="space-y-4 pb-20">
       {displayDays.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="font-serif text-lg text-foreground/50 mb-2">No itinerary yet</p>
+          <p className="font-serif text-lg mb-2 text-primary-foreground">No itinerary yet</p>
           <p className="text-sm text-muted-foreground">Enter your trip dates on the welcome screen to generate your itinerary days.</p>
         </div>
       ) : (
