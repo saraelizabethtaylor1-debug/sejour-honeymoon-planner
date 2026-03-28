@@ -42,9 +42,9 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="planning-layout flex flex-col lg:flex-row items-center lg:items-end gap-6 lg:gap-10" style={{ marginTop: '24px' }}>
+    <div className="planning-layout flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 lg:gap-10" style={{ marginTop: '24px' }}>
       {/* Arched Cover Image or Camera Placeholder */}
-      <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] lg:min-w-[420px] lg:max-w-[440px]">
+      <div className="planning-arch-photo flex-shrink-0 w-full max-w-[280px] md:min-w-[340px] md:max-w-[360px] lg:min-w-[420px] lg:max-w-[440px]">
         <input
           ref={fileInputRef}
           type="file"
@@ -53,7 +53,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           onChange={handleImageUpload}
         />
         <div
-          className="w-full h-[280px] lg:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
+          className="w-full h-[280px] md:h-[clamp(320px,55vh,500px)] lg:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
           style={{
             boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
           }}
@@ -74,7 +74,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
       </div>
 
       {/* Right Content — aligned to bottom of arch */}
-      <div className="flex-1 flex flex-col justify-end items-center lg:items-start gap-4 sm:gap-5 lg:gap-4">
+      <div className="flex-1 flex flex-col justify-end items-center md:items-start gap-4 sm:gap-5 lg:gap-4 pr-4 md:pr-6 overflow-visible">
         {/* Headline */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
