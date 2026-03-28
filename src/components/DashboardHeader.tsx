@@ -63,7 +63,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`pb-3.5 text-[10px] sm:text-[11px] uppercase tracking-[0.28em] relative transition-colors duration-200 ${
+            className={`pb-3.5 text-[10px] sm:text-[11px] uppercase tracking-[0.28em] relative transition-colors duration-200 text-muted-foreground ${
               tab === t.key ? 'text-foreground/80' : 'text-foreground/20'
             }`}
           >
