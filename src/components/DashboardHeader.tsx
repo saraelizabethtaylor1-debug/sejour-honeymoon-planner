@@ -54,7 +54,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
             <button
               key={t.key}
               onClick={() => onTabChange(t.key)}
-              className={`text-base uppercase tracking-[0.28em] relative transition-colors duration-200 text-sidebar-foreground py-5 ${
+              className={`text-base uppercase tracking-[0.28em] relative transition-colors duration-200 text-sidebar-foreground py-0 my-0 ${
                 tab === t.key ? 'text-foreground/80' : 'text-foreground/20'
               }`}
             >
@@ -72,7 +72,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
 
         {/* Right: destination + date */}
         <div className="text-right shrink-0 ml-auto">
-          <p className="font-script sm:text-3xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[2px]" style={{ color: 'hsl(0 20% 32%)' }}>
+          <p className="font-script sm:text-3xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[4px] text-primary-foreground">
             {tripData.destination}
           </p>
           {dateLine && (
