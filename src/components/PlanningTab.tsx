@@ -82,11 +82,11 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="text-center lg:text-left max-w-full leading-[1.1] whitespace-nowrap"
         >
-          <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem] my-0 py-[15px]" style={{ color: 'hsl(0 20% 32%)' }}>
+          <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
             happily ever after
           </span>
           <span
-            className="font-serif text-xl sm:text-2xl lg:text-[2.4rem] text-foreground/50 ml-2 inline py-[15px] mx-px"
+            className="font-serif text-xl sm:text-2xl lg:text-[2.4rem] text-foreground/50 ml-2 inline"
             style={{ letterSpacing: '0.08em', fontWeight: 300 }}
           >
             starts here.
