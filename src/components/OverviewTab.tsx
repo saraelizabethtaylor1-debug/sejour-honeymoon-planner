@@ -61,7 +61,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
   };
 
   return (
-    <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 flex flex-col h-full">
+    <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 flex flex-col h-full xl:px-[42px]">
       {/* Grid: Cards + Map — fill available height */}
       <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[220px_1fr] xl:grid-cols-[240px_1fr] gap-4 md:gap-5 lg:gap-6 flex-1 min-h-0">
         {/* Left Column — Cards stretch to match map */}
@@ -72,10 +72,10 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           className="flex flex-col justify-between gap-5 md:gap-0"
         >
           {groups.map((group) => (
-            <div key={group.heading} className="flex flex-col gap-2">
+            <div key={group.heading} className="flex flex-col gap-2 text-sidebar-foreground">
               <div>
-                <span className="text-[10px] tracking-[0.18em] uppercase font-medium text-foreground/40">{group.heading}</span>
-                <hr className="border-foreground/10 mt-1" />
+                <span className="tracking-[0.18em] uppercase font-medium text-secondary-foreground text-xs">{group.heading}</span>
+                <hr className="mt-1 border-secondary" />
               </div>
               {group.cards.map((itm) => (
                 <motion.button
@@ -84,7 +84,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   whileHover={{ y: -1, backgroundColor: 'hsl(0 30% 86% / 0.55)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleCardClick(itm)}
-                  className={`w-full flex items-center gap-4 px-5 py-5 md:py-[22px] border rounded-2xl shadow-[0_2px_14px_-4px_hsl(0_16%_43%/0.08)] transition-all duration-200 ${
+                  className={`w-full flex items-center gap-4 px-5 py-[42px] my-[3px] border rounded-2xl shadow-[0_2px_14px_-4px_hsl(0_16%_43%/0.08)] transition-all duration-200 ${
                     activeFilter === itm.filterKey && itm.filterKey
                       ? 'bg-primary/75 border-primary-foreground/12'
                       : 'bg-primary/55 border-foreground/[0.05]'
