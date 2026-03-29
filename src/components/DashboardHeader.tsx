@@ -32,16 +32,16 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
 
   return (
     <div className="bg-background z-10">
-      <header className="px-4 sm:px-6 lg:px-8 flex items-end gap-4 border-b border-foreground/5">
+      <header className="px-4 sm:px-6 lg:px-8 flex items-end h-[80px] pb-3 border-b border-foreground/5">
         {/* Left: hamburger + logo */}
-        <div className="flex items-end gap-1.5 sm:gap-2 shrink-0 self-end pb-2">
-          <button onClick={onMenuToggle} className="shrink-0">
+        <div className="flex items-end gap-3 shrink-0 self-end">
+          <button onClick={onMenuToggle} className="shrink-0 mb-0.5">
             <Menu className="text-foreground/70" size={20} strokeWidth={1.8} />
           </button>
-          <div className="relative w-[102px] h-[102px] sm:w-[114px] sm:h-[114px] shrink-0">
-            <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
-            <div className="absolute inset-0 flex items-center justify-center my-[20px] py-0">
-              <span className="font-serif text-base sm:text-lg tracking-wider text-foreground/70 -translate-x-[1px]">
+          <div className="relative shrink-0" style={{ width: 56, height: 56 }}>
+            <img src={moonLogo} alt="Logo" className="w-full h-full object-contain max-h-[56px]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="font-serif text-sm sm:text-base tracking-wider text-foreground/70 -translate-x-[1px]">
                 {initials}
               </span>
             </div>
