@@ -32,8 +32,9 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
 
   return (
     <div className="bg-background z-10">
-      <header className="px-4 sm:px-6 lg:px-8 pt-1.5 sm:pt-3 pb-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+      <header className="px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 border-b border-foreground/5">
+        {/* Left: hamburger + logo */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button onClick={onMenuToggle} className="shrink-0">
             <Menu className="text-foreground/70" size={20} strokeWidth={1.8} />
           </button>
@@ -46,6 +47,30 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
             </div>
           </div>
         </div>
+
+        {/* Center: navigation tabs */}
+        <div className="flex items-center gap-6 sm:gap-10 md:gap-12">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => onTabChange(t.key)}
+              className={`text-base uppercase tracking-[0.28em] relative transition-colors duration-200 text-sidebar-foreground py-5 ${
+                tab === t.key ? 'text-foreground/80' : 'text-foreground/20'
+              }`}
+            >
+              {t.label}
+              {tab === t.key && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-[0.5px] bg-foreground/15"
+                  transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Right: destination + date */}
         <div className="text-right shrink-0">
           <p className="font-script sm:text-3xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[2px]" style={{ color: 'hsl(0 20% 32%)' }}>
             {tripData.destination}
@@ -57,27 +82,6 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           )}
         </div>
       </header>
-
-      <div className="flex px-4 sm:px-6 lg:px-8 gap-6 sm:gap-10 md:gap-12 border-b border-foreground/5">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => onTabChange(t.key)}
-            className={`pb-3.5 text-base uppercase tracking-[0.28em] relative transition-colors duration-200 text-sidebar-foreground ${
-              tab === t.key ? 'text-foreground/80' : 'text-foreground/20'
-            }`}
-          >
-            {t.label}
-            {tab === t.key && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-[0.5px] bg-foreground/15"
-                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-              />
-            )}
-          </button>
-        ))}
-      </div>
     </div>
   );
 };
