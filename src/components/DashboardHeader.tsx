@@ -71,7 +71,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         </div>
 
         {/* Right: destination + date */}
-        <div className="text-right shrink-0">
+        <div className="text-right shrink-0 ml-auto">
           <p className="font-script sm:text-3xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[2px]" style={{ color: 'hsl(0 20% 32%)' }}>
             {tripData.destination}
           </p>
