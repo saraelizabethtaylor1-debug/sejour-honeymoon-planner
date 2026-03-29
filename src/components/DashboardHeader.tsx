@@ -38,10 +38,10 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           <button onClick={onMenuToggle} className="shrink-0 mb-0.5">
             <Menu className="text-foreground/70" size={20} strokeWidth={1.8} />
           </button>
-          <div className="relative shrink-0 overflow-visible" style={{ width: 168, height: 168, marginBottom: -112 }}>
+          <div className="relative shrink-0 overflow-visible" style={{ width: 110, height: 110, marginBottom: -54 }}>
             <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-2xl sm:text-3xl tracking-wider text-foreground/70 -translate-x-[1px]">
+              <span className="font-serif text-lg sm:text-xl tracking-wider text-foreground/70 -translate-x-[1px]">
                 {initials}
               </span>
             </div>
