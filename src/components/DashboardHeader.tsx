@@ -34,7 +34,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
     <div className="bg-background z-10">
       <header className="px-4 sm:px-6 lg:px-8 flex items-end gap-4 border-b border-foreground/5">
         {/* Left: hamburger + logo */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pt-4">
           <button onClick={onMenuToggle} className="shrink-0">
             <Menu className="text-foreground/70" size={20} strokeWidth={1.8} />
           </button>
@@ -72,7 +72,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
 
         {/* Right: destination + date */}
         <div className="text-right shrink-0 ml-auto">
-          <p className="font-script sm:text-3xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[4px] text-primary-foreground">
+          <p className="font-script sm:text-5xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[4px] text-primary-foreground">
             {tripData.destination}
           </p>
           {dateLine && (
