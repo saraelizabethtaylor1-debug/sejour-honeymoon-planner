@@ -74,8 +74,8 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           {groups.map((group) => (
             <div key={group.heading} className="flex flex-col gap-2 text-sidebar-foreground">
               <div>
-                <span className="tracking-[0.18em] uppercase font-medium text-secondary-foreground text-xs">{group.heading}</span>
-                <hr className="mt-1 border-secondary" />
+                <span className="tracking-[0.18em] uppercase text-sidebar-foreground font-normal text-xs">{group.heading}</span>
+                <hr className="mt-1 font-medium border-ring" />
               </div>
               {group.cards.map((itm) => (
                 <motion.button

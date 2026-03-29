@@ -47,11 +47,11 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           </div>
         </div>
         <div className="text-right shrink-0">
-          <p className="font-script text-2xl sm:text-3xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto" style={{ color: 'hsl(0 20% 32%)' }}>
+          <p className="font-script sm:text-3xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[2px]" style={{ color: 'hsl(0 20% 32%)' }}>
             {tripData.destination}
           </p>
           {dateLine && (
-            <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.14em] leading-tight mt-0.5" style={{ color: 'hsl(10 8% 28%)' }}>
+            <p className="text-[8px] uppercase tracking-[0.14em] leading-tight mt-0.5 sm:text-xs" style={{ color: 'hsl(10 8% 28%)' }}>
               {dateLine}
             </p>
           )}
@@ -63,7 +63,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`pb-3.5 text-base uppercase tracking-[0.28em] relative transition-colors duration-200 text-muted-foreground ${
+            className={`pb-3.5 text-base uppercase tracking-[0.28em] relative transition-colors duration-200 text-sidebar-foreground ${
               tab === t.key ? 'text-foreground/80' : 'text-foreground/20'
             }`}
           >
