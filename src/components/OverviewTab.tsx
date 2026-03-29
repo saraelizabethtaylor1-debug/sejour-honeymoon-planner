@@ -15,11 +15,28 @@ interface OverviewTabProps {
 
 type FilterCategory = 'accommodations' | 'activities' | 'reservations' | 'transportation' | null;
 
-const items: { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory }[] = [
-  { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: 'transportation' as FilterCategory },
-  { label: 'Accommodations', view: 'accommodations', icon: Bed, filterKey: 'accommodations' },
-  { label: 'Activities', view: 'activities', icon: Sparkles, filterKey: 'activities' },
-  { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
+type CardItem = { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory };
+
+const groups: { heading: string; cards: CardItem[] }[] = [
+  {
+    heading: 'Planning',
+    cards: [
+      { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: 'transportation' },
+      { label: 'Accommodations', view: 'accommodations', icon: Bed, filterKey: 'accommodations' },
+    ],
+  },
+  {
+    heading: 'Experience',
+    cards: [
+      { label: 'Activities', view: 'activities', icon: Sparkles, filterKey: 'activities' },
+    ],
+  },
+  {
+    heading: 'Logistics',
+    cards: [
+      { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
+    ],
+  },
 ];
 
 const containerVariants = {
