@@ -49,7 +49,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         </div>
 
         {/* Center: navigation tabs */}
-        <div className="flex items-center gap-6 sm:gap-10 md:gap-12 self-end pb-[14px]">
+        <div className="flex items-center gap-6 sm:gap-10 md:gap-12 self-end pb-[14px] pt-10">
           {tabs.map((t) => (
             <button
               key={t.key}
@@ -71,7 +71,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         </div>
 
         {/* Right: destination + date */}
-        <div className="text-right shrink-0 ml-auto self-end pb-[14px]">
+        <div className="text-right shrink-0 ml-auto self-end pb-[14px] pt-10">
           <p className="font-script sm:text-5xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[4px] text-primary-foreground">
             {tripData.destination}
           </p>
