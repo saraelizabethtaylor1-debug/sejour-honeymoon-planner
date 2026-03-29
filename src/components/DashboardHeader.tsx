@@ -41,7 +41,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           <div className="relative w-[102px] h-[102px] sm:w-[114px] sm:h-[114px] shrink-0">
             <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-xs sm:text-sm tracking-wider text-foreground/70 -translate-x-[1px]">
+              <span className="font-serif text-base sm:text-lg tracking-wider text-foreground/70 -translate-x-[1px]">
                 {initials}
               </span>
             </div>
