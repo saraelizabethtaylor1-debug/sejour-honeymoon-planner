@@ -1,8 +1,8 @@
-import { Menu } from 'lucide-react';
-import type { TripData, DashboardTab } from '@/types/honeymoon';
-import { motion } from 'framer-motion';
-import { getDaysUntilTrip, getFormattedDate } from '@/lib/dateUtils';
-import moonLogo from '@/assets/moon-logo.png';
+import { Menu } from "lucide-react";
+import type { TripData, DashboardTab } from "@/types/honeymoon";
+import { motion } from "framer-motion";
+import { getDaysUntilTrip, getFormattedDate } from "@/lib/dateUtils";
+import moonLogo from "@/assets/moon-logo.png";
 
 interface DashboardHeaderProps {
   tripData: TripData;
@@ -12,50 +12,40 @@ interface DashboardHeaderProps {
 }
 
 const tabs: { key: DashboardTab; label: string }[] = [
-  { key: 'planning', label: 'Planning' },
-  { key: 'overview', label: 'Trip Overview' },
-  { key: 'itinerary', label: 'Itinerary' },
+  { key: "planning", label: "Planning" },
+  { key: "overview", label: "Trip Overview" },
+  { key: "itinerary", label: "Itinerary" },
 ];
 
 const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: DashboardHeaderProps) => {
   const countdown = getDaysUntilTrip(tripData.date);
   const formattedDate = getFormattedDate(tripData.date);
-
-  const initials = (() => {
-    const parts = tripData.names.split('&').map((s) => s.trim());
-    return parts.length === 2
-      ? `${parts[0].charAt(0).toUpperCase()} ${parts[1].charAt(0).toUpperCase()}`
-      : tripData.names.substring(0, 2).toUpperCase();
-  })();
-
-  const dateLine = [formattedDate, countdown].filter(Boolean).join(' · ');
+  const dateLine = [formattedDate, countdown].filter(Boolean).join(" · ");
 
   return (
     <div className="bg-background z-10">
-      <header className="px-4 sm:px-6 lg:px-8 flex items-end h-[80px] pb-3 border-b border-foreground/5">
+      <header
+        className="px-4 sm:px-6 lg:px-8 border-b border-foreground/5"
+        style={{ display: "flex", alignItems: "flex-end", height: "96px", paddingBottom: "12px" }}
+      >
         {/* Left: hamburger + logo */}
-        <div className="flex items-end gap-3 shrink-0 self-end">
-          <button onClick={onMenuToggle} className="shrink-0 mb-0.5">
+        <div style={{ display: "flex", alignItems: "flex-end", gap: "12px", flexShrink: 0 }}>
+          <button onClick={onMenuToggle} style={{ marginBottom: "4px" }}>
             <Menu className="text-foreground/70" size={20} strokeWidth={1.8} />
           </button>
-          <div className="relative shrink-0 overflow-visible" style={{ width: 110, height: 110, marginBottom: -54 }}>
-            <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-lg sm:text-xl tracking-wider text-foreground/70 -translate-x-[1px]">
-                {initials}
-              </span>
-            </div>
+          <div style={{ position: "relative", width: 80, height: 80, marginBottom: -24, flexShrink: 0 }}>
+            <img src={moonLogo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
         </div>
 
         {/* Center: navigation tabs */}
-        <div className="flex items-center gap-6 sm:gap-10 md:gap-12 self-end pb-[14px] pt-10">
+        <div style={{ display: "flex", alignItems: "flex-end", gap: "48px", paddingBottom: "0px", marginLeft: "24px" }}>
           {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => onTabChange(t.key)}
-              className={`text-base uppercase tracking-[0.28em] relative transition-colors duration-200 text-sidebar-foreground py-0 my-0 ${
-                tab === t.key ? 'text-foreground/80' : 'text-foreground/20'
+              className={`text-base uppercase tracking-[0.28em] relative transition-colors duration-200 ${
+                tab === t.key ? "text-foreground/80" : "text-foreground/20"
               }`}
             >
               {t.label}
@@ -63,7 +53,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
                 <motion.div
                   layoutId="activeTab"
                   className="absolute bottom-0 left-0 right-0 h-[0.5px] bg-foreground/15"
-                  transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 35 }}
                 />
               )}
             </button>
@@ -71,12 +61,15 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
         </div>
 
         {/* Right: destination + date */}
-        <div className="text-right shrink-0 ml-auto self-end pb-[14px] pt-10">
-          <p className="font-script sm:text-5xl font-light lowercase leading-tight truncate max-w-[180px] sm:max-w-none ml-auto text-5xl py-[4px] text-primary-foreground">
+        <div style={{ textAlign: "right", flexShrink: 0, marginLeft: "auto", paddingBottom: "0px" }}>
+          <p className="font-script text-5xl font-light lowercase leading-tight text-primary-foreground">
             {tripData.destination}
           </p>
           {dateLine && (
-            <p className="text-[8px] uppercase tracking-[0.14em] leading-tight mt-0.5 sm:text-xs" style={{ color: 'hsl(10 8% 28%)' }}>
+            <p
+              className="text-[10px] uppercase tracking-[0.14em] leading-tight mt-0.5"
+              style={{ color: "hsl(10 8% 28%)" }}
+            >
               {dateLine}
             </p>
           )}
