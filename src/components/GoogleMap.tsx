@@ -275,7 +275,7 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, tran
   return (
     <div
       ref={mapRef}
-      className="w-full h-full rounded-2xl overflow-hidden"
+      className="w-full h-full rounded-2xl overflow-hidden bg-primary-foreground"
       style={{ minHeight: 200 }}
     />
   );
