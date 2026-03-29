@@ -40,7 +40,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
           </button>
           <div className="relative w-[102px] h-[102px] sm:w-[114px] sm:h-[114px] shrink-0">
             <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center my-[20px] py-0">
               <span className="font-serif text-base sm:text-lg tracking-wider text-foreground/70 -translate-x-[1px]">
                 {initials}
               </span>
