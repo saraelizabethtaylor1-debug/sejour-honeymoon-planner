@@ -62,7 +62,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: Dashboard
 
         {/* Right: destination + date */}
         <div style={{ textAlign: "right", flexShrink: 0, marginLeft: "auto", paddingBottom: "0px" }}>
-          <p className="font-script text-5xl font-light lowercase leading-tight text-primary-foreground">
+          <p className="font-script text-4xl font-light lowercase leading-tight text-primary-foreground">
             {tripData.destination}
           </p>
           {dateLine && (
