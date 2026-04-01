@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2 } from 'lucide-react';
+import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -72,6 +72,13 @@ interface TaggedActivity extends ItineraryActivity {
 
 let uidCounter = 0;
 const nextUid = () => `itact-${++uidCounter}-${Date.now()}`;
+
+const numberToWord = (n: number): string => {
+  const words = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+    'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty',
+    'Twenty-One', 'Twenty-Two', 'Twenty-Three', 'Twenty-Four', 'Twenty-Five', 'Twenty-Six', 'Twenty-Seven', 'Twenty-Eight', 'Twenty-Nine', 'Thirty', 'Thirty-One'];
+  return words[n - 1] || String(n);
+};
 
 const buildSyncedActivities = (
   dayDate: Date,
@@ -146,7 +153,7 @@ const buildSyncedActivities = (
         _synced: true,
         time: extractTime(act.time) || act.time,
         title: act.name,
-        location: '',
+        location: act.location || '',
         notes: [act.notes, act.confirmation ? `Confirmation: ${act.confirmation}` : ''].filter(Boolean).join(' · '),
         iconType: guessIconType(act.name),
       });
@@ -162,7 +169,7 @@ const buildSyncedActivities = (
         _synced: true,
         time: r.time || '',
         title: r.name,
-        location: '',
+        location: r.location || '',
         notes: [r.notes, r.confirmation ? `Confirmation: ${r.confirmation}` : ''].filter(Boolean).join(' · '),
         iconType: 'dining',
       });
@@ -178,7 +185,7 @@ const buildSyncedActivities = (
   return activities;
 };
 
-/* ── Sortable Activity Card ── */
+/* ── Sortable Activity Card (new layout) ── */
 interface SortableActivityProps {
   activity: TaggedActivity;
   id: string;
@@ -201,116 +208,145 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex gap-3 sm:gap-4 items-start relative group/item">
-      {/* Timeline node */}
-      <div className="flex-shrink-0 z-10">
-        {act.imageUrl ? (
-          <div className="relative w-[62px] h-[62px] rounded-full overflow-hidden ring-2 ring-background shadow-soft">
-            <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-            <button onClick={onRemoveImage} className="absolute -top-1 -right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
-              <X size={10} className="text-background" />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="w-[62px] h-[62px] rounded-full bg-card flex items-center justify-center border-2 border-primary/40 shadow-soft cursor-pointer hover:border-primary/60 transition-colors relative group/icon"
-          >
-            <IconComponent size={22} strokeWidth={1.2} className="text-primary-foreground group-hover/icon:opacity-0 transition-opacity" />
-            <ImagePlus size={18} strokeWidth={1.2} className="text-primary-foreground/50 absolute opacity-0 group-hover/icon:opacity-100 transition-opacity" />
-          </button>
-        )}
+    <div ref={setNodeRef} style={style} className="flex items-start relative group/item">
+      {/* Timeline dot */}
+      <div className="flex-shrink-0 w-8 flex justify-center pt-6 relative z-10">
+        <div className="w-2.5 h-2.5 rounded-full bg-primary/40 border-2 border-primary/60" />
       </div>
 
-      {/* Content card */}
-      <div className={`flex-1 min-w-0 bg-card rounded-l-2xl sm:rounded-2xl p-4 shadow-soft -mr-6 sm:mr-0 pr-12 sm:pr-12 relative ${act._synced ? 'border-l-2 border-primary/30' : ''}`}>
-        {/* Time */}
-        {editingField === 'time' ? (
-          <input
-            autoFocus
-            defaultValue={act.time}
-            onBlur={(e) => handleBlur('time', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleBlur('time', (e.target as HTMLInputElement).value)}
-            className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 bg-transparent border-b border-primary/40 focus:outline-none w-full"
-          />
-        ) : (
-          <button onClick={() => setEditingField('time')} className="text-left w-full">
-            <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 hover:text-foreground/70 transition-colors">
-              {act.time || 'Add time'}
-            </span>
-          </button>
-        )}
+      {/* Card */}
+      <div className="flex-1 bg-card rounded-2xl p-4 sm:p-5 shadow-soft flex gap-3 sm:gap-4 min-w-0">
+        {/* Drag handle - 2x2 dot grid */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="flex-shrink-0 cursor-grab active:cursor-grabbing touch-none pt-1"
+        >
+          <div className="grid grid-cols-2 gap-[3px]">
+            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+          </div>
+        </div>
 
-        {/* Title */}
-        {editingField === 'title' ? (
-          <input
-            autoFocus
-            defaultValue={act.title}
-            onBlur={(e) => handleBlur('title', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleBlur('title', (e.target as HTMLInputElement).value)}
-            className="font-serif text-base text-foreground leading-snug bg-transparent border-b border-primary/40 focus:outline-none w-full"
-          />
-        ) : (
-          <button onClick={() => setEditingField('title')} className="text-left w-full">
-            <h4 className="font-serif text-base text-foreground leading-snug hover:text-foreground/70 transition-colors">{act.title}</h4>
-          </button>
-        )}
+        {/* Category icon */}
+        <div className="flex-shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <IconComponent size={18} strokeWidth={1.4} className="text-primary-foreground" />
+          </div>
+        </div>
 
-        {/* Location */}
-        {editingField === 'location' ? (
-          <input
-            autoFocus
-            defaultValue={act.location}
-            onBlur={(e) => handleBlur('location', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleBlur('location', (e.target as HTMLInputElement).value)}
-            className="text-xs text-muted-foreground mt-0.5 bg-transparent border-b border-primary/40 focus:outline-none w-full"
-            placeholder="Add location"
-          />
-        ) : (
-          <button onClick={() => setEditingField('location')} className="text-left w-full">
-            <p className="text-xs text-muted-foreground mt-0.5 hover:text-foreground/50 transition-colors">
-              {act.location || 'Add location'}
-            </p>
-          </button>
-        )}
+        {/* Content block */}
+        <div className="flex-1 min-w-0">
+          {/* Time */}
+          {editingField === 'time' ? (
+            <input
+              autoFocus
+              defaultValue={act.time}
+              onBlur={(e) => handleBlur('time', e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleBlur('time', (e.target as HTMLInputElement).value)}
+              className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 bg-transparent border-b border-primary/40 focus:outline-none w-full"
+            />
+          ) : (
+            <button onClick={() => setEditingField('time')} className="text-left w-full">
+              <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 hover:text-foreground/70 transition-colors">
+                {act.time || 'Add time'}
+              </span>
+            </button>
+          )}
 
-        {/* Notes */}
-        {editingField === 'notes' ? (
-          <input
-            autoFocus
-            defaultValue={act.notes}
-            onBlur={(e) => handleBlur('notes', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleBlur('notes', (e.target as HTMLInputElement).value)}
-            className="text-xs text-foreground/40 mt-1 bg-transparent border-b border-primary/40 focus:outline-none w-full"
-            placeholder="Add notes"
-          />
-        ) : act.notes ? (
-          <button onClick={() => setEditingField('notes')} className="text-left w-full">
-            <p className="text-xs text-foreground/40 mt-1 hover:text-foreground/50 transition-colors">{act.notes}</p>
-          </button>
-        ) : (
-          <button onClick={() => setEditingField('notes')} className="text-left">
-            <p className="text-xs text-foreground/20 mt-1 hover:text-foreground/40 transition-colors">Add notes</p>
-          </button>
-        )}
+          {/* Title */}
+          {editingField === 'title' ? (
+            <input
+              autoFocus
+              defaultValue={act.title}
+              onBlur={(e) => handleBlur('title', e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleBlur('title', (e.target as HTMLInputElement).value)}
+              className="font-serif text-base font-semibold text-foreground leading-snug bg-transparent border-b border-primary/40 focus:outline-none w-full"
+            />
+          ) : (
+            <button onClick={() => setEditingField('title')} className="text-left w-full">
+              <h4 className="font-serif text-base font-semibold text-foreground leading-snug hover:text-foreground/70 transition-colors">{act.title}</h4>
+            </button>
+          )}
 
-        {/* Actions — delete + drag handle */}
-        <div className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-4 flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
-          <button onClick={onDelete} className="p-1.5 hover:bg-destructive/10 rounded-lg transition-colors">
+          {/* Location */}
+          {editingField === 'location' ? (
+            <input
+              autoFocus
+              defaultValue={act.location}
+              onBlur={(e) => handleBlur('location', e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleBlur('location', (e.target as HTMLInputElement).value)}
+              className="text-xs text-muted-foreground mt-0.5 bg-transparent border-b border-primary/40 focus:outline-none w-full"
+              placeholder="Add location"
+            />
+          ) : (
+            <button onClick={() => setEditingField('location')} className="text-left w-full">
+              <p className="text-xs text-muted-foreground mt-0.5 hover:text-foreground/50 transition-colors">
+                {act.location || 'Add location'}
+              </p>
+            </button>
+          )}
+
+          {/* Divider */}
+          <div className="border-t border-foreground/10 my-2.5" />
+
+          {/* Notes */}
+          {editingField === 'notes' ? (
+            <input
+              autoFocus
+              defaultValue={act.notes}
+              onBlur={(e) => handleBlur('notes', e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleBlur('notes', (e.target as HTMLInputElement).value)}
+              className="text-xs text-foreground/50 bg-transparent border-b border-primary/40 focus:outline-none w-full"
+              placeholder="Add notes"
+            />
+          ) : act.notes ? (
+            <button onClick={() => setEditingField('notes')} className="text-left w-full">
+              <p className="text-xs text-foreground/50 hover:text-foreground/60 transition-colors">{act.notes}</p>
+            </button>
+          ) : (
+            <button onClick={() => setEditingField('notes')} className="text-left">
+              <p className="text-xs text-foreground/20 hover:text-foreground/40 transition-colors">Add notes</p>
+            </button>
+          )}
+
+          {/* View on map link */}
+          {(act.location) && (
+            <button className="flex items-center gap-1 mt-2.5 text-xs text-primary-foreground hover:text-primary-foreground/70 transition-colors">
+              <span>View on map</span>
+              <ExternalLink size={10} strokeWidth={1.5} />
+            </button>
+          )}
+
+          {/* Delete button */}
+          <button
+            onClick={onDelete}
+            className="absolute top-3 right-3 p-1.5 hover:bg-destructive/10 rounded-lg transition-colors opacity-0 group-hover/item:opacity-100"
+          >
             <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
           </button>
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1.5 touch-none"
-          >
-            <div className="grid grid-cols-2 gap-[3px]">
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/25" />
+        </div>
+
+        {/* Photo placeholder */}
+        <div className="flex-shrink-0">
+          {act.imageUrl ? (
+            <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+              <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+              <button onClick={onRemoveImage} className="absolute -top-1 -right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
+                <X size={10} className="text-background" />
+              </button>
             </div>
-          </div>
+          ) : (
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="w-20 h-20 rounded-lg bg-primary/5 border border-primary/15 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
+            >
+              <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
+              <span className="text-[10px] text-foreground/30">photo</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -333,24 +369,23 @@ const ItineraryItem = ({
   day: initialDay,
   syncedActivities,
   dayDateStr,
+  dayNumber,
   onAddActivity,
   onRemoveActivity,
 }: {
   day: ItineraryDay;
   syncedActivities: TaggedActivity[];
   dayDateStr: string;
+  dayNumber: number;
   onAddActivity?: (activity: ActivityItem) => void;
   onRemoveActivity?: (id: string) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [editingTitle, setEditingTitle] = useState(false);
   const [destination, setDestination] = useState(initialDay.destination);
 
-  // Maintain a single ordered list of all activities with stable UIDs
   const [orderedActivities, setOrderedActivities] = useState<TaggedActivity[]>([]);
   const [initialized, setInitialized] = useState(false);
 
-  // Build initial list from synced + manual (from initialDay.activities)
   useEffect(() => {
     const manualTagged: TaggedActivity[] = initialDay.activities.map(a => ({
       ...a,
@@ -358,8 +393,6 @@ const ItineraryItem = ({
       _synced: false,
       iconType: (a.iconType || guessIconType(a.title)) as ItineraryActivity['iconType'],
     }));
-
-    // Merge: synced first, then manual, sorted by time initially
     const merged = [...syncedActivities, ...manualTagged];
     merged.sort((a, b) => {
       if (!a.time) return 1;
@@ -368,28 +401,23 @@ const ItineraryItem = ({
     });
     setOrderedActivities(merged);
     setInitialized(true);
-    // Only run on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update synced activities when they change (external data), preserving manual order
   useEffect(() => {
     if (!initialized) return;
     setOrderedActivities(prev => {
       const manualItems = prev.filter(a => !a._synced);
       const manualIds = new Set(manualItems.map(a => a._uid));
-      // Filter out synced activities whose source ID matches a manual item
       const filteredSynced = syncedActivities.filter(s => {
         const sourceId = s._uid.replace('sync-activity-', '');
         return !manualIds.has(sourceId);
       });
-      const merged = [...filteredSynced, ...manualItems];
-      return merged;
+      return [...filteredSynced, ...manualItems];
     });
   }, [syncedActivities, initialized]);
 
   const activityIds = useMemo(() => orderedActivities.map(a => a._uid), [orderedActivities]);
-
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
@@ -429,12 +457,10 @@ const ItineraryItem = ({
 
   const deleteActivity = useCallback((uid: string) => {
     setOrderedActivities(prev => prev.filter(a => a._uid !== uid));
-    // If it was synced from activities, remove from overview too
     if (uid.startsWith('sync-activity-')) {
       const actId = uid.replace('sync-activity-', '');
       onRemoveActivity?.(actId);
     }
-    // If it was manually added and pushed to overview
     if (uid.startsWith('itact-')) {
       onRemoveActivity?.(uid);
     }
@@ -454,7 +480,6 @@ const ItineraryItem = ({
     setOrderedActivities(prev => [...prev, newAct]);
     if (!isOpen) setIsOpen(true);
 
-    // Also add to activities list for Trip Overview
     if (onAddActivity) {
       const newActivityItem: ActivityItem = {
         id: newUid,
@@ -468,30 +493,38 @@ const ItineraryItem = ({
     }
   };
 
+  const paddedNumber = String(dayNumber).padStart(2, '0');
+  const dayWord = numberToWord(dayNumber).toUpperCase();
+
   return (
     <div>
+      {/* Day accordion header - pill shape */}
       <motion.button
-        whileHover={{ y: -2, transition: { duration: 0.15 } }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 sm:px-6 py-5 bg-primary rounded-2xl shadow-arch transition-shadow hover:shadow-lift"
+        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-primary/30 rounded-full transition-shadow hover:bg-primary/40"
       >
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          <span className="font-serif text-base sm:text-lg text-primary-foreground whitespace-nowrap">{initialDay.dayLabel}</span>
-          <span className="text-primary-foreground/25">|</span>
-          <span className="font-serif text-base sm:text-lg text-primary-foreground/50 whitespace-nowrap">{initialDay.date}</span>
-          <span className="text-primary-foreground/25">|</span>
-          <span className="font-serif text-base sm:text-lg text-primary-foreground/65 truncate">{destination}</span>
+        <div className="flex items-center gap-4">
+          {/* Large day number */}
+          <span className="font-serif text-3xl sm:text-4xl font-bold text-primary-foreground/70 leading-none">
+            {paddedNumber}
+          </span>
+          {/* Stacked day label + date */}
+          <div className="flex flex-col items-start">
+            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-primary-foreground/50">
+              Day {dayWord}
+            </span>
+            <span className="font-serif text-sm sm:text-base text-primary-foreground/80 leading-snug">
+              {initialDay.date} · {destination}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          {orderedActivities.length > 0 && (
-            <span className="text-xs text-primary-foreground/40 font-body">{orderedActivities.length}</span>
-          )}
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-            <ChevronDown size={18} className="text-primary-foreground/60" />
-          </motion.div>
-        </div>
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <ChevronDown size={18} className="text-primary-foreground/50" />
+        </motion.div>
       </motion.button>
+
+      {/* Expanded body */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -501,39 +534,18 @@ const ItineraryItem = ({
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            {/* Editable destination */}
-            <div className="pt-5 pb-2 px-2">
-              {editingTitle ? (
-                <input
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  onBlur={() => setEditingTitle(false)}
-                  onKeyDown={(e) => e.key === 'Enter' && setEditingTitle(false)}
-                  autoFocus
-                  className="font-serif text-lg text-foreground bg-transparent border-b border-primary focus:outline-none w-full"
-                />
-              ) : (
-                <button
-                  onClick={() => setEditingTitle(true)}
-                  className="text-left w-full group/dest"
-                >
-                  <span className="font-serif text-lg text-foreground/70 group-hover/dest:text-foreground transition-colors">
-                    {destination}
-                  </span>
-                </button>
-              )}
-            </div>
-
-            {/* Timeline */}
-            <div className="py-4 relative">
+            {/* Timeline area */}
+            <div className="pt-6 pb-2 relative">
               {orderedActivities.length === 0 ? (
-                <p className="text-muted-foreground font-serif italic px-2">No activities planned yet</p>
+                <p className="text-muted-foreground font-serif italic px-10 py-4">No activities planned yet</p>
               ) : (
                 <div className="relative">
-                  <div className="absolute left-[31px] top-4 bottom-4 w-[2.5px] bg-primary/60" />
+                  {/* Vertical timeline line */}
+                  <div className="absolute left-[15px] top-6 bottom-0 w-[1.5px] bg-primary/20" />
+
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={activityIds} strategy={verticalListSortingStrategy}>
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {orderedActivities.map((act) => (
                           <SortableActivityCard
                             key={act._uid}
@@ -552,13 +564,15 @@ const ItineraryItem = ({
               )}
             </div>
 
-            <button
-              onClick={addActivity}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 px-2"
-            >
-              <Plus size={14} strokeWidth={1.5} />
-              <span className="font-body">Add activity</span>
-            </button>
+            {/* Add activity button - always visible, centered */}
+            <div className="py-4">
+              <button
+                onClick={addActivity}
+                className="w-full py-3 rounded-2xl border border-dashed border-foreground/10 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors font-body"
+              >
+                + add activity
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -622,6 +636,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
               day={day}
               syncedActivities={syncedActivities}
               dayDateStr={dayDateStr}
+              dayNumber={i + 1}
               onAddActivity={onAddActivity}
               onRemoveActivity={onRemoveActivity}
             />
