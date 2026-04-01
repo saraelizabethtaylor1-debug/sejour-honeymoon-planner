@@ -613,7 +613,8 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="w-full">
+      <div className="max-w-[960px] mx-auto px-6 space-y-4 pb-20">
       {displayDays.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="font-serif text-lg mb-2 text-primary-foreground">No itinerary yet</p>
@@ -643,6 +644,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
           );
         })
       )}
+      </div>
     </div>
   );
 };
