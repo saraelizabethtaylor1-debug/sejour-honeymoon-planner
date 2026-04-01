@@ -644,6 +644,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
           );
         })
       )}
+      </div>
     </div>
   );
 };
