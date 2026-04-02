@@ -18,7 +18,7 @@ const tabs: { key: DashboardTab; label: string }[] = [
   { key: "itinerary", label: "Itinerary" },
 ];
 
-const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle }: DashboardHeaderProps) => {
+const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle, initials }: DashboardHeaderProps) => {
   const countdown = getDaysUntilTrip(tripData.date);
   const formattedDate = getFormattedDate(tripData.date);
   const dateLine = [formattedDate, countdown].filter(Boolean).join(" · ");
