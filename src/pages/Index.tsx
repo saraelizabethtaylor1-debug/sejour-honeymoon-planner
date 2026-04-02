@@ -43,6 +43,12 @@ const Index = () => {
             tab={tab}
             onTabChange={setTab}
             onMenuToggle={() => setMenuOpen(true)}
+            initials={(() => {
+              const parts = tripData.names.split(/[,&]|\band\b|\s+/).map(s => s.trim()).filter(Boolean);
+              return parts.length >= 2
+                ? `${parts[0].charAt(0).toUpperCase()}${parts[1].charAt(0).toUpperCase()}`
+                : tripData.names.substring(0, 2).toUpperCase();
+            })()}
           />
 
           <main className={`flex-1 px-4 sm:px-6 lg:px-8 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
