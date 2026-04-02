@@ -541,7 +541,7 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
       className="fixed inset-0 bg-background z-30 overflow-y-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 bg-subtle-gradient"
     >
       {view === 'todos' && <TodosView onBack={onBack} />}
-      {view === 'budget' && <BudgetView onBack={onBack} />}
+      {view === 'budget' && <BudgetView onBack={onBack} transportItems={transportItems} accommodationItems={accommodationItems} activityItems={activityItems} reservationItems={reservationItems} />}
       {view === 'packing' && <PackingView onBack={onBack} />}
       {view === 'notes' && <NotesView onBack={onBack} />}
       {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} />}
