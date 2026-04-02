@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Check, Pencil } from 'lucide-react';
-import type { DetailView, TodoItem, BudgetItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
-import { sampleTodos, sampleBudget, samplePacking, sampleNotes } from '@/data/sampleData';
+import type { DetailView, TodoItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
+import { sampleTodos, samplePacking, sampleNotes } from '@/data/sampleData';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 
 interface DetailViewProps {
