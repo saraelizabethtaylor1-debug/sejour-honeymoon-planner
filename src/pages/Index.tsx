@@ -45,7 +45,7 @@ const Index = () => {
             onMenuToggle={() => setMenuOpen(true)}
           />
 
-          <main className={`flex-1 px-4 sm:px-6 lg:px-8 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-hidden'}`}>
+          <main className={`flex-1 px-4 sm:px-6 lg:px-8 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
             {tab === 'planning' && (
               <PlanningTab
                 onOpenDetail={setDetailView}
