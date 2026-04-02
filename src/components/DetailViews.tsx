@@ -66,29 +66,38 @@ const TodosView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Budget ──
-const BudgetView = ({ onBack }: { onBack: () => void }) => {
-  const [items, setItems] = useState<BudgetItem[]>(sampleBudget);
+const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems, reservationItems }: BudgetViewProps) => {
+  const [estimatedBudgets, setEstimatedBudgets] = useState<Record<string, number>>({
+    Transportation: 0,
+    Accommodations: 0,
+    Activities: 0,
+    'Reservations / Dining': 0,
+  });
   const [editingTotal, setEditingTotal] = useState(false);
   const [totalBudgetOverride, setTotalBudgetOverride] = useState<number | null>(null);
-  const [editingCell, setEditingCell] = useState<{ id: string; field: 'estimated' | 'actual' } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
 
-  const totalEst = totalBudgetOverride ?? items.reduce((s, i) => s + i.estimated, 0);
-  const totalAct = items.reduce((s, i) => s + i.actual, 0);
-
-  const updateItem = (id: string, field: 'estimated' | 'actual', value: number) => {
-    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const actualsByCategory: Record<string, number> = {
+    Transportation: transportItems.reduce((s, i) => s + (i.cost || 0), 0),
+    Accommodations: accommodationItems.reduce((s, i) => s + (i.cost || 0), 0),
+    Activities: activityItems.reduce((s, i) => s + (i.cost || 0), 0),
+    'Reservations / Dining': reservationItems.reduce((s, i) => s + (i.cost || 0), 0),
   };
 
-  const startEdit = (id: string, field: 'estimated' | 'actual', currentValue: number) => {
-    setEditingCell({ id, field });
-    setEditValue(currentValue.toString());
+  const categories = Object.keys(estimatedBudgets);
+  const totalEst = totalBudgetOverride ?? categories.reduce((s, c) => s + estimatedBudgets[c], 0);
+  const totalAct = categories.reduce((s, c) => s + actualsByCategory[c], 0);
+
+  const startEdit = (category: string) => {
+    setEditingCategory(category);
+    setEditValue(estimatedBudgets[category].toString());
   };
 
   const commitEdit = () => {
-    if (editingCell) {
-      updateItem(editingCell.id, editingCell.field, parseInt(editValue) || 0);
-      setEditingCell(null);
+    if (editingCategory) {
+      setEstimatedBudgets(prev => ({ ...prev, [editingCategory]: parseFloat(editValue) || 0 }));
+      setEditingCategory(null);
     }
   };
 
@@ -100,8 +109,8 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
         {editingTotal ? (
           <input
             type="number"
-            value={totalBudgetOverride ?? items.reduce((s, i) => s + i.estimated, 0)}
-            onChange={(e) => setTotalBudgetOverride(parseInt(e.target.value) || 0)}
+            value={totalBudgetOverride ?? categories.reduce((s, c) => s + estimatedBudgets[c], 0)}
+            onChange={(e) => setTotalBudgetOverride(parseFloat(e.target.value) || 0)}
             onBlur={() => setEditingTotal(false)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingTotal(false)}
             autoFocus
@@ -123,20 +132,16 @@ const BudgetView = ({ onBack }: { onBack: () => void }) => {
         </div>
       </div>
       <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.id} className="flex items-center justify-between px-4 sm:px-5 py-4 bg-card pill-shape shadow-soft">
-            <span className="font-serif text-foreground">{item.category}</span>
+        {categories.map((category) => (
+          <div key={category} className="flex items-center justify-between px-4 sm:px-5 py-4 bg-card pill-shape shadow-soft">
+            <span className="font-serif text-foreground">{category}</span>
             <div className="flex gap-4 sm:gap-6 items-center">
-              {editingCell?.id === item.id && editingCell.field === 'estimated' ? (
-                <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={commitEdit} onKeyDown={(e) => e.key === 'Enter' && commitEdit()} autoFocus className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body" />
+              {editingCategory === category ? (
+                <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={commitEdit} onKeyDown={(e) => e.key === 'Enter' && commitEdit()} autoFocus className="w-24 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body" />
               ) : (
-                <button onClick={() => startEdit(item.id, 'estimated', item.estimated)} className="text-sm text-foreground hover:text-primary transition-colors">{formatCost(item.estimated)}</button>
+                <button onClick={() => startEdit(category)} className="text-sm text-foreground hover:text-primary transition-colors">{formatCost(estimatedBudgets[category])}</button>
               )}
-              {editingCell?.id === item.id && editingCell.field === 'actual' ? (
-                <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={commitEdit} onKeyDown={(e) => e.key === 'Enter' && commitEdit()} autoFocus className="w-20 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body" />
-              ) : (
-                <button onClick={() => startEdit(item.id, 'actual', item.actual)} className="text-sm text-muted-foreground hover:text-primary transition-colors">{formatCost(item.actual)}</button>
-              )}
+              <span className="text-sm text-muted-foreground w-24 text-right">{formatCost(actualsByCategory[category])}</span>
             </div>
           </div>
         ))}
