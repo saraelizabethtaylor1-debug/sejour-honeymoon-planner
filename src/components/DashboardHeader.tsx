@@ -9,6 +9,7 @@ interface DashboardHeaderProps {
   tab: DashboardTab;
   onTabChange: (tab: DashboardTab) => void;
   onMenuToggle: () => void;
+  initials?: string;
 }
 
 const tabs: { key: DashboardTab; label: string }[] = [
