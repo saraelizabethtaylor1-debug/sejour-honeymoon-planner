@@ -568,7 +568,7 @@ const ItineraryItem = ({
             <div className="py-4">
               <button
                 onClick={addActivity}
-                className="w-full py-3 rounded-2xl border border-dashed border-foreground/10 text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors font-body"
+                className="w-full py-3 font-serif text-sm sm:text-base text-primary-foreground/80 hover:text-primary-foreground transition-colors"
               >
                 + add activity
               </button>
