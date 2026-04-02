@@ -35,7 +35,7 @@ const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) 
   </div>
 );
 
-const formatCost = (val: number) => `$${val.toLocaleString()}`;
+const formatCost = (val: number) => `$${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 // ── To-Dos ──
 const TodosView = ({ onBack }: { onBack: () => void }) => {
