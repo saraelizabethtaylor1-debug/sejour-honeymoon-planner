@@ -18,6 +18,14 @@ interface DetailViewProps {
   setReservationItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>;
 }
 
+interface BudgetViewProps {
+  onBack: () => void;
+  transportItems: TransportItem[];
+  accommodationItems: AccommodationItem[];
+  activityItems: ActivityItem[];
+  reservationItems: ReservationItem[];
+}
+
 const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
   <div className="flex items-center gap-4 mb-8">
     <button onClick={onBack} className="p-2 -ml-2">

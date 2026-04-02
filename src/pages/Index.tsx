@@ -86,8 +86,8 @@ const Index = () => {
         onOpenDetail={setDetailView}
         onGoToSettings={() => setView('welcome')}
         initials={(() => {
-          const parts = tripData.names.split('&').map(s => s.trim());
-          return parts.length === 2
+          const parts = tripData.names.split(/[,&\s]+/).map(s => s.trim()).filter(Boolean);
+          return parts.length >= 2
             ? `${parts[0].charAt(0).toUpperCase()} ${parts[1].charAt(0).toUpperCase()}`
             : tripData.names.substring(0, 2).toUpperCase();
         })()}
