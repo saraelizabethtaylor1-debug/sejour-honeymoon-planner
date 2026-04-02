@@ -36,6 +36,13 @@ const DashboardHeader = ({ tripData, tab, onTabChange, onMenuToggle, initials }:
           </button>
           <div style={{ position: "relative", width: 80, height: 80, marginBottom: -24, flexShrink: 0 }}>
             <img src={moonLogo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            {initials && (
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span className="font-serif text-foreground/70" style={{ fontSize: "10px", letterSpacing: "0.15em", transform: "translateX(-1px)" }}>
+                  {initials}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
