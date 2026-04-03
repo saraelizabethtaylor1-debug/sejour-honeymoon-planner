@@ -161,7 +161,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
 
       {/* Romantic sign-off quote */}
       <div className="text-center" style={{ marginTop: 48, marginBottom: 60 }}>
-        <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
+        <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem] font-light" style={{ color: 'hsl(0 20% 32%)' }}>
           {quote}
         </span>
       </div>

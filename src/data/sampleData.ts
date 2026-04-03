@@ -5,7 +5,7 @@ export const defaultTripData: TripData = {
   days: 7,
   date: '',
   names: '',
-  quote: '"You are my greatest adventure yet"',
+  quote: '"you are my greatest adventure yet"',
 };
 
 export const sampleTodos: TodoItem[] = [];
