@@ -1,6 +1,6 @@
 import type { TripData, DashboardTab } from "@/types/honeymoon";
 import { motion } from "framer-motion";
-import { getDaysUntilTrip, getFormattedDate } from "@/lib/dateUtils";
+import moonLogo from "@/assets/moon-logo.png";
 import moonLogo from "@/assets/moon-logo.png";
 
 interface DashboardHeaderProps {
