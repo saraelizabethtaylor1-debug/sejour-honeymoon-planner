@@ -24,9 +24,9 @@ const cards: CardItem[] = [
   { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
 ];
 
-const CARD_HEIGHT = 72;
+const CARD_HEIGHT = 68;
 const CARD_GAP = 12;
-const TOTAL_HEIGHT = CARD_HEIGHT * 4 + CARD_GAP * 3; // 324px
+const TOTAL_HEIGHT = CARD_HEIGHT * 4 + CARD_GAP * 3; // 308px
 
 const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems, transportItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
