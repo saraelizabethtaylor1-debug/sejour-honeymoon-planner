@@ -71,7 +71,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
         <div style={{ width: 32, flexShrink: 0 }} />
 
         {/* Right column — bottom half has headline + cards */}
-        <div style={{ width: '54%', height: 600 }} className="flex flex-col justify-center">
+        <div style={{ width: '54%', height: 600, paddingTop: 180 }} className="flex flex-col justify-start">
           {/* Headline */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
