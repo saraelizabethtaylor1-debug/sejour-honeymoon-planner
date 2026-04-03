@@ -35,7 +35,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="flex justify-center" style={{ marginTop: '24px' }}>
+    <div className="flex justify-center py-[50px]" style={{ marginTop: '24px' }}>
       <div style={{ width: '100%', maxWidth: 1100 }} className="mx-auto px-4">
         <div className="flex flex-col md:flex-row items-end justify-center" style={{ gap: 40 }}>
           {/* Arched Cover Image — 40% of container */}
@@ -83,7 +83,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
                 happily ever after
               </span>
               <span
-                className="font-serif text-xl sm:text-2xl lg:text-[2.4rem] text-foreground/50 ml-2 inline"
+                className="font-serif text-xl sm:text-2xl text-foreground/50 ml-2 inline lg:text-lg"
                 style={{ letterSpacing: '0.08em', fontWeight: 300 }}
               >
                 starts here.
