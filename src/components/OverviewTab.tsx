@@ -95,7 +95,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
               ))}
             </motion.div>
 
-            {/* Right — Map fills remaining width, fixed height matching cards */}
+            {/* Right — Map fills remaining ~560px, height matches cards */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -103,9 +103,10 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
               className="flex-1 min-w-0 overflow-hidden"
               style={{
                 height: TOTAL_HEIGHT,
+                maxWidth: 560,
                 filter: 'grayscale(80%) brightness(1.05) sepia(20%)',
                 border: '1px solid #E8C8C0',
-                borderRadius: 18,
+                borderRadius: 12,
               }}
             >
               <GoogleMap
