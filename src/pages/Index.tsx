@@ -84,6 +84,9 @@ const Index = () => {
               />
             )}
           </main>
+          </main>
+
+          <BottomNav tab={tab} onTabChange={setTab} />
         </div>
       )}
 
