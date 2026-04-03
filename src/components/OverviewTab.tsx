@@ -47,13 +47,13 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       {/* Slim Hero */}
       <div className="text-center" style={{ paddingTop: 12, paddingBottom: 20 }}>
         {heroLine && (
-          <p className="font-serif text-[11px] uppercase tracking-[0.28em] text-foreground/40 font-light">
+          <p className="font-serif uppercase tracking-[0.28em] text-foreground/40 font-light text-xl">
             {heroLine}
           </p>
         )}
         <p
-          className="font-script italic lowercase leading-[1.2]"
-          style={{ color: 'hsl(10 30% 35%)', fontSize: 26, marginTop: 8 }}
+          className="font-script italic lowercase leading-[1.2] text-4xl"
+          style={{ color: 'hsl(10 30% 35%)', marginTop: 8 }}
         >
           {quote}
         </p>
@@ -88,7 +88,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   <div className="w-9 h-9 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
                     <itm.icon size={18} strokeWidth={1.2} className="text-foreground/50" />
                   </div>
-                  <span className="font-serif text-[15px] tracking-wide text-foreground/80">
+                  <span className="font-serif tracking-wide text-foreground/80 text-sm">
                     {itm.label}
                   </span>
                 </motion.button>
