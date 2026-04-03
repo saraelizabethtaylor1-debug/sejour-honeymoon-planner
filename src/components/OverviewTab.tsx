@@ -24,6 +24,10 @@ const cards: CardItem[] = [
   { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
 ];
 
+const CARD_HEIGHT = 72;
+const CARD_GAP = 12;
+const TOTAL_HEIGHT = CARD_HEIGHT * 4 + CARD_GAP * 3; // 324px
+
 const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems, transportItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
   const [activeFilter, setActiveFilter] = useState<FilterCategory>(null);
@@ -40,36 +44,32 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
 
   return (
     <div className="w-full flex flex-col h-full">
-      {/* Slim Hero Band */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="text-center py-4 px-4"
-      >
+      {/* Slim Hero */}
+      <div className="text-center" style={{ paddingTop: 12, paddingBottom: 20 }}>
         {heroLine && (
           <p className="font-serif text-[11px] uppercase tracking-[0.28em] text-foreground/40 font-light">
             {heroLine}
           </p>
         )}
         <p
-          className="mt-1.5 font-script text-[24px] tracking-tight lowercase leading-[1.2]"
-          style={{ color: 'hsl(10 30% 35%)' }}
+          className="font-script italic lowercase leading-[1.2]"
+          style={{ color: 'hsl(10 30% 35%)', fontSize: 26, marginTop: 8 }}
         >
           {quote}
         </p>
-      </motion.div>
+      </div>
 
-      {/* Two-column layout — centered 900px container */}
-      <div className="flex-1 min-h-0 flex justify-center px-4 pb-6">
-        <div className="w-full" style={{ maxWidth: '900px' }}>
-          <div className="grid h-full gap-6" style={{ gridTemplateColumns: '45% 55%' }}>
-            {/* Left — Category Cards */}
+      {/* Two-column layout — 1000px centered */}
+      <div className="flex justify-center px-4 pb-6">
+        <div style={{ width: '100%', maxWidth: 1000 }}>
+          <div className="flex gap-6">
+            {/* Left — Cards at 380px */}
             <motion.div
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
-              className="flex flex-col gap-3"
+              className="flex flex-col shrink-0"
+              style={{ width: 380, gap: CARD_GAP }}
             >
               {cards.map((itm) => (
                 <motion.button
@@ -78,29 +78,35 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleCardClick(itm)}
-                  className={`w-full flex items-center gap-5 px-6 py-6 border rounded-2xl transition-all duration-200 ${
+                  className={`w-full flex items-center gap-5 px-6 border rounded-2xl transition-all duration-200 ${
                     activeFilter === itm.filterKey && itm.filterKey
                       ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
                       : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
                   }`}
+                  style={{ height: CARD_HEIGHT }}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
-                    <itm.icon size={20} strokeWidth={1.2} className="text-foreground/50" />
+                  <div className="w-9 h-9 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
+                    <itm.icon size={18} strokeWidth={1.2} className="text-foreground/50" />
                   </div>
-                  <span className="font-serif text-[15px] md:text-base lg:text-[17px] tracking-wide text-foreground/80">
+                  <span className="font-serif text-[15px] tracking-wide text-foreground/80">
                     {itm.label}
                   </span>
                 </motion.button>
               ))}
             </motion.div>
 
-            {/* Right — Google Map (constrained to column) */}
+            {/* Right — Map fills remaining width, fixed height matching cards */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="overflow-hidden"
-              style={{ filter: 'grayscale(80%) brightness(1.05) sepia(20%)', border: '1px solid #E8C8C0', borderRadius: '18px' }}
+              className="flex-1 min-w-0 overflow-hidden"
+              style={{
+                height: TOTAL_HEIGHT,
+                filter: 'grayscale(80%) brightness(1.05) sepia(20%)',
+                border: '1px solid #E8C8C0',
+                borderRadius: 18,
+              }}
             >
               <GoogleMap
                 destination={tripData.destination}
