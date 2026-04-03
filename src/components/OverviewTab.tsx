@@ -24,9 +24,9 @@ const cards: CardItem[] = [
   { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
 ];
 
-const CARD_HEIGHT = 72;
+const CARD_HEIGHT = 68;
 const CARD_GAP = 12;
-const TOTAL_HEIGHT = CARD_HEIGHT * 4 + CARD_GAP * 3; // 324px
+const TOTAL_HEIGHT = CARD_HEIGHT * 4 + CARD_GAP * 3; // 308px
 
 const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems, transportItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
@@ -61,15 +61,15 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
 
       {/* Two-column layout — 1000px centered */}
       <div className="flex justify-center px-4 pb-6">
-        <div style={{ width: '100%', maxWidth: 1000 }}>
-          <div className="flex gap-6">
-            {/* Left — Cards at 380px */}
+        <div style={{ width: '100%', maxWidth: 920 }}>
+          <div className="flex" style={{ gap: 20 }}>
+            {/* Left — Cards at 340px */}
             <motion.div
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
               className="flex flex-col shrink-0"
-              style={{ width: 380, gap: CARD_GAP }}
+              style={{ width: 340, gap: CARD_GAP }}
             >
               {cards.map((itm) => (
                 <motion.button
@@ -78,7 +78,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleCardClick(itm)}
-                  className={`w-full flex items-center gap-5 px-6 border rounded-2xl transition-all duration-200 ${
+                  className={`w-full flex items-center gap-4 px-4 border rounded-xl transition-all duration-200 ${
                     activeFilter === itm.filterKey && itm.filterKey
                       ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
                       : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
@@ -95,7 +95,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
               ))}
             </motion.div>
 
-            {/* Right — Map fills remaining width, fixed height matching cards */}
+            {/* Right — Map fills remaining ~560px, height matches cards */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -103,9 +103,10 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
               className="flex-1 min-w-0 overflow-hidden"
               style={{
                 height: TOTAL_HEIGHT,
+                maxWidth: 560,
                 filter: 'grayscale(80%) brightness(1.05) sepia(20%)',
                 border: '1px solid #E8C8C0',
-                borderRadius: 18,
+                borderRadius: 12,
               }}
             >
               <GoogleMap
