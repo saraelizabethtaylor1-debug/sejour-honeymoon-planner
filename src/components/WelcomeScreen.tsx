@@ -27,7 +27,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
       days: parseInt(days) || 7,
       date: date || '',
       names: names || '',
-      quote: '"You are my greatest adventure yet"',
+      quote: '"you are my greatest adventure yet"',
       coverImage,
       clockFormat,
     });
