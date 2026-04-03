@@ -1,6 +1,5 @@
 import type { TripData, DashboardTab } from "@/types/honeymoon";
 import { motion } from "framer-motion";
-import { getDaysUntilTrip, getFormattedDate } from "@/lib/dateUtils";
 import moonLogo from "@/assets/moon-logo.png";
 
 interface DashboardHeaderProps {
@@ -17,9 +16,6 @@ const tabs: { key: DashboardTab; label: string }[] = [
 ];
 
 const DashboardHeader = ({ tripData, tab, onTabChange, initials }: DashboardHeaderProps) => {
-  const countdown = getDaysUntilTrip(tripData.date);
-  const formattedDate = getFormattedDate(tripData.date);
-  const dateLine = [tripData.destination, countdown].filter(Boolean).join(" · ");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-foreground/5" style={{ boxShadow: "0 1px 8px -2px hsl(10 8% 12% / 0.04)" }}>
@@ -65,14 +61,6 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials }: DashboardHead
         ))}
       </nav>
 
-      {/* Destination + countdown — hidden on mobile */}
-      {dateLine && (
-        <div className="hidden md:block text-center pb-3">
-          <p className="text-[9px] uppercase tracking-[0.2em] text-foreground/35">
-            {dateLine}
-          </p>
-        </div>
-      )}
     </header>
   );
 };
