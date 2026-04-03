@@ -4,6 +4,7 @@ import type { TripData, AppView, DashboardTab, DetailView, TransportItem, Accomm
 import { defaultTripData, sampleItinerary, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import DashboardHeader from '@/components/DashboardHeader';
+import BottomNav from '@/components/BottomNav';
 import SideMenu from '@/components/SideMenu';
 import PlanningTab from '@/components/PlanningTab';
 import OverviewTab from '@/components/OverviewTab';
@@ -17,7 +18,6 @@ const Index = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailView, setDetailView] = useState<DetailView>(null);
 
-  // Lifted state for overview data
   const [transportItems, setTransportItems] = useState<TransportItem[]>([]);
   const [accommodationItems, setAccommodationItems] = useState<AccommodationItem[]>([]);
   const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
@@ -26,6 +26,13 @@ const Index = () => {
   const handleWelcomeComplete = (data: TripData) => {
     setTripData(data);
     setView('dashboard');
+  };
+
+  const getInitials = () => {
+    const parts = tripData.names.split(/[,&]|\band\b|\s+/).map(s => s.trim()).filter(Boolean);
+    return parts.length >= 2
+      ? `${parts[0].charAt(0).toUpperCase()}${parts[1].charAt(0).toUpperCase()}`
+      : tripData.names.substring(0, 2).toUpperCase();
   };
 
   return (
@@ -37,21 +44,18 @@ const Index = () => {
       </AnimatePresence>
 
       {view === 'dashboard' && (
-        <div className="h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col">
           <DashboardHeader
             tripData={tripData}
             tab={tab}
             onTabChange={setTab}
-            onMenuToggle={() => setMenuOpen(true)}
-            initials={(() => {
-              const parts = tripData.names.split(/[,&]|\band\b|\s+/).map(s => s.trim()).filter(Boolean);
-              return parts.length >= 2
-                ? `${parts[0].charAt(0).toUpperCase()}${parts[1].charAt(0).toUpperCase()}`
-                : tripData.names.substring(0, 2).toUpperCase();
-            })()}
+            initials={getInitials()}
           />
 
-          <main className={`flex-1 px-4 sm:px-6 lg:px-8 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
+          {/* Spacer for fixed header */}
+          <div className="h-[70px] md:h-[120px] flex-shrink-0" />
+
+          <main className={`flex-1 px-4 sm:px-6 lg:px-8 pb-20 md:pb-0 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
             {tab === 'planning' && (
               <PlanningTab
                 onOpenDetail={setDetailView}
@@ -82,6 +86,8 @@ const Index = () => {
               />
             )}
           </main>
+
+          <BottomNav tab={tab} onTabChange={setTab} />
         </div>
       )}
 
@@ -91,12 +97,7 @@ const Index = () => {
         onNavigate={(t) => { setTab(t); setView('dashboard'); }}
         onOpenDetail={setDetailView}
         onGoToSettings={() => setView('welcome')}
-        initials={(() => {
-          const parts = tripData.names.split(/[,&]|\band\b|\s+/).map(s => s.trim()).filter(Boolean);
-          return parts.length >= 2
-            ? `${parts[0].charAt(0).toUpperCase()} ${parts[1].charAt(0).toUpperCase()}`
-            : tripData.names.substring(0, 2).toUpperCase();
-        })()}
+        initials={getInitials()}
       />
 
       <AnimatePresence>
