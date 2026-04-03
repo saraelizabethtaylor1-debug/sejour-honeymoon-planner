@@ -61,15 +61,15 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
 
       {/* Two-column layout — 1000px centered */}
       <div className="flex justify-center px-4 pb-6">
-        <div style={{ width: '100%', maxWidth: 1000 }}>
-          <div className="flex gap-6">
-            {/* Left — Cards at 380px */}
+        <div style={{ width: '100%', maxWidth: 920 }}>
+          <div className="flex" style={{ gap: 20 }}>
+            {/* Left — Cards at 340px */}
             <motion.div
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
               className="flex flex-col shrink-0"
-              style={{ width: 380, gap: CARD_GAP }}
+              style={{ width: 340, gap: CARD_GAP }}
             >
               {cards.map((itm) => (
                 <motion.button
