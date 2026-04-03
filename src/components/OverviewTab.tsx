@@ -47,7 +47,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       {/* Slim Hero */}
       <div className="text-center" style={{ paddingTop: 12, paddingBottom: 20 }}>
         {heroLine && (
-          <p className="font-serif text-[11px] uppercase tracking-[0.28em] text-foreground/40 font-light">
+          <p className="font-serif uppercase tracking-[0.28em] text-foreground/40 font-light text-xl">
             {heroLine}
           </p>
         )}
