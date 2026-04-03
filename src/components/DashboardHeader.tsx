@@ -65,14 +65,6 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials }: DashboardHead
         ))}
       </nav>
 
-      {/* Destination + countdown — hidden on mobile */}
-      {dateLine && (
-        <div className="hidden md:block text-center pb-3">
-          <p className="text-[9px] uppercase tracking-[0.2em] text-foreground/35">
-            {dateLine}
-          </p>
-        </div>
-      )}
     </header>
   );
 };
