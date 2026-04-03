@@ -38,7 +38,41 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
     <div className="flex justify-center py-[50px]" style={{ marginTop: '24px' }}>
       <div style={{ width: '100%', maxWidth: 1100 }} className="mx-auto px-4">
         <div className="flex flex-col md:flex-row items-end justify-center" style={{ gap: 40 }}>
-...
+          {/* Arched Cover Image — 40% of container */}
+          <div className="flex-shrink-0 w-full" style={{ flex: '0 0 40%', maxWidth: '40%', marginTop: 40 }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageUpload}
+            />
+            <div
+              className="w-full arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
+              style={{
+                boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
+                height: 'auto',
+                aspectRatio: '9 / 11',
+              }}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {hasCoverImage ? (
+                <img
+                  src={tripData.coverImage}
+                  className="w-full h-full object-cover"
+                  alt={tripData.destination}
+                />
+              ) : (
+                <div className="w-full h-full bg-primary/40 flex items-center justify-center">
+                  <Camera size={40} strokeWidth={1} className="text-foreground/25" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Content — fills remaining space */}
+          <div className="flex flex-col justify-end items-center md:items-start" style={{ flex: '1 1 0%', minWidth: 0, gap: 20 }}>
+            {/* Headline — left-aligned to card grid */}
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
