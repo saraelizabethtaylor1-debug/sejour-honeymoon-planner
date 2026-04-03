@@ -78,7 +78,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleCardClick(itm)}
-                  className={`w-full flex items-center gap-5 px-6 border rounded-2xl transition-all duration-200 ${
+                  className={`w-full flex items-center gap-4 px-4 border rounded-xl transition-all duration-200 ${
                     activeFilter === itm.filterKey && itm.filterKey
                       ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
                       : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
