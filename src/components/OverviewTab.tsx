@@ -52,8 +52,8 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           </p>
         )}
         <p
-          className="font-script italic lowercase leading-[1.2]"
-          style={{ color: 'hsl(10 30% 35%)', fontSize: 26, marginTop: 8 }}
+          className="font-script italic lowercase leading-[1.2] text-4xl"
+          style={{ color: 'hsl(10 30% 35%)', marginTop: 8 }}
         >
           {quote}
         </p>
