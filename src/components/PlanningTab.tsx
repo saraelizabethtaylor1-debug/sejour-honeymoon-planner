@@ -35,7 +35,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="flex justify-center" style={{ paddingTop: 50, paddingBottom: 48 }}>
+    <div className="flex justify-center py-0 my-[125px]">
       <div style={{ width: '70vw', height: 600 }} className="flex items-end">
         {/* Arch photo — left, full height */}
         <div style={{ width: '46%', flexShrink: 0, height: 600 }}>
