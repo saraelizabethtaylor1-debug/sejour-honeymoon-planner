@@ -112,7 +112,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
                 whileTap={{ scale: 0.97 }}
                 onClick={() => onOpenDetail(card.view)}
                 className="planning-card flex flex-col items-center justify-center gap-2.5 bg-primary/50 rounded-xl transition-shadow duration-200"
-                style={{ boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)', flex: 1 }}
+                style={{ boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)', height: 160 }}
               >
                 <card.icon size={22} strokeWidth={1} className="text-foreground/50" />
                 <span className="font-body text-[10px] uppercase tracking-[0.14em] text-foreground/60">
