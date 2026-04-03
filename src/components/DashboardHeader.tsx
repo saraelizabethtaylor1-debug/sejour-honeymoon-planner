@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import type { TripData, DashboardTab } from "@/types/honeymoon";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Settings, LogOut, CalendarDays, MapPin, Users } from "lucide-react";
+import { Heart, Settings, LogOut, CalendarDays, MapPin, Users } from "lucide-react";
 import moonLogo from "@/assets/moon-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
