@@ -93,7 +93,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               variants={container}
               initial="hidden"
               animate="show"
-              className="grid grid-cols-2 gap-3 lg:gap-4 w-full"
+              className="grid grid-cols-2 gap-4 w-full max-w-[520px]"
             >
               {[
                 { title: 'to-dos', icon: Heart, view: 'todos' as const },
