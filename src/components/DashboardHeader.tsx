@@ -53,7 +53,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings 
           <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
           {initials && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-foreground/70" style={{ fontSize: "11px", letterSpacing: "0.15em", transform: "translateX(-0.5px)" }}>
+              <span className="font-serif text-foreground/70 text-base" style={{ fontSize: "11px", letterSpacing: "0.15em", transform: "translateX(-0.5px)" }}>
                 {initials}
               </span>
             </div>
