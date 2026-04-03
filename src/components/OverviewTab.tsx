@@ -82,7 +82,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       </div>
 
       {/* Two-column layout — 1100px centered */}
-      <div className="flex justify-center px-4" style={{ paddingTop: 60, paddingBottom: 0 }}>
+      <div className="flex justify-center px-[7px]" style={{ paddingTop: 60, paddingBottom: 0 }}>
         <div style={{ width: '100%', maxWidth: 1100 }}>
           <div className="flex" style={{ gap: 24 }}>
             {/* Left — Grouped cards at 420px */}
