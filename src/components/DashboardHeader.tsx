@@ -17,9 +17,6 @@ const tabs: { key: DashboardTab; label: string }[] = [
 ];
 
 const DashboardHeader = ({ tripData, tab, onTabChange, initials }: DashboardHeaderProps) => {
-  const countdown = getDaysUntilTrip(tripData.date);
-  const formattedDate = getFormattedDate(tripData.date);
-  const dateLine = [tripData.destination, countdown].filter(Boolean).join(" · ");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-foreground/5" style={{ boxShadow: "0 1px 8px -2px hsl(10 8% 12% / 0.04)" }}>
