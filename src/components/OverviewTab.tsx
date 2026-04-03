@@ -15,7 +15,6 @@ interface OverviewTabProps {
 }
 
 type FilterCategory = 'accommodations' | 'activities' | 'reservations' | 'transportation' | null;
-
 type CardItem = { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory };
 
 const cards: CardItem[] = [
@@ -37,87 +36,82 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
     onOpenDetail(itm.view);
   };
 
+  const heroLine = [tripData.destination, countdown].filter(Boolean).join(' · ');
+
   return (
     <div className="w-full flex flex-col h-full">
-      {/* Hero Section */}
+      {/* Compact Hero */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center py-8 md:py-12 lg:py-14 px-4"
+        transition={{ duration: 0.5 }}
+        className="text-center pt-4 pb-2 md:pt-6 md:pb-3 px-4"
       >
-        {tripData.destination && (
-          <h2
-            className="font-script text-[42px] sm:text-[52px] md:text-[62px] lg:text-[72px] leading-[1.1] tracking-tight lowercase"
-            style={{ color: 'hsl(10 30% 35%)' }}
-          >
-            {tripData.destination}
-          </h2>
-        )}
-        {countdown && (
-          <p className="mt-3 text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-foreground/35 font-light">
-            {countdown}
+        {heroLine && (
+          <p className="font-serif text-[11px] sm:text-[12px] uppercase tracking-[0.28em] text-foreground/40 font-light">
+            {heroLine}
           </p>
         )}
         <p
-          className="mt-5 md:mt-6 font-script text-[20px] sm:text-[24px] md:text-[28px] tracking-tight lowercase leading-tight text-foreground/40"
+          className="mt-3 md:mt-4 font-script text-[28px] sm:text-[34px] md:text-[40px] lg:text-[46px] tracking-tight lowercase leading-[1.15]"
+          style={{ color: 'hsl(10 30% 35%)' }}
         >
           {quote}
         </p>
       </motion.div>
 
-      {/* Two-column: Cards + Map */}
-      <div className="flex-1 min-h-0 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-[42px] pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[300px_1fr] xl:grid-cols-[320px_1fr] gap-5 md:gap-6 lg:gap-8 h-full">
-          {/* Left Column — Category Cards */}
-          <motion.div
-            initial="hidden"
-            animate="show"
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
-            className="flex flex-col gap-3"
-          >
-            {cards.map((itm) => (
-              <motion.button
-                key={itm.label}
-                variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
-                whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleCardClick(itm)}
-                className={`w-full flex items-center gap-5 px-6 py-7 border rounded-2xl transition-all duration-200 ${
-                  activeFilter === itm.filterKey && itm.filterKey
-                    ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
-                    : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
-                }`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
-                  <itm.icon size={20} strokeWidth={1.2} className="text-foreground/50" />
-                </div>
-                <div className="text-left">
+      {/* Two-column layout in centered container */}
+      <div className="flex-1 min-h-0 px-4 sm:px-6 pb-6 pt-4 md:pt-5 flex justify-center">
+        <div className="w-full max-w-[80%] xl:max-w-[78%]">
+          <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[300px_1fr] xl:grid-cols-[320px_1fr] gap-5 md:gap-6 lg:gap-8 h-full">
+            {/* Left — Category Cards */}
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
+              className="flex flex-col gap-3"
+            >
+              {cards.map((itm) => (
+                <motion.button
+                  key={itm.label}
+                  variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                  whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleCardClick(itm)}
+                  className={`w-full flex items-center gap-5 px-6 py-7 border rounded-2xl transition-all duration-200 ${
+                    activeFilter === itm.filterKey && itm.filterKey
+                      ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
+                      : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
+                  }`}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
+                    <itm.icon size={20} strokeWidth={1.2} className="text-foreground/50" />
+                  </div>
                   <span className="font-serif text-[15px] md:text-base lg:text-[17px] tracking-wide text-foreground/80">
                     {itm.label}
                   </span>
-                </div>
-              </motion.button>
-            ))}
-          </motion.div>
+                </motion.button>
+              ))}
+            </motion.div>
 
-          {/* Right Column — Google Map */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="min-h-[300px] md:min-h-0 overflow-hidden"
-            style={{ filter: 'grayscale(80%) brightness(1.05) sepia(20%)', border: '1px solid #E8C8C0', borderRadius: '18px' }}
-          >
-            <GoogleMap
-              destination={tripData.destination}
-              accommodations={accommodationItems}
-              activities={activityItems}
-              reservations={reservationItems}
-              transportItems={transportItems}
-              activeFilter={activeFilter}
-            />
-          </motion.div>
+            {/* Right — Google Map */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="min-h-[300px] md:min-h-0 overflow-hidden"
+              style={{ filter: 'grayscale(80%) brightness(1.05) sepia(20%)', border: '1px solid #E8C8C0', borderRadius: '18px' }}
+            >
+              <GoogleMap
+                destination={tripData.destination}
+                accommodations={accommodationItems}
+                activities={activityItems}
+                reservations={reservationItems}
+                transportItems={transportItems}
+                activeFilter={activeFilter}
+              />
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>

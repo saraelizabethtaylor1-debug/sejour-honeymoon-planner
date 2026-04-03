@@ -53,7 +53,7 @@ const Index = () => {
           />
 
           {/* Spacer for fixed header */}
-          <div className="h-[90px] md:h-[160px] flex-shrink-0" />
+          <div className="h-[100px] md:h-[210px] flex-shrink-0" />
 
           <main className={`flex-1 px-4 sm:px-6 lg:px-8 pb-20 md:pb-0 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
             {tab === 'planning' && (
