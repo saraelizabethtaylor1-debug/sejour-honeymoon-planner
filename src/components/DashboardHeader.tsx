@@ -21,11 +21,11 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials }: DashboardHead
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-foreground/5" style={{ boxShadow: "0 1px 8px -2px hsl(10 8% 12% / 0.04)" }}>
       {/* Top row: logo + wordmark */}
       <div className="flex items-center justify-center gap-4 pt-6 pb-4 px-4 sm:px-6 lg:px-8">
-        <div className="relative flex-shrink-0" style={{ width: 72, height: 72 }}>
+        <div className="relative flex-shrink-0" style={{ width: 90, height: 90 }}>
           <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
           {initials && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-foreground/70" style={{ fontSize: "9px", letterSpacing: "0.15em", transform: "translateX(-0.5px)" }}>
+              <span className="font-serif text-foreground/70" style={{ fontSize: "11px", letterSpacing: "0.15em", transform: "translateX(-0.5px)" }}>
                 {initials}
               </span>
             </div>
@@ -33,7 +33,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials }: DashboardHead
         </div>
         <span
           className="font-serif text-foreground/80"
-          style={{ fontSize: "32px", letterSpacing: "0.4em", fontWeight: 300 }}
+          style={{ fontSize: "40px", letterSpacing: "0.4em", fontWeight: 300 }}
         >
           SÉJOUR
         </span>
