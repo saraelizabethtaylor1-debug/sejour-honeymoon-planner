@@ -1,7 +1,6 @@
 import type { TripData, DashboardTab } from "@/types/honeymoon";
 import { motion } from "framer-motion";
 import moonLogo from "@/assets/moon-logo.png";
-import moonLogo from "@/assets/moon-logo.png";
 
 interface DashboardHeaderProps {
   tripData: TripData;
