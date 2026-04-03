@@ -70,13 +70,9 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings 
         <div className="absolute right-4 sm:right-6 lg:right-8 top-1/2 -translate-y-1/2" ref={dropdownRef}>
           <button
             onClick={() => setProfileOpen((p) => !p)}
-            className="w-9 h-9 rounded-full bg-primary/50 border border-foreground/[0.06] flex items-center justify-center hover:bg-primary/70 transition-colors duration-200"
+            className="w-9 h-9 rounded-full bg-[#f5e6e2] border border-foreground/[0.06] flex items-center justify-center transition-colors duration-200 group hover:bg-[#e8d0cc]"
           >
-            {initials ? (
-              <span className="font-serif text-[11px] tracking-wider text-foreground/65">{initials}</span>
-            ) : (
-              <User size={16} strokeWidth={1.3} className="text-foreground/50" />
-            )}
+            <Heart size={18} strokeWidth={1.2} className="text-[#9e6b63] group-hover:fill-[#e8d0cc] transition-colors duration-200" />
           </button>
 
           <AnimatePresence>
