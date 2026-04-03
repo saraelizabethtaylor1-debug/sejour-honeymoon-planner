@@ -36,10 +36,10 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
 
   return (
     <div className="flex justify-center" style={{ marginTop: '24px' }}>
-      <div style={{ width: '100%', maxWidth: 1000 }} className="mx-auto">
-        <div className="flex flex-col md:flex-row items-center md:items-end justify-center" style={{ gap: 28 }}>
-          {/* Arched Cover Image — 460px wide */}
-          <div className="flex-shrink-0 w-full" style={{ maxWidth: 460 }}>
+      <div style={{ width: '100%', maxWidth: 1180 }} className="mx-auto">
+        <div className="flex flex-col md:flex-row items-end justify-center" style={{ gap: 28 }}>
+          {/* Arched Cover Image — 620px wide */}
+          <div className="flex-shrink-0 w-full" style={{ maxWidth: 620, marginTop: 40 }}>
             <input
               ref={fileInputRef}
               type="file"
@@ -48,9 +48,11 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               onChange={handleImageUpload}
             />
             <div
-              className="w-full h-[280px] md:h-[clamp(320px,55vh,500px)] lg:h-[clamp(360px,70vh,600px)] arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
+              className="w-full arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
               style={{
                 boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
+                height: 'auto',
+                aspectRatio: '620 / 700',
               }}
               onClick={() => fileInputRef.current?.click()}
             >
