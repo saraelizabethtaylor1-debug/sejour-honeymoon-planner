@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence } from 'framer-motion';
 import type { TripData, AppView, DashboardTab, DetailView, TransportItem, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
 import { defaultTripData, sampleItinerary, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
@@ -101,23 +102,26 @@ const Index = () => {
         initials={getInitials()}
       />
 
-      <AnimatePresence>
-        {detailView && (
-          <DetailViewComponent
-            key={detailView}
-            view={detailView}
-            onBack={() => setDetailView(null)}
-            transportItems={transportItems}
-            setTransportItems={setTransportItems}
-            accommodationItems={accommodationItems}
-            setAccommodationItems={setAccommodationItems}
-            activityItems={activityItems}
-            setActivityItems={setActivityItems}
-            reservationItems={reservationItems}
-            setReservationItems={setReservationItems}
-          />
-        )}
-      </AnimatePresence>
+      {createPortal(
+        <AnimatePresence>
+          {detailView && (
+            <DetailViewComponent
+              key={detailView}
+              view={detailView}
+              onBack={() => setDetailView(null)}
+              transportItems={transportItems}
+              setTransportItems={setTransportItems}
+              accommodationItems={accommodationItems}
+              setAccommodationItems={setAccommodationItems}
+              activityItems={activityItems}
+              setActivityItems={setActivityItems}
+              reservationItems={reservationItems}
+              setReservationItems={setReservationItems}
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
