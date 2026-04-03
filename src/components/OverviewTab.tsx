@@ -24,9 +24,9 @@ const cards: CardItem[] = [
   { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
 ];
 
-const CARD_HEIGHT = 68;
-const CARD_GAP = 12;
-const TOTAL_HEIGHT = CARD_HEIGHT * 4 + CARD_GAP * 3; // 308px
+const CARD_HEIGHT = 80;
+const CARD_GAP = 16;
+const TOTAL_HEIGHT = CARD_HEIGHT * 4 + CARD_GAP * 3; // 368px
 
 const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems, transportItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
@@ -44,32 +44,26 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
 
   return (
     <div className="w-full flex flex-col h-full">
-      {/* Slim Hero */}
+      {/* Slim Hero — no quote */}
       <div className="text-center" style={{ paddingTop: 12, paddingBottom: 20 }}>
         {heroLine && (
           <p className="font-serif uppercase tracking-[0.28em] text-foreground/40 font-light px-0 py-[50px] pt-[50px] pb-0 text-lg">
             {heroLine}
           </p>
         )}
-        <p
-          className="font-script italic lowercase leading-[1.2] text-4xl"
-          style={{ color: 'hsl(10 30% 35%)', marginTop: 8 }}
-        >
-          {quote}
-        </p>
       </div>
 
-      {/* Two-column layout — 1000px centered */}
-      <div className="flex justify-center px-4 pb-6">
-        <div style={{ width: '100%', maxWidth: 920 }}>
-          <div className="flex" style={{ gap: 20 }}>
-            {/* Left — Cards at 340px */}
+      {/* Two-column layout — 1100px centered */}
+      <div className="flex justify-center px-4 pb-0">
+        <div style={{ width: '100%', maxWidth: 1100 }}>
+          <div className="flex" style={{ gap: 24 }}>
+            {/* Left — Cards at 420px */}
             <motion.div
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
               className="flex flex-col shrink-0"
-              style={{ width: 340, gap: CARD_GAP }}
+              style={{ width: 420, gap: CARD_GAP }}
             >
               {cards.map((itm) => (
                 <motion.button
@@ -78,24 +72,24 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleCardClick(itm)}
-                  className={`w-full flex items-center gap-4 px-4 border rounded-xl transition-all duration-200 ${
+                  className={`w-full flex items-center gap-4 px-5 border rounded-xl transition-all duration-200 ${
                     activeFilter === itm.filterKey && itm.filterKey
                       ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
                       : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
                   }`}
                   style={{ height: CARD_HEIGHT }}
                 >
-                  <div className="w-9 h-9 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
-                    <itm.icon size={18} strokeWidth={1.2} className="text-foreground/50" />
+                  <div className="w-10 h-10 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
+                    <itm.icon size={20} strokeWidth={1.2} className="text-foreground/50" />
                   </div>
-                  <span className="font-serif tracking-wide text-foreground/80 text-sm">
+                  <span className="font-serif tracking-wide text-foreground/80 text-base">
                     {itm.label}
                   </span>
                 </motion.button>
               ))}
             </motion.div>
 
-            {/* Right — Map fills remaining ~560px, height matches cards */}
+            {/* Right — Map fills remaining width */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -103,7 +97,6 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
               className="flex-1 min-w-0 overflow-hidden"
               style={{
                 height: TOTAL_HEIGHT,
-                maxWidth: 560,
                 filter: 'grayscale(80%) brightness(1.05) sepia(20%)',
                 border: '1px solid #E8C8C0',
                 borderRadius: 12,
@@ -120,6 +113,16 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
             </motion.div>
           </div>
         </div>
+      </div>
+
+      {/* Romantic sign-off quote */}
+      <div className="text-center" style={{ marginTop: 48, marginBottom: 40 }}>
+        <p
+          className="font-script italic lowercase leading-[1.2]"
+          style={{ color: 'hsl(10 30% 35%)', fontSize: 26 }}
+        >
+          {quote}
+        </p>
       </div>
     </div>
   );
