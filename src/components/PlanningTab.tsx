@@ -78,7 +78,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="leading-[1.1] whitespace-nowrap"
-            style={{ marginBottom: 28 }}
+            style={{ marginBottom: 24 }}
           >
             <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
               happily ever after
