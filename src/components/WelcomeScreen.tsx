@@ -44,8 +44,13 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
       <div className="max-w-[680px] mx-auto w-full flex flex-col flex-1 justify-between">
         <div className="space-y-10 sm:space-y-14 my-0">
           <header className="text-center">
-            <h1 className="font-script text-5xl sm:text-6xl text-primary-foreground leading-none">honeymoon</h1>
-            <p className="text-label mt-4 font-semibold">The Planning Suite</p>
+            <span
+              className="font-serif text-foreground/80"
+              style={{ fontSize: "40px", letterSpacing: "0.4em", fontWeight: 300 }}
+            >
+              SÉJOUR
+            </span>
+            <p className="text-label mt-4 font-semibold">The Honeymoon Planning Suite</p>
           </header>
 
           <div className="space-y-6 sm:space-y-8">
