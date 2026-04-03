@@ -75,7 +75,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       {/* Slim Hero — no quote */}
       <div className="text-center" style={{ paddingTop: 12, paddingBottom: 20 }}>
         {heroLine && (
-          <p className="font-serif uppercase tracking-[0.28em] text-foreground/40 font-light px-0 py-[50px] pt-[50px] pb-0 text-lg">
+          <p className="uppercase text-foreground/40" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, letterSpacing: '0.2em', fontSize: 22, padding: '50px 0 0 0' }}>
             {heroLine}
           </p>
         )}
@@ -98,8 +98,8 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   {/* Section header */}
                   <motion.p
                     variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-                    className="uppercase tracking-[0.22em] text-foreground/35 font-light text-sm font-sans"
-                    style={{ fontSize: 11, marginBottom: SECTION_HEADER_MB, lineHeight: `${SECTION_HEADER_HEIGHT}px` }}
+                    className="uppercase text-foreground/35"
+                    style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, letterSpacing: '0.25em', fontSize: 10, marginBottom: SECTION_HEADER_MB, lineHeight: `${SECTION_HEADER_HEIGHT}px` }}
                   >
                     {section.header}
                   </motion.p>
@@ -123,7 +123,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                         <div className="w-10 h-10 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
                           <itm.icon size={20} strokeWidth={1.2} className="text-foreground/50" />
                         </div>
-                        <span className="font-serif tracking-wide text-foreground/80 text-base">
+                        <span className="text-foreground/80" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, fontSize: 15 }}>
                           {itm.label}
                         </span>
                       </motion.button>
@@ -162,8 +162,8 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       {/* Romantic sign-off quote */}
       <div className="text-center" style={{ marginTop: 48, marginBottom: 60 }}>
         <p
-          className="font-script italic lowercase leading-[1.2] text-4xl"
-          style={{ color: 'hsl(10 30% 35%)', fontSize: 26 }}
+          className="italic lowercase leading-[1.2]"
+          style={{ fontFamily: "'Pinyon Script', cursive", color: 'hsl(10 30% 35%)', fontSize: 32 }}
         >
           {quote}
         </p>
