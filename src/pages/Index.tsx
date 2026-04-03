@@ -37,12 +37,11 @@ const Index = () => {
       </AnimatePresence>
 
       {view === 'dashboard' && (
-        <div className="h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col">
           <DashboardHeader
             tripData={tripData}
             tab={tab}
             onTabChange={setTab}
-            onMenuToggle={() => setMenuOpen(true)}
             initials={(() => {
               const parts = tripData.names.split(/[,&]|\band\b|\s+/).map(s => s.trim()).filter(Boolean);
               return parts.length >= 2
@@ -51,7 +50,10 @@ const Index = () => {
             })()}
           />
 
-          <main className={`flex-1 px-4 sm:px-6 lg:px-8 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
+          {/* Spacer for fixed header — taller on desktop (has tabs+destination), shorter on mobile */}
+          <div className="h-[70px] md:h-[120px] flex-shrink-0" />
+
+          <main className={`flex-1 px-4 sm:px-6 lg:px-8 pb-20 md:pb-0 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-4 sm:py-5 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
             {tab === 'planning' && (
               <PlanningTab
                 onOpenDetail={setDetailView}
