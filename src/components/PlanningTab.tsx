@@ -71,14 +71,14 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
         <div style={{ width: 32, flexShrink: 0 }} />
 
         {/* Right column — bottom half has headline + cards */}
-        <div style={{ width: '54%', height: 600, paddingTop: 180 }} className="flex flex-col justify-start">
+        <div style={{ width: '54%', height: 600 }} className="flex flex-col justify-end">
           {/* Headline */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="leading-[1.1] whitespace-nowrap"
-            style={{ marginBottom: 28 }}
+            style={{ marginBottom: 24 }}
           >
             <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
               happily ever after
@@ -112,7 +112,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
                 whileTap={{ scale: 0.97 }}
                 onClick={() => onOpenDetail(card.view)}
                 className="planning-card flex flex-col items-center justify-center gap-2.5 bg-primary/50 rounded-xl transition-shadow duration-200"
-                style={{ boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)', flex: 1 }}
+                style={{ boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)', height: 160 }}
               >
                 <card.icon size={22} strokeWidth={1} className="text-foreground/50" />
                 <span className="font-body text-[10px] uppercase tracking-[0.14em] text-foreground/60">
