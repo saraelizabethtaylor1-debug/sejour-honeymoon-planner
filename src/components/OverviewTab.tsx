@@ -123,7 +123,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                         <div className="w-10 h-10 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
                           <itm.icon size={20} strokeWidth={1.2} className="text-foreground/50" />
                         </div>
-                        <span className="font-serif tracking-wide text-foreground/80 text-base">
+                        <span className="text-foreground/80" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, fontSize: 15 }}>
                           {itm.label}
                         </span>
                       </motion.button>
