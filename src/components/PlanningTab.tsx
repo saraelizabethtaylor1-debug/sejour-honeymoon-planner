@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Wallet, Briefcase, PenLine, Camera, Check, Circle } from 'lucide-react';
+import { Heart, Wallet, Briefcase, PenLine, Camera } from 'lucide-react';
 import type { DetailView, TripData } from '@/types/honeymoon';
 
 interface PlanningTabProps {
