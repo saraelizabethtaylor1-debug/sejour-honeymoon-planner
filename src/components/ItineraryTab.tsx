@@ -506,7 +506,7 @@ const ItineraryItem = ({
       >
         <div className="flex items-center gap-4">
           {/* Large day number */}
-          <span className="font-serif text-3xl sm:text-4xl font-bold text-primary-foreground/70 leading-none">
+          <span className="font-serif text-3xl sm:text-4xl font-light text-primary-foreground/70 leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
             {paddedNumber}
           </span>
           {/* Stacked day label + date */}
