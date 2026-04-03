@@ -40,30 +40,30 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
 
   return (
     <div className="w-full flex flex-col h-full">
-      {/* Compact Hero */}
+      {/* Slim Hero Band */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center pt-4 pb-2 md:pt-6 md:pb-3 px-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="text-center py-4 px-4"
       >
         {heroLine && (
-          <p className="font-serif text-[11px] sm:text-[12px] uppercase tracking-[0.28em] text-foreground/40 font-light">
+          <p className="font-serif text-[11px] uppercase tracking-[0.28em] text-foreground/40 font-light">
             {heroLine}
           </p>
         )}
         <p
-          className="mt-3 md:mt-4 font-script text-[28px] sm:text-[34px] md:text-[40px] lg:text-[46px] tracking-tight lowercase leading-[1.15]"
+          className="mt-1.5 font-script text-[24px] tracking-tight lowercase leading-[1.2]"
           style={{ color: 'hsl(10 30% 35%)' }}
         >
           {quote}
         </p>
       </motion.div>
 
-      {/* Two-column layout in centered container */}
-      <div className="flex-1 min-h-0 px-4 sm:px-6 pb-6 pt-4 md:pt-5 flex justify-center">
-        <div className="w-full max-w-[80%] xl:max-w-[78%]">
-          <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[300px_1fr] xl:grid-cols-[320px_1fr] gap-5 md:gap-6 lg:gap-8 h-full">
+      {/* Two-column layout — centered 900px container */}
+      <div className="flex-1 min-h-0 flex justify-center px-4 pb-6">
+        <div className="w-full" style={{ maxWidth: '900px' }}>
+          <div className="grid h-full gap-6" style={{ gridTemplateColumns: '45% 55%' }}>
             {/* Left — Category Cards */}
             <motion.div
               initial="hidden"
@@ -78,7 +78,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleCardClick(itm)}
-                  className={`w-full flex items-center gap-5 px-6 py-7 border rounded-2xl transition-all duration-200 ${
+                  className={`w-full flex items-center gap-5 px-6 py-6 border rounded-2xl transition-all duration-200 ${
                     activeFilter === itm.filterKey && itm.filterKey
                       ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
                       : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
@@ -94,12 +94,12 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
               ))}
             </motion.div>
 
-            {/* Right — Google Map */}
+            {/* Right — Google Map (constrained to column) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="min-h-[300px] md:min-h-0 overflow-hidden"
+              className="overflow-hidden"
               style={{ filter: 'grayscale(80%) brightness(1.05) sepia(20%)', border: '1px solid #E8C8C0', borderRadius: '18px' }}
             >
               <GoogleMap
