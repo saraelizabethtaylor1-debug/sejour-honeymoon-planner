@@ -82,7 +82,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       </div>
 
       {/* Two-column layout — 1100px centered */}
-      <div className="flex justify-center px-4" style={{ paddingTop: 60, paddingBottom: 0 }}>
+      <div className="flex justify-center px-[7px]" style={{ paddingTop: 60, paddingBottom: 0 }}>
         <div style={{ width: '100%', maxWidth: 1100 }}>
           <div className="flex" style={{ gap: 24 }}>
             {/* Left — Grouped cards at 420px */}
@@ -98,7 +98,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   {/* Section header */}
                   <motion.p
                     variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-                    className="font-serif uppercase tracking-[0.22em] text-foreground/35 font-light"
+                    className="uppercase tracking-[0.22em] text-foreground/35 font-light text-sm font-sans"
                     style={{ fontSize: 11, marginBottom: SECTION_HEADER_MB, lineHeight: `${SECTION_HEADER_HEIGHT}px` }}
                   >
                     {section.header}
@@ -162,7 +162,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
       {/* Romantic sign-off quote */}
       <div className="text-center" style={{ marginTop: 48, marginBottom: 60 }}>
         <p
-          className="font-script italic lowercase leading-[1.2]"
+          className="font-script italic lowercase leading-[1.2] text-4xl"
           style={{ color: 'hsl(10 30% 35%)', fontSize: 26 }}
         >
           {quote}
