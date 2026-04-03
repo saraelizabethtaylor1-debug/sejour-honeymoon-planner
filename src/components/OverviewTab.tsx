@@ -98,8 +98,8 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
                   {/* Section header */}
                   <motion.p
                     variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-                    className="uppercase tracking-[0.22em] text-foreground/35 font-light text-sm font-sans"
-                    style={{ fontSize: 11, marginBottom: SECTION_HEADER_MB, lineHeight: `${SECTION_HEADER_HEIGHT}px` }}
+                    className="uppercase text-foreground/35"
+                    style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, letterSpacing: '0.25em', fontSize: 10, marginBottom: SECTION_HEADER_MB, lineHeight: `${SECTION_HEADER_HEIGHT}px` }}
                   >
                     {section.header}
                   </motion.p>
