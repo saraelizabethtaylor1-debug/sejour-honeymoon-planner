@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink } from 'lucide-react';
+import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -21,6 +21,9 @@ interface ItineraryTabProps {
 const iconMap: Record<string, typeof Bed> = {
   hotel: Bed,
   flight: Plane,
+  ferry: Ship,
+  train: TrainFront,
+  car: Car,
   dining: UtensilsCrossed,
   activity: Sparkles,
   spa: Sparkles,
@@ -94,14 +97,18 @@ const buildSyncedActivities = (
     if (!t.time || !t.type) continue;
     const itemDate = extractDateForComparison(t.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
+      const locationParts = [t.departureLocation, t.arrivalLocation].filter(Boolean);
+      const locationStr = locationParts.length === 2 ? `${locationParts[0]} → ${locationParts[1]}` : locationParts[0] || '';
+      const typeLC = t.type.toLowerCase();
+      const iconKey = typeLC === 'plane' ? 'flight' : typeLC === 'ferry' ? 'ferry' : typeLC === 'train' ? 'train' : typeLC === 'car' ? 'car' : 'transport';
       activities.push({
         _uid: `sync-transport-${t.id}`,
         _synced: true,
         time: extractTime(t.time) || t.time,
         title: `${t.type}${t.details ? ': ' + t.details : ''}`,
-        location: '',
+        location: locationStr,
         notes: t.confirmation ? `Confirmation: ${t.confirmation}` : '',
-        iconType: t.type.toLowerCase().includes('flight') ? 'flight' : 'transport',
+        iconType: iconKey as ItineraryActivity['iconType'],
       });
     }
   }
