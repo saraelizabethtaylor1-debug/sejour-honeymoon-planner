@@ -341,17 +341,15 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
                 className={inputClass}
               />
               <div className="grid grid-cols-3 gap-2.5">
-                <input
-                  type="date"
+                <CustomDatePicker
                   value={item.date || ''}
-                  onChange={(e) => update(item.id, 'date', e.target.value)}
-                  className={inputClass}
+                  onChange={(v) => update(item.id, 'date', v)}
+                  placeholder="Date"
                 />
-                <input
-                  type="time"
+                <CustomTimePicker
                   value={item.time || ''}
-                  onChange={(e) => update(item.id, 'time', e.target.value)}
-                  className={inputClass}
+                  onChange={(v) => update(item.id, 'time', v)}
+                  placeholder="Time"
                 />
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
