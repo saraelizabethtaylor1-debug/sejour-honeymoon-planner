@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Trash2, Check, Pencil } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { DetailView, TodoItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
 import { sampleTodos, samplePacking, sampleNotes } from '@/data/sampleData';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
