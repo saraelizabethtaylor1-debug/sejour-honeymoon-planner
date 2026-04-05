@@ -356,12 +356,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
                   <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
                 </div>
               </div>
-              <button
-                onClick={() => {}}
-                className="w-full mt-1 py-2.5 rounded-xl bg-[#d4b5b0] hover:bg-[#c9a8a2] text-white text-sm font-serif tracking-wide transition-colors shadow-soft"
-              >
-                Save
-              </button>
+              <SaveButton label="Transportation" />
             </div>
           </div>
         ))}
