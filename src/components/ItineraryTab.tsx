@@ -100,7 +100,8 @@ const buildSyncedActivities = (
       const locationParts = [t.departureLocation, t.arrivalLocation].filter(Boolean);
       const locationStr = locationParts.length === 2 ? `${locationParts[0]} → ${locationParts[1]}` : locationParts[0] || '';
       const typeLC = t.type.toLowerCase();
-      const iconType: ItineraryActivity['iconType'] = typeLC === 'plane' || typeLC.includes('flight') ? 'flight' : 'transport';
+      const iconType: ItineraryActivity['iconType'] = typeLC === 'plane' || typeLC.includes('flight') ? 'flight'
+        : typeLC === 'ferry' ? 'transport' : typeLC === 'train' ? 'transport' : typeLC === 'car' ? 'transport' : 'transport';
       activities.push({
         _uid: `sync-transport-${t.id}`,
         _synced: true,
