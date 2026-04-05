@@ -341,7 +341,7 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
         </div>
 
         {/* Photo placeholder - full height */}
-        <div className="flex-shrink-0 w-20 sm:w-24">
+        <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24">
           {act.imageUrl ? (
             <div className="relative w-full h-full">
               <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
