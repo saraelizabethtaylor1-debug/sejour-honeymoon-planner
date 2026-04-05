@@ -254,6 +254,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
   return (
     <div>
       <DetailHeader title="Transportation" onBack={onBack} />
+      <div className="max-w-[820px] mx-auto">
       <div className="space-y-3">
         {items.map((item) => (
           <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
