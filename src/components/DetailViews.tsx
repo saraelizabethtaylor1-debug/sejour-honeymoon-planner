@@ -484,11 +484,8 @@ const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; ite
         <Plus size={14} strokeWidth={1.5} />
         <span className="font-body">Add reservation</span>
       </button>
+      </div>
     </div>
-  );
-};
-
-// ── Map ──
 const MapView = ({ onBack }: { onBack: () => void }) => {
   return (
     <div>
