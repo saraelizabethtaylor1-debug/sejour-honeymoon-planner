@@ -391,11 +391,8 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
         <Plus size={14} strokeWidth={1.5} />
         <span className="font-body">Add accommodation</span>
       </button>
+      </div>
     </div>
-  );
-};
-
-// ── Activities ──
 const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>> }) => {
   const add = () => {
     setItems([...items, { id: Date.now().toString(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
