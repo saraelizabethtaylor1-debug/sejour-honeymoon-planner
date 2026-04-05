@@ -40,6 +40,7 @@ export interface TransportItem {
   type: string;
   details: string;
   confirmation: string;
+  date?: string;
   time: string;
   cost: number;
   departureLocation?: string;

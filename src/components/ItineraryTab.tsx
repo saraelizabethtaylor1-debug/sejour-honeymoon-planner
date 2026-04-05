@@ -518,15 +518,15 @@ const ItineraryItem = ({
       >
         <div className="flex items-center gap-4">
           {/* Large day number */}
-          <span className="font-serif text-3xl sm:text-4xl font-light text-white/70 leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
+          <span className="font-serif text-3xl sm:text-4xl font-light text-white leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
             {paddedNumber}
           </span>
           {/* Stacked day label + date */}
           <div className="flex flex-col items-start">
-            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-white/60">
+            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-white">
               Day {dayWord}
             </span>
-            <span className="font-serif text-sm sm:text-base text-white/90 leading-snug">
+            <span className="font-serif text-sm sm:text-base text-white leading-snug">
               {initialDay.date} · {editingDestination ? null : (
                 <button
                   onClick={(e) => { e.stopPropagation(); setEditingDestination(true); }}
