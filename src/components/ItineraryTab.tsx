@@ -105,7 +105,7 @@ const buildSyncedActivities = (
         _uid: `sync-transport-${t.id}`,
         _synced: true,
         time: t.time || '',
-        title: `${t.type}${t.details ? ': ' + t.details : ''}`,
+        title: `${({ plane: 'Flight', ferry: 'Ferry', train: 'Train', car: 'Car' } as Record<string, string>)[typeLC] || t.type}${t.details ? ': ' + t.details : ''}`,
         location: locationStr,
         notes: t.confirmation ? `Confirmation: ${t.confirmation}` : '',
         iconType: iconKey as ItineraryActivity['iconType'],
