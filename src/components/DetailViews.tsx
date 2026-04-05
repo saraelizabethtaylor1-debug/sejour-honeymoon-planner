@@ -407,12 +407,7 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
                 <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
               </div>
               <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Notes" className={inputClass} />
-              <button
-                onClick={() => {}}
-                className="w-full mt-1 py-2.5 rounded-xl bg-[#d4b5b0] hover:bg-[#c9a8a2] text-white text-sm font-serif tracking-wide transition-colors shadow-soft"
-              >
-                Save
-              </button>
+              <SaveButton label="Accommodations" />
             </div>
           </div>
         ))}
