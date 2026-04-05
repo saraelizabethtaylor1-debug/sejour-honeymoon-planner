@@ -243,7 +243,7 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
 // ── Transportation ──
 const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>> }) => {
   const add = () => {
-    setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', time: '', cost: 0 }]);
+    setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 }]);
   };
   const remove = (id: string) => setItems(items.filter(i => i.id !== id));
   const update = (id: string, field: keyof TransportItem, value: string | number) => {
@@ -301,27 +301,15 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
               />
               <div className="grid grid-cols-3 gap-2.5">
                 <input
-                  value={item.time?.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim() || ''}
-                  onChange={(e) => {
-                    const currentTime = item.time || '';
-                    const timeOnly = currentTime.match(/(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm))/i)?.[1] || '';
-                    const newDate = e.target.value;
-                    const combined = newDate && timeOnly ? `${newDate}, ${timeOnly}` : newDate || timeOnly;
-                    update(item.id, 'time', combined);
-                  }}
-                  placeholder="Date (e.g. Sept 14)"
+                  type="date"
+                  value={item.date || ''}
+                  onChange={(e) => update(item.id, 'date', e.target.value)}
                   className={inputClass}
                 />
                 <input
-                  value={item.time?.match(/(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm))/i)?.[1] || ''}
-                  onChange={(e) => {
-                    const currentTime = item.time || '';
-                    const dateOnly = currentTime.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim();
-                    const newTime = e.target.value;
-                    const combined = dateOnly && newTime ? `${dateOnly}, ${newTime}` : dateOnly || newTime;
-                    update(item.id, 'time', combined);
-                  }}
-                  placeholder="Time (e.g. 10:30 AM)"
+                  type="time"
+                  value={item.time || ''}
+                  onChange={(e) => update(item.id, 'time', e.target.value)}
                   className={inputClass}
                 />
                 <div className="relative">
@@ -330,7 +318,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
                 </div>
               </div>
               <button
-                onClick={() => {/* entry is already saved via state */}}
+                onClick={() => {}}
                 className="w-full mt-1 py-2.5 rounded-xl bg-[#d4b5b0] hover:bg-[#c9a8a2] text-white text-sm font-serif tracking-wide transition-colors shadow-soft"
               >
                 Save
