@@ -301,10 +301,12 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
               />
               <div className="grid grid-cols-3 gap-2.5">
                 <input
-                  value={(item as any)._date || item.time?.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim() || ''}
+                  value={item.time?.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim() || ''}
                   onChange={(e) => {
-                    const timeOnly = item.time?.match(/(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm))/i)?.[1] || '';
-                    const combined = timeOnly ? `${e.target.value}, ${timeOnly}` : e.target.value;
+                    const currentTime = item.time || '';
+                    const timeOnly = currentTime.match(/(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm))/i)?.[1] || '';
+                    const newDate = e.target.value;
+                    const combined = newDate && timeOnly ? `${newDate}, ${timeOnly}` : newDate || timeOnly;
                     update(item.id, 'time', combined);
                   }}
                   placeholder="Date (e.g. Sept 14)"
@@ -313,8 +315,10 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
                 <input
                   value={item.time?.match(/(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm))/i)?.[1] || ''}
                   onChange={(e) => {
-                    const dateOnly = item.time?.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim() || '';
-                    const combined = dateOnly ? `${dateOnly}, ${e.target.value}` : e.target.value;
+                    const currentTime = item.time || '';
+                    const dateOnly = currentTime.replace(/,?\s*\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)/i, '').trim();
+                    const newTime = e.target.value;
+                    const combined = dateOnly && newTime ? `${dateOnly}, ${newTime}` : dateOnly || newTime;
                     update(item.id, 'time', combined);
                   }}
                   placeholder="Time (e.g. 10:30 AM)"

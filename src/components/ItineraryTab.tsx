@@ -518,19 +518,19 @@ const ItineraryItem = ({
       >
         <div className="flex items-center gap-4">
           {/* Large day number */}
-          <span className="font-serif text-3xl sm:text-4xl font-light text-primary/30 leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
+          <span className="font-serif text-3xl sm:text-4xl font-light text-white/70 leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
             {paddedNumber}
           </span>
           {/* Stacked day label + date */}
           <div className="flex flex-col items-start">
-            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-primary/40">
+            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-white/60">
               Day {dayWord}
             </span>
-            <span className="font-serif text-sm sm:text-base text-primary/70 leading-snug">
+            <span className="font-serif text-sm sm:text-base text-white/90 leading-snug">
               {initialDay.date} · {editingDestination ? null : (
                 <button
                   onClick={(e) => { e.stopPropagation(); setEditingDestination(true); }}
-                  className="hover:text-primary/90 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   {destination || 'Add destination'}
                 </button>
@@ -542,14 +542,14 @@ const ItineraryItem = ({
                   onClick={(e) => e.stopPropagation()}
                   onBlur={(e) => { setDestination(e.target.value); setEditingDestination(false); }}
                   onKeyDown={(e) => { if (e.key === 'Enter') { setDestination((e.target as HTMLInputElement).value); setEditingDestination(false); } }}
-                  className="bg-transparent border-b border-primary/40 focus:outline-none text-primary/80 font-serif text-sm sm:text-base w-24 sm:w-32"
+                  className="bg-transparent border-b border-white/40 focus:outline-none text-white font-serif text-sm sm:text-base w-24 sm:w-32"
                 />
               )}
             </span>
           </div>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={18} className="text-primary/50" />
+          <ChevronDown size={18} className="text-white/60" />
         </motion.div>
       </motion.button>
 
