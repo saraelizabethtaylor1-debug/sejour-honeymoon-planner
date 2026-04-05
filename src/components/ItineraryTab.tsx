@@ -105,7 +105,7 @@ const buildSyncedActivities = (
         _uid: `sync-transport-${t.id}`,
         _synced: true,
         time: t.time || '',
-        title: `${t.type}${t.details ? ': ' + t.details : ''}`,
+        title: `${({ plane: 'Flight', ferry: 'Ferry', train: 'Train', car: 'Car' } as Record<string, string>)[typeLC] || t.type}${t.details ? ': ' + t.details : ''}`,
         location: locationStr,
         notes: t.confirmation ? `Confirmation: ${t.confirmation}` : '',
         iconType: iconKey as ItineraryActivity['iconType'],
@@ -341,7 +341,7 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
         </div>
 
         {/* Photo placeholder - full height */}
-        <div className="flex-shrink-0 w-20 sm:w-24">
+        <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24">
           {act.imageUrl ? (
             <div className="relative w-full h-full">
               <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
