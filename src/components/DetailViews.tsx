@@ -261,20 +261,17 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
             <div className="space-y-2.5">
-              <div className="grid grid-cols-2 gap-2.5">
-                <Select value={item.type || ''} onValueChange={(v) => update(item.id, 'type', v)}>
-                  <SelectTrigger className="w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors h-auto">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Plane"><span className="flex items-center gap-2"><Plane size={14} strokeWidth={1.4} /> Plane</span></SelectItem>
-                    <SelectItem value="Ferry"><span className="flex items-center gap-2"><Ship size={14} strokeWidth={1.4} /> Ferry</span></SelectItem>
-                    <SelectItem value="Train"><span className="flex items-center gap-2"><TrainFront size={14} strokeWidth={1.4} /> Train</span></SelectItem>
-                    <SelectItem value="Car"><span className="flex items-center gap-2"><Car size={14} strokeWidth={1.4} /> Car</span></SelectItem>
-                  </SelectContent>
-                </Select>
-                <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
-              </div>
+              <Select value={item.type || ''} onValueChange={(v) => update(item.id, 'type', v)}>
+                <SelectTrigger className="w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors h-auto">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent className="z-[9999]">
+                  <SelectItem value="Plane"><span className="flex items-center gap-2"><Plane size={14} strokeWidth={1.4} /> Plane</span></SelectItem>
+                  <SelectItem value="Ferry"><span className="flex items-center gap-2"><Ship size={14} strokeWidth={1.4} /> Ferry</span></SelectItem>
+                  <SelectItem value="Train"><span className="flex items-center gap-2"><TrainFront size={14} strokeWidth={1.4} /> Train</span></SelectItem>
+                  <SelectItem value="Car"><span className="flex items-center gap-2"><Car size={14} strokeWidth={1.4} /> Car</span></SelectItem>
+                </SelectContent>
+              </Select>
               <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
               <PlacesAutocomplete
                 value={item.departureLocation || ''}
@@ -329,7 +326,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
               </div>
               <button
                 onClick={() => {/* entry is already saved via state */}}
-                className="w-full mt-1 py-2.5 rounded-xl bg-[#c9a09a] hover:bg-[#b8908a] text-white text-sm font-serif tracking-wide transition-colors shadow-soft"
+                className="w-full mt-1 py-2.5 rounded-xl bg-[#d4b5b0] hover:bg-[#c9a8a2] text-white text-sm font-serif tracking-wide transition-colors shadow-soft"
               >
                 Save
               </button>
