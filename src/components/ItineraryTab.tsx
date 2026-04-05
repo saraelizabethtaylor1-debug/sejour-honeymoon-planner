@@ -336,20 +336,21 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
             <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
           </button>
         </div>
+        </div>
 
-        {/* Photo placeholder */}
-        <div className="flex-shrink-0">
+        {/* Photo placeholder - full height */}
+        <div className="flex-shrink-0 w-20 sm:w-24">
           {act.imageUrl ? (
-            <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+            <div className="relative w-full h-full">
               <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-              <button onClick={onRemoveImage} className="absolute -top-1 -right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
+              <button onClick={onRemoveImage} className="absolute top-1 right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
                 <X size={10} className="text-background" />
               </button>
             </div>
           ) : (
             <button
               onClick={() => fileRef.current?.click()}
-              className="w-20 h-20 rounded-lg bg-primary/5 border border-primary/15 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
+              className="w-full h-full min-h-[80px] bg-primary/5 border-l border-primary/15 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
             >
               <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
               <span className="text-[10px] text-foreground/30">photo</span>
