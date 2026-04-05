@@ -326,7 +326,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
               </div>
               <button
                 onClick={() => {/* entry is already saved via state */}}
-                className="w-full mt-1 py-2.5 rounded-xl bg-[#c9a09a] hover:bg-[#b8908a] text-white text-sm font-serif tracking-wide transition-colors shadow-soft"
+                className="w-full mt-1 py-2.5 rounded-xl bg-[#d4b5b0] hover:bg-[#c9a8a2] text-white text-sm font-serif tracking-wide transition-colors shadow-soft"
               >
                 Save
               </button>
