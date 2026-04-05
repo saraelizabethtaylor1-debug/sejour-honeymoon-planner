@@ -94,8 +94,8 @@ const buildSyncedActivities = (
   const activities: TaggedActivity[] = [];
 
   for (const t of transportItems) {
-    if (!t.time || !t.type) continue;
-    const itemDate = extractDateForComparison(t.time, fallbackYear);
+    if (!t.date || !t.type) continue;
+    const itemDate = extractDateForComparison(t.date, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
       const locationParts = [t.departureLocation, t.arrivalLocation].filter(Boolean);
       const locationStr = locationParts.length === 2 ? `${locationParts[0]} → ${locationParts[1]}` : locationParts[0] || '';
@@ -104,7 +104,7 @@ const buildSyncedActivities = (
       activities.push({
         _uid: `sync-transport-${t.id}`,
         _synced: true,
-        time: extractTime(t.time) || t.time,
+        time: t.time || '',
         title: `${t.type}${t.details ? ': ' + t.details : ''}`,
         location: locationStr,
         notes: t.confirmation ? `Confirmation: ${t.confirmation}` : '',
