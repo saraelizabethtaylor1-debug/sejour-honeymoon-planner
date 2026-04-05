@@ -437,6 +437,7 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
         <Plus size={14} strokeWidth={1.5} />
         <span className="font-body">Add activity</span>
       </button>
+      </div>
     </div>
   );
 };
