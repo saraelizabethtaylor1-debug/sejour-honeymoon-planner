@@ -512,25 +512,42 @@ const ItineraryItem = ({
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-primary/30 rounded-full transition-shadow hover:bg-primary/40"
+        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-primary-foreground rounded-full transition-shadow hover:bg-primary-foreground/90"
       >
         <div className="flex items-center gap-4">
           {/* Large day number */}
-          <span className="font-serif text-3xl sm:text-4xl font-light text-primary-foreground/70 leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
+          <span className="font-serif text-3xl sm:text-4xl font-light text-primary/30 leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
             {paddedNumber}
           </span>
           {/* Stacked day label + date */}
           <div className="flex flex-col items-start">
-            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-primary-foreground/50">
+            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-primary/40">
               Day {dayWord}
             </span>
-            <span className="font-serif text-sm sm:text-base text-primary-foreground/80 leading-snug">
-              {initialDay.date} · {destination}
+            <span className="font-serif text-sm sm:text-base text-primary/70 leading-snug">
+              {initialDay.date} · {editingDestination ? null : (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setEditingDestination(true); }}
+                  className="hover:text-primary/90 transition-colors"
+                >
+                  {destination || 'Add destination'}
+                </button>
+              )}
+              {editingDestination && (
+                <input
+                  autoFocus
+                  defaultValue={destination}
+                  onClick={(e) => e.stopPropagation()}
+                  onBlur={(e) => { setDestination(e.target.value); setEditingDestination(false); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { setDestination((e.target as HTMLInputElement).value); setEditingDestination(false); } }}
+                  className="bg-transparent border-b border-primary/40 focus:outline-none text-primary/80 font-serif text-sm sm:text-base w-24 sm:w-32"
+                />
+              )}
             </span>
           </div>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={18} className="text-primary-foreground/50" />
+          <ChevronDown size={18} className="text-primary/50" />
         </motion.div>
       </motion.button>
 
