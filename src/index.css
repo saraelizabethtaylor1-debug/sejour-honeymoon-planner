@@ -155,6 +155,47 @@
   }
 }
 
+/* Native date/time picker styling */
+input[type="date"],
+input[type="time"] {
+  background: #fdf8f6 !important;
+  border: 1px solid #e8d0cc !important;
+  border-radius: 8px !important;
+  color: #4a3030 !important;
+}
+
+input[type="date"]:focus,
+input[type="time"]:focus {
+  border-color: #7d5a58 !important;
+  outline: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: sepia(0.5) hue-rotate(-10deg) saturate(0.6) brightness(0.7);
+  cursor: pointer;
+}
+
+/* Style the native date/time picker popup (Chromium) */
+::-webkit-datetime-edit-fields-wrapper {
+  color: #4a3030;
+}
+
+::-webkit-datetime-edit-text {
+  color: #b8948f;
+}
+
+::-webkit-datetime-edit-month-field:focus,
+::-webkit-datetime-edit-day-field:focus,
+::-webkit-datetime-edit-year-field:focus,
+::-webkit-datetime-edit-hour-field:focus,
+::-webkit-datetime-edit-minute-field:focus,
+::-webkit-datetime-edit-ampm-field:focus {
+  background: #d4b5b0;
+  color: white;
+  border-radius: 4px;
+}
+
 /* Tablet-specific: side-by-side like desktop, scaled to fit 100vh */
 @media (min-width: 768px) and (max-width: 1023px) {
   .planning-layout {
