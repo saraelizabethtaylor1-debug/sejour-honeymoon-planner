@@ -514,7 +514,7 @@ const ItineraryItem = ({
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-primary-foreground rounded-full transition-shadow hover:bg-primary-foreground/90"
+        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#d4b5b0] rounded-full transition-shadow hover:bg-[#d4b5b0]/90"
       >
         <div className="flex items-center gap-4">
           {/* Large day number */}
