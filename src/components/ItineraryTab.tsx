@@ -257,9 +257,9 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
               className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 bg-transparent border-b border-primary/40 focus:outline-none w-full"
             />
           ) : (
-            <button onClick={() => setEditingField('time')} className="text-left w-full">
+             <button onClick={() => setEditingField('time')} className="text-left w-full">
               <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 hover:text-foreground/70 transition-colors">
-                {act.time || 'Add time'}
+                {act.time ? act.time.replace(/^.*?,\s*/, '') : 'Add time'}
               </span>
             </button>
           )}
