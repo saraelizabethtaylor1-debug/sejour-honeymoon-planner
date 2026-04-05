@@ -43,6 +43,7 @@ export function CustomDatePicker({ value, onChange, placeholder = 'Select date',
         <div className="absolute top-full left-0 mt-1 z-[9999] bg-white border border-[#e8d0cc] rounded-xl shadow-lg shadow-[#e8d0cc]/30 p-3">
           <DayPicker
             mode="single"
+            weekStartsOn={0}
             selected={selected}
             onSelect={(day) => {
               if (day) {
