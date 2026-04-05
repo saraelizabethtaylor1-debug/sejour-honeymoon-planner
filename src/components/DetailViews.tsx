@@ -339,6 +339,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
         <Plus size={14} strokeWidth={1.5} />
         <span className="font-body">Add transportation</span>
       </button>
+      </div>
     </div>
   );
 };
