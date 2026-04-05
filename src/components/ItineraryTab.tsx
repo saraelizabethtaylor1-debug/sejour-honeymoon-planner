@@ -340,19 +340,19 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
         </div>
         </div>
 
-        {/* Photo placeholder - full height */}
-        <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24">
+        {/* Photo placeholder - full height, flush right */}
+        <div className="flex-shrink-0 w-24 self-stretch rounded-r-2xl overflow-hidden">
           {act.imageUrl ? (
             <div className="relative w-full h-full">
               <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-              <button onClick={onRemoveImage} className="absolute top-1 right-1 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
+              <button onClick={onRemoveImage} className="absolute bottom-2 left-2 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
                 <X size={10} className="text-background" />
               </button>
             </div>
           ) : (
             <button
               onClick={() => fileRef.current?.click()}
-              className="w-full h-full min-h-[80px] bg-primary/5 border-l border-primary/15 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
+              className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
             >
               <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
               <span className="text-[10px] text-foreground/30">photo</span>
