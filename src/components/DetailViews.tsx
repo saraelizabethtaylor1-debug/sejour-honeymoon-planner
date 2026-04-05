@@ -1,6 +1,45 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car } from 'lucide-react';
+
+const SaveButton = ({ label }: { label: string }) => {
+  const [saved, setSaved] = useState(false);
+  const [toast, setToast] = useState(false);
+
+  const handleSave = useCallback(() => {
+    setSaved(true);
+    setToast(true);
+    setTimeout(() => setSaved(false), 2000);
+    setTimeout(() => setToast(false), 2500);
+  }, []);
+
+  return (
+    <>
+      <button
+        onClick={handleSave}
+        className={`w-full mt-1 py-2.5 rounded-xl text-white text-sm font-serif tracking-wide transition-colors shadow-soft ${
+          saved ? 'bg-[#b8948f]' : 'bg-[#d4b5b0] hover:bg-[#c9a8a2]'
+        }`}
+      >
+        {saved ? '✓ Saved' : 'Save'}
+      </button>
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] px-5 py-2.5 rounded-xl text-sm font-body shadow-lg"
+            style={{ backgroundColor: '#f5ede9', color: '#5c4742' }}
+          >
+            {label} saved
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { DetailView, TodoItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
 import { sampleTodos, samplePacking, sampleNotes } from '@/data/sampleData';
