@@ -446,8 +446,11 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Activity name" className={inputClass} />
               <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
-                <input value={item.time} onChange={(e) => update(item.id, 'time', e.target.value)} placeholder="Date & Time (e.g. Sept 16, 4:00 PM)" className={inputClass} />
-                <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
+                <CustomDatePicker value={item.time?.split(',')[0]?.trim() || ''} onChange={(v) => {
+                  const timePart = item.time?.match(/,\s*(.+)/)?.[1] || '';
+                  update(item.id, 'time', timePart ? `${v}, ${timePart}` : v);
+                }} placeholder="Date" />
+                <CustomTimePicker value={item.confirmation || ''} onChange={(v) => update(item.id, 'confirmation', v)} placeholder="Time" />
               </div>
               <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
               <div className="relative">
