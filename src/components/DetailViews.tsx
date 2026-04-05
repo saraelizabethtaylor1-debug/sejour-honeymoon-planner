@@ -395,12 +395,12 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
               <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={inputClass} />
               <PlacesAutocomplete value={item.address} onChange={(v) => update(item.id, 'address', v)} onPlaceSelect={(r) => { update(item.id, 'address', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Address (search or type)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
-                <input value={item.checkIn} onChange={(e) => update(item.id, 'checkIn', e.target.value)} placeholder="Check-in date (e.g. Sept 15)" className={inputClass} />
-                <input value={item.checkInTime} onChange={(e) => update(item.id, 'checkInTime', e.target.value)} placeholder="Check-in time (e.g. 2:00 PM)" className={inputClass} />
+                <CustomDatePicker value={item.checkIn} onChange={(v) => update(item.id, 'checkIn', v)} placeholder="Check-in date" />
+                <CustomTimePicker value={item.checkInTime} onChange={(v) => update(item.id, 'checkInTime', v)} placeholder="Check-in time" />
               </div>
               <div className="grid grid-cols-2 gap-2.5">
-                <input value={item.checkOut} onChange={(e) => update(item.id, 'checkOut', e.target.value)} placeholder="Check-out date (e.g. Sept 20)" className={inputClass} />
-                <input value={item.checkOutTime} onChange={(e) => update(item.id, 'checkOutTime', e.target.value)} placeholder="Check-out time (e.g. 11:00 AM)" className={inputClass} />
+                <CustomDatePicker value={item.checkOut} onChange={(v) => update(item.id, 'checkOut', v)} placeholder="Check-out date" />
+                <CustomTimePicker value={item.checkOutTime} onChange={(v) => update(item.id, 'checkOutTime', v)} placeholder="Check-out time" />
               </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
