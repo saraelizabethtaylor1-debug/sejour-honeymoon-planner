@@ -391,6 +391,7 @@ const ItineraryItem = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [destination, setDestination] = useState(initialDay.destination);
+  const [editingDestination, setEditingDestination] = useState(false);
 
   const [orderedActivities, setOrderedActivities] = useState<TaggedActivity[]>([]);
   const [initialized, setInitialized] = useState(false);
