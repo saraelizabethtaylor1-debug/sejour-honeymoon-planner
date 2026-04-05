@@ -122,8 +122,8 @@ const buildSyncedActivities = (
       activities.push({
         _uid: `sync-acc-checkin-${a.id}`,
         _synced: true,
-        time: a.checkInTime || 'Check-in',
-        title: `Check-in at ${a.name}`,
+        time: a.checkInTime || '',
+        title: `Check in at ${a.name}${a.checkInTime ? ' • ' + a.checkInTime : ''}`,
         location: a.address,
         notes: a.confirmation ? `Confirmation: ${a.confirmation}` : '',
         iconType: 'hotel',
@@ -132,8 +132,8 @@ const buildSyncedActivities = (
       activities.push({
         _uid: `sync-acc-checkout-${a.id}`,
         _synced: true,
-        time: a.checkOutTime || 'Check-out',
-        title: `Check-out from ${a.name}`,
+        time: a.checkOutTime || '',
+        title: `Check out at ${a.name}${a.checkOutTime ? ' • ' + a.checkOutTime : ''}`,
         location: a.address,
         notes: '',
         iconType: 'hotel',
