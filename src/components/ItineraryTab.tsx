@@ -223,6 +223,7 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
 
       {/* Card */}
       <div className="flex-1 bg-card rounded-2xl shadow-soft flex gap-3 sm:gap-4 min-w-0 overflow-hidden">
+        <div className="flex-1 flex gap-3 sm:gap-4 min-w-0 p-4 sm:p-5">
         {/* Drag handle - 2x2 dot grid */}
         <div
           {...attributes}
