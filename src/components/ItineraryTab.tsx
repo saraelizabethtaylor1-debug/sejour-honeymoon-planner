@@ -94,14 +94,18 @@ const buildSyncedActivities = (
     if (!t.time || !t.type) continue;
     const itemDate = extractDateForComparison(t.time, fallbackYear);
     if (itemDate && isSameDay(itemDate, dayDate)) {
+      const locationParts = [t.departureLocation, t.arrivalLocation].filter(Boolean);
+      const locationStr = locationParts.length === 2 ? `${locationParts[0]} → ${locationParts[1]}` : locationParts[0] || '';
+      const typeLC = t.type.toLowerCase();
+      const iconType: ItineraryActivity['iconType'] = typeLC === 'plane' || typeLC.includes('flight') ? 'flight' : 'transport';
       activities.push({
         _uid: `sync-transport-${t.id}`,
         _synced: true,
         time: extractTime(t.time) || t.time,
         title: `${t.type}${t.details ? ': ' + t.details : ''}`,
-        location: '',
+        location: locationStr,
         notes: t.confirmation ? `Confirmation: ${t.confirmation}` : '',
-        iconType: t.type.toLowerCase().includes('flight') ? 'flight' : 'transport',
+        iconType,
       });
     }
   }
