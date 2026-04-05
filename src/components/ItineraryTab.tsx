@@ -21,6 +21,9 @@ interface ItineraryTabProps {
 const iconMap: Record<string, typeof Bed> = {
   hotel: Bed,
   flight: Plane,
+  ferry: Ship,
+  train: TrainFront,
+  car: Car,
   dining: UtensilsCrossed,
   activity: Sparkles,
   spa: Sparkles,
