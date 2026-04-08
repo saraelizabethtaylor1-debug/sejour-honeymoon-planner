@@ -58,12 +58,9 @@ Please respond with EXACTLY this JSON format, no other text:
 }`;
 
     try {
-      const response = await fetch('https://hcxmmumqpeamycgtabiq.supabase.co/functions/v1/ai-concierge', {
+      const response = await fetch('/api/ai-concierge', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjeG1tdW1xcGVhbXljZ3RhYmlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDg5NzQsImV4cCI6MjA5MTE4NDk3NH0.ulClnA9rEw0EJntGaZpsNHPZQaypYOTLsoWj0XPEs5c',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
       });
 
