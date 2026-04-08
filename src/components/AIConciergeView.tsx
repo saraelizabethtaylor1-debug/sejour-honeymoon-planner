@@ -42,7 +42,7 @@ const AIConciergeView = ({ onBack, tripData }: AIConciergeViewProps) => {
   };
 
   const generate = async () => {
-    if (!budget || selectedVibes.length === 0) return;
+    if (budget === '' && selectedVibes.length === 0) return;
     setLoading(true);
     setResult(null);
 
@@ -68,13 +68,30 @@ Please respond with EXACTLY this JSON format, no other text:
       });
 
       const data = await response.json();
+      console.log('[AIConcierge] HTTP status:', response.status);
+      console.log('[AIConcierge] Full response data:', JSON.stringify(data, null, 2));
+
       if (!response.ok) throw new Error(data.error ?? 'Edge function error');
+
       const text = data.content?.map((b: any) => b.text || '').join('') || '';
+      console.log('[AIConcierge] Extracted text:', text);
+
       const clean = text.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(clean);
+      console.log('[AIConcierge] Cleaned text before parse:', clean);
+
+      let parsed: { itinerary: string; hotels: string };
+      try {
+        parsed = JSON.parse(clean);
+      } catch (parseErr) {
+        console.error('[AIConcierge] JSON.parse failed:', parseErr);
+        console.error('[AIConcierge] Text that failed to parse:', clean);
+        throw new Error('Failed to parse response as JSON');
+      }
+
       setResult(parsed);
       setExpandedSection('itinerary');
     } catch (err) {
+      console.error('[AIConcierge] Error:', err);
       setResult({
         itinerary: 'Something went wrong generating your itinerary. Please try again.',
         hotels: '',
@@ -155,7 +172,7 @@ Please respond with EXACTLY this JSON format, no other text:
           whileHover={{ scale: 0.98 }}
           whileTap={{ scale: 0.96 }}
           onClick={generate}
-          disabled={loading || !budget || selectedVibes.length === 0}
+          disabled={loading || (budget === '' && selectedVibes.length === 0)}
           className="w-full py-4 bg-primary pill-shape font-script text-3xl text-primary-foreground shadow-arch transition-opacity disabled:opacity-40 flex items-center justify-center gap-3"
         >
           {loading ? (
