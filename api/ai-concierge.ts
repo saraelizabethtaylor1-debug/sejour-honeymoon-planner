@@ -19,12 +19,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
 
   const data = await response.json();
+
+  console.log('[ai-concierge] Anthropic status:', response.status);
+  console.log('[ai-concierge] Anthropic response body:', JSON.stringify(data, null, 2));
+
   return res.status(response.status).json(data);
 }
