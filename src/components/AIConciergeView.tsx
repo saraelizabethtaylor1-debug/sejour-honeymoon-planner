@@ -24,7 +24,6 @@ interface ParsedDay {
 }
 
 function parseItineraryDays(text: string): ParsedDay[] {
-  // Split on "Day N:" lines
   const blocks = text.split(/(?=Day \d+:)/i).map(b => b.trim()).filter(Boolean);
   return blocks.map((block) => {
     const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
@@ -41,10 +40,7 @@ function parseItineraryDays(text: string): ParsedDay[] {
   }).filter(d => d.dayNumber > 0);
 }
 
-function buildItineraryDays(
-  parsed: ParsedDay[],
-  destination: string,
-): ItineraryDay[] {
+function buildItineraryDays(parsed: ParsedDay[], destination: string): ItineraryDay[] {
   return parsed.map((d) => ({
     id: String(d.dayNumber),
     dayLabel: `Day ${d.dayNumber}`,
@@ -68,6 +64,7 @@ interface AIConciergeViewProps {
 
 const AIConciergeView = ({ onBack, tripData, onAddToItinerary }: AIConciergeViewProps) => {
   const [budget, setBudget] = useState('');
+  const [days, setDays] = useState(String(tripData.days || ''));
   const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ itinerary: string; hotels: string } | null>(null);
@@ -88,10 +85,12 @@ const AIConciergeView = ({ onBack, tripData, onAddToItinerary }: AIConciergeView
     setParsedDays([]);
     setAdded(false);
 
+    const numDays = days || String(tripData.days);
+
     const prompt = `You are a luxury honeymoon concierge. Create a personalized honeymoon plan.
 
 Destination: ${tripData.destination || 'to be decided'}
-Duration: ${tripData.days} days
+Duration: ${numDays} days
 Travelers: ${tripData.names || 'a couple'}
 Total Budget: $${budget}
 Travel Vibe: ${selectedVibes.join(', ')}
@@ -109,7 +108,7 @@ Day 2: [Evocative Theme Name]
 • [bullet]
 • [bullet]
 
-(Repeat for all ${tripData.days} days)
+(Repeat for all ${numDays} days)
 
 HOTELS
 **[Hotel Name]** — [City/Area] — [Why it's perfect for this couple. Approx nightly rate.]
@@ -130,12 +129,11 @@ HOTELS
       if (!response.ok) throw new Error(data.error ?? 'API error');
 
       const text: string = data.content?.[0]?.text || '';
-
       const itinerary = text.match(/ITINERARY\s*([\s\S]*?)(?=\nHOTELS|$)/i)?.[1]?.trim() ?? text;
       const hotels = text.match(/HOTELS\s*([\s\S]*?)$/i)?.[1]?.trim() ?? '';
 
-      const days = parseItineraryDays(itinerary);
-      setParsedDays(days);
+      const parsed = parseItineraryDays(itinerary);
+      setParsedDays(parsed);
       setResult({ itinerary, hotels });
       setExpandedSection('itinerary');
     } catch (err) {
@@ -151,13 +149,11 @@ HOTELS
 
   const handleAddToItinerary = () => {
     if (!onAddToItinerary || parsedDays.length === 0) return;
-    const days = buildItineraryDays(parsedDays, tripData.destination);
-    onAddToItinerary(days);
+    const itinDays = buildItineraryDays(parsedDays, tripData.destination);
+    onAddToItinerary(itinDays);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };
-
-  const inputClass = 'w-full bg-card border border-foreground/5 rounded-xl px-4 py-3 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   const renderMarkdown = (text: string) => {
     return text.split('\n').map((line, i) => {
@@ -174,51 +170,80 @@ HOTELS
     });
   };
 
+  const labelClass = 'block text-[10px] uppercase tracking-widest text-foreground/40 mb-2';
+  const bareInputClass = 'w-full bg-transparent border-b border-foreground/20 py-2 text-sm font-body text-foreground placeholder:text-foreground/25 focus:outline-none focus:border-foreground/40 transition-colors';
+
   return (
     <div className="max-w-[680px] mx-auto">
       <DetailHeader title="AI Concierge" onBack={onBack} />
 
-      <div className="mb-6 p-5 bg-primary/20 rounded-2xl">
-        <p className="font-script text-5xl mb-2" style={{ color: 'hsl(0 20% 32%)' }}>your perfect honeymoon awaits</p>
-        <p className="font-body text-sm text-foreground/50">Tell us your vision and we'll craft something magical.</p>
+      {/* Hero */}
+      <div className="text-center py-8 mb-8">
+        <p className="font-script text-5xl mb-3" style={{ color: 'hsl(0 20% 32%)' }}>
+          your perfect honeymoon awaits
+        </p>
+        <p className="font-body text-sm text-foreground/40">
+          Tell us your vision and we'll craft something magical.
+        </p>
       </div>
 
-      <div className="space-y-6">
-        {/* Budget */}
-        <div className="space-y-1.5">
-          <label className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1 border-b border-foreground/10 pb-1 mb-3">Total Budget (USD)</label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+      <div className="space-y-10">
+        {/* Budget + Days — side by side */}
+        <div className="flex gap-8">
+          <div className="flex-1">
+            <label className={labelClass}>Total Budget (USD)</label>
+            <div className="relative">
+              <span className="absolute left-0 top-2 text-sm text-foreground/30">$</span>
+              <input
+                type="number"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                placeholder="10,000"
+                className={`${bareInputClass} pl-4`}
+              />
+            </div>
+          </div>
+          <div className="flex-1">
+            <label className={labelClass}>Number of Days</label>
             <input
               type="number"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              placeholder="10,000"
-              className={`${inputClass} pl-8`}
+              value={days}
+              onChange={(e) => setDays(e.target.value)}
+              placeholder={String(tripData.days || 7)}
+              className={bareInputClass}
             />
           </div>
-          <p className="font-body text-sm text-foreground/50 mt-2">We'll tailor everything to fit comfortably within this.</p>
         </div>
 
-        {/* Vibe */}
-        <div className="space-y-2">
-          <label className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1 border-b border-foreground/10 pb-1 mb-3">Travel Vibe</label>
-          <p className="font-body text-sm text-foreground/50 mb-3">Select all that speak to your soul.</p>
-          <div className="flex flex-wrap gap-2">
-            {vibes.map((v) => (
-              <button
-                key={v}
-                onClick={() => toggleVibe(v)}
-                className={`px-3 py-1.5 rounded-full text-xs font-serif uppercase transition-all ${
-                  selectedVibes.includes(v)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground/60 hover:text-foreground border border-foreground/15'
-                }`}
-                style={{ letterSpacing: '0.12em', fontWeight: 300 }}
-              >
-                {v}
-              </button>
-            ))}
+        {/* Travel Vibe */}
+        <div>
+          <label className={labelClass}>Travel Vibe</label>
+          <div className="flex items-center">
+            {vibes.map((v, idx) => {
+              const selected = selectedVibes.includes(v);
+              return (
+                <div key={v} className="flex items-center">
+                  <button
+                    onClick={() => toggleVibe(v)}
+                    className="relative transition-colors px-3 py-1"
+                  >
+                    <span
+                      className={`font-serif text-sm tracking-wide transition-colors ${
+                        selected ? 'text-foreground font-semibold' : 'text-foreground/30 hover:text-foreground/60'
+                      }`}
+                    >
+                      {v}
+                    </span>
+                    {selected && (
+                      <span className="absolute bottom-0 left-3 right-3 border-b border-foreground/60" />
+                    )}
+                  </button>
+                  {idx < vibes.length - 1 && (
+                    <span className="border-r border-foreground/15 h-3 mx-0.5" />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -228,7 +253,7 @@ HOTELS
           whileTap={{ scale: 0.96 }}
           onClick={generate}
           disabled={loading || (budget === '' && selectedVibes.length === 0)}
-          className="w-full py-4 bg-primary pill-shape font-script text-3xl text-primary-foreground shadow-arch transition-opacity disabled:opacity-40 flex items-center justify-center gap-3"
+          className="w-full py-4 bg-primary pill-shape font-script text-3xl text-primary-foreground shadow-arch transition-opacity disabled:opacity-40"
         >
           {loading ? (
             <span className="font-body text-sm tracking-widest uppercase animate-pulse">crafting your journey...</span>
@@ -238,13 +263,13 @@ HOTELS
         </motion.button>
       </div>
 
-      {/* Results */}
+      {/* Results — unchanged */}
       <AnimatePresence>
         {result && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8 space-y-4"
+            className="mt-10 space-y-4"
           >
             {/* Itinerary */}
             <div className="bg-card rounded-2xl shadow-soft overflow-hidden">
@@ -288,11 +313,9 @@ HOTELS
                           </div>
                         ))
                       ) : (
-                        // Fallback: raw text if parsing found no day structure
                         <div className="pt-3">{renderMarkdown(result.itinerary)}</div>
                       )}
 
-                      {/* Add to Itinerary button */}
                       {parsedDays.length > 0 && onAddToItinerary && (
                         <button
                           onClick={handleAddToItinerary}
