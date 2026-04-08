@@ -1,23 +1,26 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Hotel, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Sparkles, Hotel, MapPin, ChevronDown, ChevronUp, Heart, Mountain, Waves, Building2, Wine, Gem } from 'lucide-react';
 
 const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
   <div className="flex items-center gap-4 mb-8">
     <button onClick={onBack} className="p-2 -ml-2">
       <ArrowLeft size={20} strokeWidth={1.5} className="text-foreground/70" />
     </button>
-    <h2 className="font-serif text-2xl sm:text-3xl text-foreground">{title}</h2>
+    <div className="flex items-center gap-2">
+      <h2 className="font-serif text-2xl sm:text-3xl text-foreground">{title}</h2>
+      <Sparkles size={16} strokeWidth={1.5} style={{ color: 'hsl(0 20% 56%)' }} />
+    </div>
   </div>
 );
 
 const vibes = [
-  { label: 'Romantic', emoji: '🌹' },
-  { label: 'Adventure', emoji: '🏔️' },
-  { label: 'Relaxation', emoji: '🌊' },
-  { label: 'Culture', emoji: '🏛️' },
-  { label: 'Foodie', emoji: '🍷' },
-  { label: 'Luxury', emoji: '✨' },
+  { label: 'Romantic', icon: Heart },
+  { label: 'Adventure', icon: Mountain },
+  { label: 'Relaxation', icon: Waves },
+  { label: 'Culture', icon: Building2 },
+  { label: 'Foodie', icon: Wine },
+  { label: 'Luxury', icon: Gem },
 ];
 
 interface AIConciergeViewProps {
@@ -127,19 +130,23 @@ Please respond with EXACTLY this JSON format, no other text:
         <div className="space-y-2">
           <label className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1">Travel Vibe</label>
           <div className="flex flex-wrap gap-2">
-            {vibes.map((v) => (
-              <button
-                key={v.label}
-                onClick={() => toggleVibe(v.label)}
-                className={`px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all ${
-                  selectedVibes.includes(v.label)
-                    ? 'bg-primary text-primary-foreground shadow-arch'
-                    : 'bg-card text-foreground/60 hover:text-foreground border border-foreground/5'
-                }`}
-              >
-                {v.emoji} {v.label}
-              </button>
-            ))}
+            {vibes.map((v) => {
+              const selected = selectedVibes.includes(v.label);
+              return (
+                <button
+                  key={v.label}
+                  onClick={() => toggleVibe(v.label)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all ${
+                    selected
+                      ? 'bg-primary text-primary-foreground shadow-arch'
+                      : 'bg-card text-foreground/60 hover:text-foreground border border-foreground/5'
+                  }`}
+                >
+                  <v.icon size={14} strokeWidth={1.5} />
+                  {v.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -154,10 +161,7 @@ Please respond with EXACTLY this JSON format, no other text:
           {loading ? (
             <span className="font-body text-sm tracking-widest uppercase animate-pulse">crafting your journey...</span>
           ) : (
-            <>
-              <Sparkles size={18} strokeWidth={1.5} />
-              plan my honeymoon
-            </>
+            'plan my honeymoon'
           )}
         </motion.button>
       </div>
