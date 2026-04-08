@@ -864,7 +864,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   const sectionLabel = 'text-[10px] uppercase tracking-widest text-foreground/35 mt-4 mb-2 block';
 
   return (
-    <div>
+    <div className="max-w-[640px] mx-auto">
       <DetailHeader title="Traveler Profiles" onBack={onBack} />
       <div className="space-y-6">
         {travelers.map((traveler) => (
