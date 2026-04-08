@@ -180,7 +180,7 @@ HOTELS
 
       <div className="mb-6 p-5 bg-primary/20 rounded-2xl">
         <p className="font-script text-5xl mb-2" style={{ color: 'hsl(0 20% 32%)' }}>your perfect honeymoon awaits</p>
-        <p className="font-serif text-sm uppercase tracking-widest text-foreground/40">Tell us your vision and we'll craft something magical.</p>
+        <p className="font-body text-sm text-foreground/50">Tell us your vision and we'll craft something magical.</p>
       </div>
 
       <div className="space-y-6">
@@ -197,11 +197,13 @@ HOTELS
               className={`${inputClass} pl-8`}
             />
           </div>
+          <p className="font-body text-sm text-foreground/50 mt-2">We'll tailor everything to fit comfortably within this.</p>
         </div>
 
         {/* Vibe */}
         <div className="space-y-2">
           <label className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1 border-b border-foreground/10 pb-1 mb-3">Travel Vibe</label>
+          <p className="font-body text-sm text-foreground/50 mb-3">Select all that speak to your soul.</p>
           <div className="flex flex-wrap gap-2">
             {vibes.map((v) => (
               <button
