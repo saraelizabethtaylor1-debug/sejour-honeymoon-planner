@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plane, Bed, Sparkles, CalendarHeart } from 'lucide-react';
+import { Plane, Bed, Map, CalendarHeart } from 'lucide-react';
 import type { DetailView, TripData, AccommodationItem, ActivityItem, ReservationItem, TransportItem } from '@/types/honeymoon';
 import { getDaysUntilTrip } from '@/lib/dateUtils';
 import GoogleMap from '@/components/GoogleMap';
@@ -18,7 +18,7 @@ type RowItem = { label: string; view: DetailView; icon: typeof Plane };
 const tripRows: RowItem[] = [
   { label: 'Transportation', view: 'transportation', icon: Plane },
   { label: 'Accommodations', view: 'accommodations', icon: Bed },
-  { label: 'Activities', view: 'activities', icon: Sparkles },
+  { label: 'Activities', view: 'activities', icon: Map },
   { label: 'Reservations', view: 'reservations', icon: CalendarHeart },
 ];
 
@@ -89,7 +89,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           ))}
 
           {/* Quote */}
-          <div className="text-center pt-6 flex flex-col items-center" style={{ gap: 2 }}>
+          <div className="flex-1 flex flex-col items-center justify-center text-center" style={{ gap: 2, minHeight: 0 }}>
             <span
               className="font-serif uppercase block"
               style={{ fontSize: 14, letterSpacing: '0.3em', fontWeight: 300, color: 'hsl(0 12% 52%)' }}

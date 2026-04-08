@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car } from 'lucide-react';
+import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map } from 'lucide-react';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
@@ -26,7 +26,7 @@ const iconMap: Record<string, typeof Bed> = {
   train: TrainFront,
   car: Car,
   dining: UtensilsCrossed,
-  activity: Sparkles,
+  activity: Map,
   spa: Sparkles,
   beach: Palmtree,
   sightseeing: Landmark,
