@@ -173,7 +173,7 @@ HOTELS
   };
 
   const labelClass = 'block text-[10px] uppercase tracking-widest text-foreground/40 mb-2';
-  const bareInputClass = 'w-full bg-transparent border-b border-foreground/20 py-2 text-sm font-body text-foreground placeholder:text-foreground/25 focus:outline-none focus:border-foreground/40 transition-colors';
+  const bareInputClass = 'w-full bg-transparent border-b border-foreground/20 py-2 text-sm font-serif font-normal text-foreground/70 placeholder:text-foreground/25 focus:outline-none focus:border-foreground/40 transition-colors';
 
   return (
     <div className="max-w-[680px] mx-auto">
