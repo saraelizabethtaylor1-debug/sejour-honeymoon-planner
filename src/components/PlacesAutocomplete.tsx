@@ -41,21 +41,34 @@ const PlacesAutocomplete = ({ value, onChange, onPlaceSelect, placeholder = 'Sea
     return () => clearInterval(interval);
   }, []);
 
-  // Prevent the Google .pac-container dropdown from triggering input blur
-  // (mousedown fires before blur; preventDefault stops the blur from happening)
+  // Prevent the Google .pac-container from triggering input blur.
+  // mousedown fires before blur; preventDefault on it stops the focus shift
+  // so Google's click handler can still fire and select the item.
   useEffect(() => {
     const prevent = (e: MouseEvent) => e.preventDefault();
-    const observer = new MutationObserver(() => {
+
+    const attach = () => {
       const pac = document.querySelector('.pac-container');
-      if (pac) {
+      if (pac && !pac.dataset.blurFixed) {
         pac.addEventListener('mousedown', prevent);
-        observer.disconnect();
+        pac.dataset.blurFixed = '1';
       }
-    });
+    };
+
+    // Attach immediately if the container already exists
+    attach();
+
+    // Also watch for it appearing (or reappearing) in the DOM
+    const observer = new MutationObserver(attach);
     observer.observe(document.body, { childList: true, subtree: true });
+
     return () => {
       observer.disconnect();
-      document.querySelector('.pac-container')?.removeEventListener('mousedown', prevent);
+      const pac = document.querySelector('.pac-container');
+      if (pac) {
+        pac.removeEventListener('mousedown', prevent);
+        delete pac.dataset.blurFixed;
+      }
     };
   }, []);
 
