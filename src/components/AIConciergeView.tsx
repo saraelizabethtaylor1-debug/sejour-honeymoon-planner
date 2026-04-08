@@ -73,22 +73,13 @@ Please respond with EXACTLY this JSON format, no other text:
 
       if (!response.ok) throw new Error(data.error ?? 'Edge function error');
 
-      const text = data.content?.map((b: any) => b.text || '').join('') || '';
-      console.log('[AIConcierge] Extracted text:', text);
+      const text = data.content?.[0]?.text || '';
+      console.log('[AIConcierge] Raw text:', text);
 
-      const clean = text.replace(/```json|```/g, '').trim();
-      console.log('[AIConcierge] Cleaned text before parse:', clean);
+      const itinerary = text.match(/"itinerary":\s*"([\s\S]+?)(?=",\s*"hotels"|"?\s*})/)?.[1]?.replace(/\\n/g, '\n') ?? text;
+      const hotels = text.match(/"hotels":\s*"([\s\S]+?)(?="?\s*})/)?.[1]?.replace(/\\n/g, '\n') ?? '';
 
-      let parsed: { itinerary: string; hotels: string };
-      try {
-        parsed = JSON.parse(clean);
-      } catch (parseErr) {
-        console.error('[AIConcierge] JSON.parse failed:', parseErr);
-        console.error('[AIConcierge] Text that failed to parse:', clean);
-        throw new Error('Failed to parse response as JSON');
-      }
-
-      setResult(parsed);
+      setResult({ itinerary, hotels });
       setExpandedSection('itinerary');
     } catch (err) {
       console.error('[AIConcierge] Error:', err);
