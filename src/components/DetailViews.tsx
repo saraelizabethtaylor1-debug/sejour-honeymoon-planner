@@ -2,6 +2,7 @@ import AIConciergeView from "@/components/AIConciergeView";
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car, Loader2, Sparkles } from 'lucide-react';
+import type { ItineraryDay } from '@/types/honeymoon';
 import { CustomDatePicker } from '@/components/ui/custom-date-picker';
 import { CustomTimePicker } from '@/components/ui/custom-time-picker';
 
@@ -58,8 +59,9 @@ interface DetailViewProps {
   activityItems: ActivityItem[];
   setActivityItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>;
   reservationItems: ReservationItem[];
-  tripData?: { destination: string; days: number; names: string };
   setReservationItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>;
+  tripData?: { destination: string; days: number; names: string };
+  onAddToItinerary?: (days: ItineraryDay[]) => void;
 }
 
 interface BudgetViewProps {
@@ -899,7 +901,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Main ──
-const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, accommodationItems, setAccommodationItems, activityItems, setActivityItems, reservationItems, setReservationItems, tripData }: DetailViewProps) => {
+const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, accommodationItems, setAccommodationItems, activityItems, setActivityItems, reservationItems, setReservationItems, tripData, onAddToItinerary }: DetailViewProps) => {
   if (!view) return null;
   return (
     <motion.div
@@ -919,7 +921,7 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
       {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} />}
       {view === 'map' && <MapView onBack={onBack} />}
       {view === 'travelerInfo' && <TravelerInfoView onBack={onBack} />}
-      {view === 'concierge' && <AIConciergeView onBack={onBack} tripData={tripData} />}
+      {view === 'concierge' && <AIConciergeView onBack={onBack} tripData={tripData} onAddToItinerary={onAddToItinerary} />}
     </motion.div>
   );
 };

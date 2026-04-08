@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence } from 'framer-motion';
-import type { TripData, AppView, DashboardTab, DetailView, TransportItem, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
+import type { TripData, AppView, DashboardTab, DetailView, TransportItem, AccommodationItem, ActivityItem, ReservationItem, ItineraryDay } from '@/types/honeymoon';
 import { defaultTripData, sampleItinerary, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import DashboardHeader from '@/components/DashboardHeader';
@@ -23,6 +23,7 @@ const Index = () => {
   const [accommodationItems, setAccommodationItems] = useState<AccommodationItem[]>([]);
   const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
   const [reservationItems, setReservationItems] = useState<ReservationItem[]>([]);
+  const [itineraryDays, setItineraryDays] = useState<ItineraryDay[]>(sampleItinerary);
 
   const handleWelcomeComplete = (data: TripData) => {
     setTripData(data);
@@ -77,7 +78,7 @@ const Index = () => {
             )}
             {tab === 'itinerary' && (
               <ItineraryTab
-                days={sampleItinerary}
+                days={itineraryDays}
                 tripData={tripData}
                 transportItems={transportItems}
                 accommodationItems={accommodationItems}
@@ -118,6 +119,11 @@ const Index = () => {
               reservationItems={reservationItems}
               setReservationItems={setReservationItems}
               tripData={{ destination: tripData.destination, days: tripData.days, names: tripData.names }}
+              onAddToItinerary={(days) => {
+                setItineraryDays(days);
+                setDetailView(null);
+                setTab('itinerary');
+              }}
             />
           )}
         </AnimatePresence>,

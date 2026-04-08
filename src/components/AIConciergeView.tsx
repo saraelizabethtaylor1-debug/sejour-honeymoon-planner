@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Hotel, MapPin, ChevronDown, ChevronUp, Heart, Mountain, Waves, Building2, Wine, Gem } from 'lucide-react';
+import { ArrowLeft, Sparkles, Hotel, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import type { ItineraryDay, ItineraryActivity } from '@/types/honeymoon';
 
 const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
   <div className="flex items-center gap-4 mb-8">
@@ -14,26 +15,65 @@ const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) 
   </div>
 );
 
-const vibes = [
-  { label: 'Romantic', icon: Heart },
-  { label: 'Adventure', icon: Mountain },
-  { label: 'Relaxation', icon: Waves },
-  { label: 'Culture', icon: Building2 },
-  { label: 'Foodie', icon: Wine },
-  { label: 'Luxury', icon: Gem },
-];
+const vibes = ['Romantic', 'Adventure', 'Relaxation', 'Culture', 'Foodie', 'Luxury'];
+
+interface ParsedDay {
+  dayNumber: number;
+  theme: string;
+  bullets: string[];
+}
+
+function parseItineraryDays(text: string): ParsedDay[] {
+  // Split on "Day N:" lines
+  const blocks = text.split(/(?=Day \d+:)/i).map(b => b.trim()).filter(Boolean);
+  return blocks.map((block) => {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const header = lines[0] || '';
+    const match = header.match(/Day\s+(\d+):\s*(.*)/i);
+    const dayNumber = match ? parseInt(match[1]) : 0;
+    const theme = match ? match[2].trim() : header;
+    const bullets = lines
+      .slice(1)
+      .filter(l => l.startsWith('•') || l.startsWith('-') || l.startsWith('*'))
+      .map(l => l.replace(/^[•\-*]\s*/, '').trim())
+      .filter(Boolean);
+    return { dayNumber, theme, bullets };
+  }).filter(d => d.dayNumber > 0);
+}
+
+function buildItineraryDays(
+  parsed: ParsedDay[],
+  destination: string,
+): ItineraryDay[] {
+  return parsed.map((d) => ({
+    id: String(d.dayNumber),
+    dayLabel: `Day ${d.dayNumber}`,
+    date: '',
+    destination,
+    activities: d.bullets.map<ItineraryActivity>((bullet) => ({
+      time: '',
+      title: bullet,
+      location: '',
+      notes: '',
+      iconType: 'activity',
+    })),
+  }));
+}
 
 interface AIConciergeViewProps {
   onBack: () => void;
   tripData: { destination: string; days: number; names: string };
+  onAddToItinerary?: (days: ItineraryDay[]) => void;
 }
 
-const AIConciergeView = ({ onBack, tripData }: AIConciergeViewProps) => {
+const AIConciergeView = ({ onBack, tripData, onAddToItinerary }: AIConciergeViewProps) => {
   const [budget, setBudget] = useState('');
   const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ itinerary: string; hotels: string } | null>(null);
+  const [parsedDays, setParsedDays] = useState<ParsedDay[]>([]);
   const [expandedSection, setExpandedSection] = useState<'itinerary' | 'hotels' | null>('itinerary');
+  const [added, setAdded] = useState(false);
 
   const toggleVibe = (vibe: string) => {
     setSelectedVibes(prev =>
@@ -45,8 +85,10 @@ const AIConciergeView = ({ onBack, tripData }: AIConciergeViewProps) => {
     if (budget === '' && selectedVibes.length === 0) return;
     setLoading(true);
     setResult(null);
+    setParsedDays([]);
+    setAdded(false);
 
-    const prompt = `You are a luxury honeymoon concierge. Create a personalized honeymoon plan for the following:
+    const prompt = `You are a luxury honeymoon concierge. Create a personalized honeymoon plan.
 
 Destination: ${tripData.destination || 'to be decided'}
 Duration: ${tripData.days} days
@@ -54,11 +96,25 @@ Travelers: ${tripData.names || 'a couple'}
 Total Budget: $${budget}
 Travel Vibe: ${selectedVibes.join(', ')}
 
-Please respond with EXACTLY this JSON format, no other text:
-{
-  "itinerary": "A beautiful day-by-day itinerary in flowing prose. For each day write: **Day 1: [Theme]** followed by 2-3 sentences describing the day's experiences, activities, dining, and mood. Make it feel aspirational and romantic.",
-  "hotels": "Recommend 3 specific luxury hotels that match the vibe and budget. For each write: **[Hotel Name]** — [Location] — [1-2 sentences on why it's perfect for this couple, what makes it special, approximate nightly rate]."
-}`;
+Respond with EXACTLY this plain-text format — no JSON, no markdown code fences:
+
+ITINERARY
+Day 1: [Evocative Theme Name]
+• [Short memorable activity or experience, 10–15 words]
+• [Short memorable activity or experience, 10–15 words]
+• [Short memorable activity or experience, 10–15 words]
+
+Day 2: [Evocative Theme Name]
+• [bullet]
+• [bullet]
+• [bullet]
+
+(Repeat for all ${tripData.days} days)
+
+HOTELS
+**[Hotel Name]** — [City/Area] — [Why it's perfect for this couple. Approx nightly rate.]
+**[Hotel Name]** — [City/Area] — [Why it's perfect for this couple. Approx nightly rate.]
+**[Hotel Name]** — [City/Area] — [Why it's perfect for this couple. Approx nightly rate.]`;
 
     try {
       const response = await fetch('/api/ai-concierge', {
@@ -69,16 +125,17 @@ Please respond with EXACTLY this JSON format, no other text:
 
       const data = await response.json();
       console.log('[AIConcierge] HTTP status:', response.status);
-      console.log('[AIConcierge] Full response data:', JSON.stringify(data, null, 2));
+      console.log('[AIConcierge] Raw text:', data.content?.[0]?.text);
 
-      if (!response.ok) throw new Error(data.error ?? 'Edge function error');
+      if (!response.ok) throw new Error(data.error ?? 'API error');
 
-      const text = data.content?.[0]?.text || '';
-      console.log('[AIConcierge] Raw text:', text);
+      const text: string = data.content?.[0]?.text || '';
 
-      const itinerary = text.match(/"itinerary":\s*"([\s\S]+?)(?=",\s*"hotels"|"?\s*})/)?.[1]?.replace(/\\n/g, '\n') ?? text;
-      const hotels = text.match(/"hotels":\s*"([\s\S]+?)(?="?\s*})/)?.[1]?.replace(/\\n/g, '\n') ?? '';
+      const itinerary = text.match(/ITINERARY\s*([\s\S]*?)(?=\nHOTELS|$)/i)?.[1]?.trim() ?? text;
+      const hotels = text.match(/HOTELS\s*([\s\S]*?)$/i)?.[1]?.trim() ?? '';
 
+      const days = parseItineraryDays(itinerary);
+      setParsedDays(days);
       setResult({ itinerary, hotels });
       setExpandedSection('itinerary');
     } catch (err) {
@@ -90,6 +147,14 @@ Please respond with EXACTLY this JSON format, no other text:
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddToItinerary = () => {
+    if (!onAddToItinerary || parsedDays.length === 0) return;
+    const days = buildItineraryDays(parsedDays, tripData.destination);
+    onAddToItinerary(days);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2500);
   };
 
   const inputClass = 'w-full bg-card border border-foreground/5 rounded-xl px-4 py-3 text-sm font-body focus:outline-none focus:border-primary transition-colors';
@@ -114,7 +179,7 @@ Please respond with EXACTLY this JSON format, no other text:
       <DetailHeader title="AI Concierge" onBack={onBack} />
 
       <div className="mb-6 p-5 bg-primary/20 rounded-2xl">
-        <p className="font-script text-2xl mb-1" style={{ color: 'hsl(0 20% 32%)' }}>your perfect honeymoon awaits</p>
+        <p className="font-script text-4xl mb-1" style={{ color: 'hsl(0 20% 32%)' }}>your perfect honeymoon awaits</p>
         <p className="font-body text-xs text-foreground/50 tracking-wide">Tell us your vision and we'll craft something magical.</p>
       </div>
 
@@ -132,30 +197,29 @@ Please respond with EXACTLY this JSON format, no other text:
               className={`${inputClass} pl-8`}
             />
           </div>
+          <div className="border-b border-foreground/10 mt-4" />
         </div>
 
         {/* Vibe */}
         <div className="space-y-2">
           <label className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1">Travel Vibe</label>
           <div className="flex flex-wrap gap-2">
-            {vibes.map((v) => {
-              const selected = selectedVibes.includes(v.label);
-              return (
-                <button
-                  key={v.label}
-                  onClick={() => toggleVibe(v.label)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all ${
-                    selected
-                      ? 'bg-primary text-primary-foreground shadow-arch'
-                      : 'bg-card text-foreground/60 hover:text-foreground border border-foreground/5'
-                  }`}
-                >
-                  <v.icon size={14} strokeWidth={1.5} />
-                  {v.label}
-                </button>
-              );
-            })}
+            {vibes.map((v) => (
+              <button
+                key={v}
+                onClick={() => toggleVibe(v)}
+                className={`px-3 py-1.5 rounded-full text-xs font-serif uppercase transition-all ${
+                  selectedVibes.includes(v)
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground/60 hover:text-foreground border border-foreground/15'
+                }`}
+                style={{ letterSpacing: '0.12em', fontWeight: 300 }}
+              >
+                {v}
+              </button>
+            ))}
           </div>
+          <div className="border-b border-foreground/10 mt-4" />
         </div>
 
         {/* Generate Button */}
@@ -202,8 +266,43 @@ Please respond with EXACTLY this JSON format, no other text:
                     exit={{ height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-5 pb-5 border-t border-foreground/5 pt-4">
-                      {renderMarkdown(result.itinerary)}
+                    <div className="px-4 pb-5 pt-1 border-t border-foreground/5 flex flex-col gap-3">
+                      {parsedDays.length > 0 ? (
+                        parsedDays.map((day) => (
+                          <div key={day.dayNumber} className="bg-background rounded-2xl shadow-soft p-5">
+                            <p
+                              className="font-serif uppercase text-foreground/75"
+                              style={{ fontSize: 11, letterSpacing: '0.22em', fontWeight: 400 }}
+                            >
+                              Day {day.dayNumber} · {day.theme}
+                            </p>
+                            <div className="border-t border-foreground/10 my-3" />
+                            <ul className="space-y-2">
+                              {day.bullets.map((bullet, i) => (
+                                <li key={i} className="flex items-start gap-2.5">
+                                  <span className="text-foreground/25 mt-0.5 flex-shrink-0" style={{ fontSize: 12 }}>—</span>
+                                  <span className="font-body text-sm text-foreground/65 leading-snug">{bullet}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))
+                      ) : (
+                        // Fallback: raw text if parsing found no day structure
+                        <div className="pt-3">{renderMarkdown(result.itinerary)}</div>
+                      )}
+
+                      {/* Add to Itinerary button */}
+                      {parsedDays.length > 0 && onAddToItinerary && (
+                        <button
+                          onClick={handleAddToItinerary}
+                          className={`w-full mt-1 py-2.5 rounded-xl text-sm font-serif tracking-wide transition-colors shadow-soft ${
+                            added ? 'bg-[#b8948f] text-white' : 'bg-[#d4b5b0] hover:bg-[#c9a8a2] text-white'
+                          }`}
+                        >
+                          {added ? '✓ Added to Itinerary' : 'Add to Itinerary'}
+                        </button>
+                      )}
                     </div>
                   </motion.div>
                 )}
