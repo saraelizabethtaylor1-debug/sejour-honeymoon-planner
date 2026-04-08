@@ -116,6 +116,12 @@ export interface TravelerInfo {
   passportNumber: string;
   passportExpiry: string;
   dateOfBirth: string;
+  nationality: string;
+  dietaryRestrictions: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  preferredAirline: string;
+  seatPreference: string;
   notes: string;
 }
 

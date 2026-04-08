@@ -836,10 +836,16 @@ const MapView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Traveler Info ──
+const emptyTraveler = (id: string): TravelerInfo => ({
+  id, name: '', passportNumber: '', passportExpiry: '', dateOfBirth: '',
+  nationality: '', dietaryRestrictions: '', emergencyContactName: '',
+  emergencyContactPhone: '', preferredAirline: '', seatPreference: '', notes: '',
+});
+
 const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   const [travelers, setTravelers] = useState<TravelerInfo[]>([
-    { id: '1', name: '', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
-    { id: '2', name: '', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' },
+    emptyTraveler('1'),
+    emptyTraveler('2'),
   ]);
 
   const updateTraveler = (id: string, field: keyof TravelerInfo, value: string) => {
@@ -847,7 +853,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   };
 
   const addTraveler = () => {
-    setTravelers([...travelers, { id: Date.now().toString(), name: '', passportNumber: '', passportExpiry: '', dateOfBirth: '', notes: '' }]);
+    setTravelers([...travelers, emptyTraveler(Date.now().toString())]);
   };
 
   const removeTraveler = (id: string) => {
@@ -855,10 +861,11 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   };
 
   const inputClass = 'w-full bg-card border border-foreground/5 rounded-xl px-4 py-3 text-sm font-body focus:outline-none focus:border-primary transition-colors';
+  const sectionLabel = 'text-[10px] uppercase tracking-widest text-foreground/35 mt-4 mb-2 block';
 
   return (
     <div>
-      <DetailHeader title="Traveler Info" onBack={onBack} />
+      <DetailHeader title="Traveler Profiles" onBack={onBack} />
       <div className="space-y-6">
         {travelers.map((traveler) => (
           <div key={traveler.id} className="bg-card rounded-2xl p-4 sm:p-5 shadow-soft relative">
@@ -866,10 +873,24 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
             <div className="space-y-3">
+              {/* Identity */}
               <div>
-                <label className="text-label mb-1 block">Name</label>
-                <input value={traveler.name} onChange={(e) => updateTraveler(traveler.id, 'name', e.target.value)} placeholder="Full name" className={inputClass} />
+                <label className="text-label mb-1 block">Full Name</label>
+                <input value={traveler.name} onChange={(e) => updateTraveler(traveler.id, 'name', e.target.value)} placeholder="Full legal name" className={inputClass} />
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-label mb-1 block">Date of Birth</label>
+                  <input value={traveler.dateOfBirth} onChange={(e) => updateTraveler(traveler.id, 'dateOfBirth', e.target.value)} placeholder="MM/DD/YYYY" className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-label mb-1 block">Nationality</label>
+                  <input value={traveler.nationality} onChange={(e) => updateTraveler(traveler.id, 'nationality', e.target.value)} placeholder="e.g. American" className={inputClass} />
+                </div>
+              </div>
+
+              {/* Passport */}
+              <span className={sectionLabel}>Passport</span>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label mb-1 block">Passport #</label>
@@ -880,14 +901,45 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
                   <input value={traveler.passportExpiry} onChange={(e) => updateTraveler(traveler.id, 'passportExpiry', e.target.value)} placeholder="MM/YYYY" className={inputClass} />
                 </div>
               </div>
-              <div>
-                <label className="text-label mb-1 block">Date of Birth</label>
-                <input value={traveler.dateOfBirth} onChange={(e) => updateTraveler(traveler.id, 'dateOfBirth', e.target.value)} placeholder="MM/DD/YYYY" className={inputClass} />
+
+              {/* Travel preferences */}
+              <span className={sectionLabel}>Travel Preferences</span>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-label mb-1 block">Preferred Airline</label>
+                  <input value={traveler.preferredAirline} onChange={(e) => updateTraveler(traveler.id, 'preferredAirline', e.target.value)} placeholder="e.g. Delta, United" className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-label mb-1 block">Seat Preference</label>
+                  <input value={traveler.seatPreference} onChange={(e) => updateTraveler(traveler.id, 'seatPreference', e.target.value)} placeholder="e.g. Window, Aisle" className={inputClass} />
+                </div>
               </div>
               <div>
-                <label className="text-label mb-1 block">Notes</label>
-                <textarea value={traveler.notes} onChange={(e) => updateTraveler(traveler.id, 'notes', e.target.value)} placeholder="Allergies, preferences, etc." rows={2} className={`${inputClass} resize-none`} />
+                <label className="text-label mb-1 block">Dietary Restrictions / Allergies</label>
+                <input value={traveler.dietaryRestrictions} onChange={(e) => updateTraveler(traveler.id, 'dietaryRestrictions', e.target.value)} placeholder="e.g. Vegetarian, nut allergy" className={inputClass} />
               </div>
+
+              {/* Emergency contact */}
+              <span className={sectionLabel}>Emergency Contact</span>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-label mb-1 block">Contact Name</label>
+                  <input value={traveler.emergencyContactName} onChange={(e) => updateTraveler(traveler.id, 'emergencyContactName', e.target.value)} placeholder="Full name" className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-label mb-1 block">Phone</label>
+                  <input value={traveler.emergencyContactPhone} onChange={(e) => updateTraveler(traveler.id, 'emergencyContactPhone', e.target.value)} placeholder="+1 (555) 000-0000" className={inputClass} />
+                </div>
+              </div>
+
+              {/* Notes */}
+              <span className={sectionLabel}>Notes</span>
+              <div>
+                <textarea value={traveler.notes} onChange={(e) => updateTraveler(traveler.id, 'notes', e.target.value)} placeholder="Any other notes or preferences..." rows={2} className={`${inputClass} resize-none`} />
+              </div>
+            </div>
+            <div className="mt-4">
+              <SaveButton label="Traveler profile" />
             </div>
           </div>
         ))}

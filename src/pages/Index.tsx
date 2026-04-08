@@ -53,6 +53,7 @@ const Index = () => {
             onTabChange={setTab}
             initials={getInitials()}
             onGoToSettings={() => setView('welcome')}
+            onOpenDetail={setDetailView}
           />
 
           {/* Spacer for fixed header */}

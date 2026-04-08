@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import type { TripData, DashboardTab } from "@/types/honeymoon";
+import type { TripData, DashboardTab, DetailView } from "@/types/honeymoon";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, Settings, LogOut, CalendarDays, MapPin, Users } from "lucide-react";
+import { Menu, Settings, LogOut, CalendarDays, MapPin, UserCircle } from "lucide-react";
 import moonLogo from "@/assets/moon-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ interface DashboardHeaderProps {
   onTabChange: (tab: DashboardTab) => void;
   initials?: string;
   onGoToSettings?: () => void;
+  onOpenDetail?: (view: DetailView) => void;
 }
 
 const tabs: { key: DashboardTab; label: string }[] = [
@@ -21,7 +22,7 @@ const tabs: { key: DashboardTab; label: string }[] = [
   { key: "itinerary", label: "Itinerary" },
 ];
 
-const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings }: DashboardHeaderProps) => {
+const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings, onOpenDetail }: DashboardHeaderProps) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { signOut } = useAuth();
@@ -87,7 +88,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings 
               >
                 {/* Trip Info */}
                 <div className="px-5 pt-5 pb-4 border-b border-foreground/5">
-                  <p className="font-serif text-xs uppercase tracking-widest text-foreground/80">MY TRIP</p>
+                  <p className="font-serif text-xs uppercase tracking-widest text-foreground/80">OUR HONEYMOON</p>
                   <div className="mt-2 space-y-1.5">
                     {tripData.destination && (
                       <div className="flex items-center gap-2 text-foreground/45">
@@ -101,12 +102,13 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings 
                         <span className="text-[11px] uppercase tracking-[0.15em]">{formattedDate}{getDaysUntilTrip(tripData.date) ? ` · ${getDaysUntilTrip(tripData.date)!.toUpperCase()}` : ''}</span>
                       </div>
                     )}
-                    {tripData.days > 0 && (
-                      <div className="flex items-center gap-2 text-foreground/45">
-                        <Users size={13} strokeWidth={1.3} />
-                        <span className="text-[11px] uppercase tracking-[0.15em]">{tripData.names || 'Travelers'}</span>
-                      </div>
-                    )}
+                    <button
+                      onClick={() => { onOpenDetail?.('travelerInfo'); setProfileOpen(false); }}
+                      className="flex items-center gap-2 text-foreground/45 hover:text-foreground/70 transition-colors w-full"
+                    >
+                      <UserCircle size={13} strokeWidth={1.3} />
+                      <span className="text-[11px] uppercase tracking-[0.15em]">Traveler Profiles</span>
+                    </button>
                   </div>
                 </div>
 
