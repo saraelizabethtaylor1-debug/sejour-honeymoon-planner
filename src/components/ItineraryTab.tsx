@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car } from 'lucide-react';
+import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -71,6 +72,8 @@ const isSameDay = (a: Date, b: Date): boolean =>
 interface TaggedActivity extends ItineraryActivity {
   _uid: string;
   _synced: boolean;
+  lat?: number;
+  lng?: number;
 }
 
 let uidCounter = 0;
@@ -196,11 +199,50 @@ const buildSyncedActivities = (
 interface SortableActivityProps {
   activity: TaggedActivity;
   id: string;
-  onUpdate: (fields: Partial<ItineraryActivity>) => void;
+  onUpdate: (fields: Partial<ItineraryActivity> & { lat?: number; lng?: number }) => void;
   onImageUpload: (file: File) => void;
   onRemoveImage: () => void;
   onDelete: () => void;
 }
+
+/* ── Drive time connector between activity cards ── */
+const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng }: {
+  fromLat?: number; fromLng?: number; toLat?: number; toLng?: number;
+}) => {
+  const [driveTime, setDriveTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!fromLat || !fromLng || !toLat || !toLng) return;
+    if (!window.google?.maps) return;
+    const service = new google.maps.DistanceMatrixService();
+    service.getDistanceMatrix(
+      {
+        origins: [{ lat: fromLat, lng: fromLng }],
+        destinations: [{ lat: toLat, lng: toLng }],
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === 'OK' && result) {
+          const duration = result.rows[0]?.elements[0]?.duration?.text;
+          if (duration) setDriveTime(duration);
+        }
+      }
+    );
+  }, [fromLat, fromLng, toLat, toLng]);
+
+  return (
+    <div className="flex items-center gap-2 ml-[28px] py-0.5">
+      <div className="flex flex-col items-center">
+        <div className="w-px h-2.5 bg-primary/20" />
+        <Car size={10} strokeWidth={1.5} className="text-foreground/30 my-0.5" />
+        <div className="w-px h-2.5 bg-primary/20" />
+      </div>
+      {driveTime && (
+        <span className="font-body text-[11px] text-foreground/35">{driveTime}</span>
+      )}
+    </div>
+  );
+};
 
 const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage, onDelete }: SortableActivityProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -282,22 +324,13 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
           )}
 
           {/* Location */}
-          {editingField === 'location' ? (
-            <input
-              autoFocus
-              defaultValue={act.location}
-              onBlur={(e) => handleBlur('location', e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleBlur('location', (e.target as HTMLInputElement).value)}
-              className="text-xs text-muted-foreground mt-0.5 bg-transparent border-b border-primary/40 focus:outline-none w-full"
-              placeholder="Add location"
-            />
-          ) : (
-            <button onClick={() => setEditingField('location')} className="text-left w-full">
-              <p className="text-xs text-muted-foreground mt-0.5 hover:text-foreground/50 transition-colors">
-                {act.location || 'Add location'}
-              </p>
-            </button>
-          )}
+          <PlacesAutocomplete
+            value={act.location || ''}
+            onChange={(val) => onUpdate({ location: val })}
+            onPlaceSelect={(result) => onUpdate({ location: result.address, lat: result.lat, lng: result.lng })}
+            placeholder="Add location"
+            className="text-xs text-muted-foreground mt-0.5 bg-transparent focus:outline-none w-full placeholder:text-foreground/25 focus:placeholder:text-foreground/40 transition-colors"
+          />
 
           {/* Divider */}
           <div className="border-t border-foreground/10 my-2.5" />
@@ -443,7 +476,7 @@ const ItineraryItem = ({
     });
   }, []);
 
-  const updateActivity = useCallback((uid: string, fields: Partial<ItineraryActivity>) => {
+  const updateActivity = useCallback((uid: string, fields: Partial<ItineraryActivity> & { lat?: number; lng?: number }) => {
     setOrderedActivities(prev =>
       prev.map(a => {
         if (a._uid !== uid) return a;
@@ -574,17 +607,26 @@ const ItineraryItem = ({
 
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={activityIds} strategy={verticalListSortingStrategy}>
-                      <div className="space-y-4">
-                        {orderedActivities.map((act) => (
-                          <SortableActivityCard
-                            key={act._uid}
-                            id={act._uid}
-                            activity={act}
-                            onUpdate={(fields) => updateActivity(act._uid, fields)}
-                            onImageUpload={(file) => handleImageUpload(act._uid, file)}
-                            onRemoveImage={() => removeImage(act._uid)}
-                            onDelete={() => deleteActivity(act._uid)}
-                          />
+                      <div>
+                        {orderedActivities.map((act, idx) => (
+                          <div key={act._uid} className="mb-4">
+                            {idx > 0 && (
+                              <DriveTimeConnector
+                                fromLat={orderedActivities[idx - 1].lat}
+                                fromLng={orderedActivities[idx - 1].lng}
+                                toLat={act.lat}
+                                toLng={act.lng}
+                              />
+                            )}
+                            <SortableActivityCard
+                              id={act._uid}
+                              activity={act}
+                              onUpdate={(fields) => updateActivity(act._uid, fields)}
+                              onImageUpload={(file) => handleImageUpload(act._uid, file)}
+                              onRemoveImage={() => removeImage(act._uid)}
+                              onDelete={() => deleteActivity(act._uid)}
+                            />
+                          </div>
                         ))}
                       </div>
                     </SortableContext>

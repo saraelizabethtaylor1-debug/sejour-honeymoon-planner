@@ -8,7 +8,6 @@ declare global {
   }
 }
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCc4A2sU57cT4ICbxwqv4f9NP_fgbu-Iyg';
 
 const mapStyles: google.maps.MapTypeStyle[] = [
   { elementType: 'geometry', stylers: [{ color: '#e8d5cc' }] },
@@ -81,25 +80,6 @@ function createMarkerIcon(category: string, highlighted = false): string {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-let googleMapsPromise: Promise<void> | null = null;
-
-function loadGoogleMaps(): Promise<void> {
-  if (window.google?.maps) return Promise.resolve();
-  if (googleMapsPromise) return googleMapsPromise;
-
-  googleMapsPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Failed to load Google Maps'));
-    document.head.appendChild(script);
-  });
-
-  return googleMapsPromise;
-}
-
 const GoogleMap = ({ destination, accommodations, activities, reservations, transportItems = [], activeFilter, highlightedItem }: GoogleMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
@@ -167,37 +147,29 @@ const GoogleMap = ({ destination, accommodations, activities, reservations, tran
     return markers;
   }, [accommodations, activities, reservations, transportItems]);
 
-  // Initialize map — no geocoding, use hardcoded destination center
+  // Initialize map once on mount — Google Maps is loaded synchronously via index.html
   useEffect(() => {
-    let cancelled = false;
+    // Guard: skip if already initialized or DOM/API not ready
+    if (mapInstance.current || !mapRef.current) return;
+    if (!window.google?.maps) {
+      setError('Google Maps failed to load');
+      return;
+    }
 
-    loadGoogleMaps()
-      .then(() => {
-        if (cancelled || !mapRef.current) return;
-        setLoaded(true);
-
-        const center = getDestinationCenter(destination);
-
-        mapInstance.current = new google.maps.Map(mapRef.current, {
-          center,
-          zoom: 11,
-          styles: mapStyles,
-          disableDefaultUI: true,
-          zoomControl: true,
-          zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
-          gestureHandling: 'cooperative',
-        });
-
-        infoWindowRef.current = new google.maps.InfoWindow();
-        placeMarkers();
-      })
-      .catch(() => {
-        if (!cancelled) setError('Could not load map');
-      });
-
-    return () => { cancelled = true; };
+    const center = getDestinationCenter(destination);
+    mapInstance.current = new google.maps.Map(mapRef.current, {
+      center,
+      zoom: 11,
+      styles: mapStyles,
+      disableDefaultUI: true,
+      zoomControl: true,
+      zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
+      gestureHandling: 'cooperative',
+    });
+    infoWindowRef.current = new google.maps.InfoWindow();
+    setLoaded(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [destination]);
+  }, []);
 
   const placeMarkers = useCallback(() => {
     if (!mapInstance.current || !loaded) return;

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plane, Bed, Sparkles, CalendarHeart } from 'lucide-react';
 import type { DetailView, TripData, AccommodationItem, ActivityItem, ReservationItem, TransportItem } from '@/types/honeymoon';
@@ -14,156 +13,132 @@ interface OverviewTabProps {
   transportItems: TransportItem[];
 }
 
-type FilterCategory = 'accommodations' | 'activities' | 'reservations' | 'transportation' | null;
-type CardItem = { label: string; view: DetailView; icon: typeof Plane; filterKey: FilterCategory };
+type RowItem = { label: string; view: DetailView; icon: typeof Plane };
 
-type CardSection = { header: string; cards: CardItem[] };
-
-const sections: CardSection[] = [
-  {
-    header: 'PLANNING',
-    cards: [
-      { label: 'Transportation', view: 'transportation', icon: Plane, filterKey: 'transportation' },
-      { label: 'Accommodations', view: 'accommodations', icon: Bed, filterKey: 'accommodations' },
-    ],
-  },
-  {
-    header: 'EXPERIENCE',
-    cards: [
-      { label: 'Activities', view: 'activities', icon: Sparkles, filterKey: 'activities' },
-    ],
-  },
-  {
-    header: 'LOGISTICS',
-    cards: [
-      { label: 'Reservations', view: 'reservations', icon: CalendarHeart, filterKey: 'reservations' },
-    ],
-  },
+const tripRows: RowItem[] = [
+  { label: 'Transportation', view: 'transportation', icon: Plane },
+  { label: 'Accommodations', view: 'accommodations', icon: Bed },
+  { label: 'Activities', view: 'activities', icon: Sparkles },
+  { label: 'Reservations', view: 'reservations', icon: CalendarHeart },
 ];
 
-const CARD_HEIGHT = 100;
-const CARD_GAP = 12;
-const SECTION_HEADER_HEIGHT = 16; // approximate line height of small caps header
-const SECTION_HEADER_MB = 8;
-const SECTION_MT = 20;
-
-// Calculate total left column height:
-// Section 1: header(16) + mb(8) + card(100) + gap(12) + card(100)
-// Section 2: mt(20) + header(16) + mb(8) + card(100)
-// Section 3: mt(20) + header(16) + mb(8) + card(100)
-// = 16+8+100+12+100 + 20+16+8+100 + 20+16+8+100 = 524
-const TOTAL_LEFT_HEIGHT = (SECTION_HEADER_HEIGHT + SECTION_HEADER_MB + CARD_HEIGHT * 2 + CARD_GAP)
-  + (SECTION_MT + SECTION_HEADER_HEIGHT + SECTION_HEADER_MB + CARD_HEIGHT)
-  + (SECTION_MT + SECTION_HEADER_HEIGHT + SECTION_HEADER_MB + CARD_HEIGHT);
 
 const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems, reservationItems, transportItems }: OverviewTabProps) => {
   const quote = tripData.quote?.replace(/^[""]|[""]$/g, '') || 'you are my greatest adventure yet';
-  const [activeFilter, setActiveFilter] = useState<FilterCategory>(null);
   const countdown = getDaysUntilTrip(tripData.date);
 
-  const handleCardClick = (itm: CardItem) => {
-    if (itm.filterKey) {
-      setActiveFilter(prev => prev === itm.filterKey ? null : itm.filterKey);
-    }
-    onOpenDetail(itm.view);
-  };
-
-  const heroLine = [tripData.destination, countdown].filter(Boolean).join(' · ');
-
   return (
-    <div className="w-full flex flex-col h-full">
-      {/* Slim Hero — no quote */}
-      <div className="text-center" style={{ paddingTop: 12, paddingBottom: 20 }}>
-        {heroLine && (
-          <p className="uppercase text-foreground/40" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, letterSpacing: '0.2em', fontSize: 22, padding: '50px 0 0 0' }}>
-            {heroLine}
+    <div className="w-full flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 165px)' }}>
+
+      {/* Hero bar — full-width dusty rose */}
+      <div className="w-full bg-primary/20 flex-shrink-0 flex flex-col items-center justify-center" style={{ paddingTop: 22, paddingBottom: 22 }}>
+        {tripData.destination && (
+          <h1
+            className="font-serif text-foreground/75"
+            style={{ fontSize: 17, letterSpacing: '0.38em', textTransform: 'uppercase', fontWeight: 400 }}
+          >
+            {tripData.destination}
+          </h1>
+        )}
+        {countdown && (
+          <p className="font-body text-[10px] uppercase tracking-widest mt-1.5" style={{ color: 'hsl(0 12% 50%)' }}>
+            {countdown.toUpperCase()}
           </p>
         )}
       </div>
+      <div className="w-full border-b border-foreground/10 flex-shrink-0" />
 
-      {/* Two-column layout — 1100px centered */}
-      <div className="flex justify-center px-[7px] pt-[10px]" style={{ paddingBottom: 0 }}>
-        <div style={{ width: '100%', maxWidth: 1100 }}>
-          <div className="flex" style={{ gap: 24 }}>
-            {/* Left — Grouped cards at 420px */}
-            <motion.div
-              initial="hidden"
-              animate="show"
-              variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05 } } }}
-              className="flex flex-col shrink-0"
-              style={{ width: 420 }}
+      {/* Two-column layout */}
+      <div className="flex-1 min-h-0 flex px-6 pt-5 pb-4" style={{ gap: 40, maxWidth: 1100, alignSelf: 'center', width: '100%' }}>
+
+        {/* Left column — concierge menu rows */}
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}
+          className="flex flex-col"
+          style={{ width: 320, flexShrink: 0 }}
+        >
+          {tripRows.map((row, idx) => (
+            <motion.button
+              key={row.view}
+              variants={{ hidden: { opacity: 0, x: -6 }, show: { opacity: 1, x: 0 } }}
+              whileHover="hover"
+              onClick={() => onOpenDetail(row.view)}
+              className="group w-full flex items-center gap-3.5 text-left transition-colors"
+              style={{ paddingTop: 13, paddingBottom: 13, borderTop: idx === 0 ? '1px solid hsl(0 12% 88%)' : undefined, borderBottom: '1px solid hsl(0 12% 88%)' }}
             >
-              {sections.map((section, sIdx) => (
-                <div key={section.header} style={{ marginTop: sIdx === 0 ? 0 : SECTION_MT }}>
-                  {/* Section header */}
-                  <motion.p
-                    variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-                    className="uppercase text-foreground/35"
-                    style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300, letterSpacing: '0.25em', fontSize: 10, marginBottom: SECTION_HEADER_MB, lineHeight: `${SECTION_HEADER_HEIGHT}px` }}
-                  >
-                    {section.header}
-                  </motion.p>
+              <motion.div
+                variants={{ hover: { x: 2 } }}
+                transition={{ type: 'tween', duration: 0.15 }}
+                className="flex items-center gap-3.5 w-full"
+              >
+                <row.icon
+                  size={14}
+                  strokeWidth={1.3}
+                  className="text-foreground/35 group-hover:text-foreground/60 transition-colors flex-shrink-0"
+                />
+                <span
+                  className="font-serif text-foreground/65 group-hover:text-foreground/90 transition-colors"
+                  style={{ fontSize: 15, fontWeight: 400, letterSpacing: '0.01em' }}
+                >
+                  {row.label}
+                </span>
+              </motion.div>
+            </motion.button>
+          ))}
 
-                  {/* Cards */}
-                  <div className="flex flex-col" style={{ gap: CARD_GAP }}>
-                    {section.cards.map((itm) => (
-                      <motion.button
-                        key={itm.label}
-                        variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
-                        whileHover={{ y: -2, boxShadow: '0 6px 24px -6px hsl(10 16% 40% / 0.12)' }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleCardClick(itm)}
-                        className={`w-full flex items-center gap-4 px-5 border rounded-xl transition-all duration-200 ${
-                          activeFilter === itm.filterKey && itm.filterKey
-                            ? 'bg-primary/75 border-primary-foreground/12 shadow-md'
-                            : 'bg-primary/40 border-foreground/[0.04] shadow-[0_2px_12px_-4px_hsl(10_16%_40%/0.06)]'
-                        }`}
-                        style={{ height: CARD_HEIGHT }}
-                      >
-                        <div className="w-10 h-10 rounded-xl bg-background/60 flex items-center justify-center shrink-0">
-                          <itm.icon size={20} strokeWidth={1.2} className="text-foreground/50" />
-                        </div>
-                        <span className="text-foreground/80" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, fontSize: 15 }}>
-                          {itm.label}
-                        </span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* Right — Map fills remaining width, matches left column height */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="flex-1 min-w-0 overflow-hidden"
-              style={{
-                height: TOTAL_LEFT_HEIGHT,
-                filter: 'grayscale(80%) brightness(1.05) sepia(20%)',
-                border: '1px solid #E8C8C0',
-                borderRadius: 12,
-              }}
+          {/* Quote */}
+          <div className="text-center pt-6 flex flex-col items-center" style={{ gap: 2 }}>
+            <span
+              className="font-serif uppercase block"
+              style={{ fontSize: 14, letterSpacing: '0.3em', fontWeight: 300, color: 'hsl(0 12% 52%)' }}
             >
-              <GoogleMap
-                destination={tripData.destination}
-                accommodations={accommodationItems}
-                activities={activityItems}
-                reservations={reservationItems}
-                transportItems={transportItems}
-                activeFilter={activeFilter}
-              />
-            </motion.div>
+              <span style={{ color: 'hsl(0 20% 62%)', marginRight: 4 }}>&ldquo;</span>you are my
+            </span>
+            <span
+              className="font-serif uppercase block"
+              style={{ fontSize: 14, letterSpacing: '0.3em', fontWeight: 300, color: 'hsl(0 12% 52%)' }}
+            >
+              greatest
+            </span>
+            <span
+              className="font-script block"
+              style={{ fontSize: '2.25rem', color: 'hsl(0 20% 32%)', lineHeight: 1.15 }}
+            >
+              adventure
+            </span>
+            <span
+              className="font-serif uppercase block"
+              style={{ fontSize: 14, letterSpacing: '0.3em', fontWeight: 300, color: 'hsl(0 12% 52%)' }}
+            >
+              yet<span style={{ color: 'hsl(0 20% 62%)', marginLeft: 4 }}>&rdquo;</span>
+            </span>
           </div>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Romantic sign-off quote */}
-      <div className="text-center" style={{ marginTop: 48, marginBottom: 60 }}>
-        <span className="font-script sm:text-4xl lg:text-[3.4rem] font-extralight text-4xl" style={{ color: 'hsl(0 20% 32%)' }}>
-          {quote}
-        </span>
+        {/* Right column — map */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+          className="flex-1 min-w-0 overflow-hidden"
+          style={{
+            filter: 'grayscale(80%) brightness(1.05) sepia(20%)',
+            border: '1px solid hsl(0 20% 86%)',
+            borderRadius: 8,
+          }}
+        >
+          <GoogleMap
+            destination={tripData.destination}
+            accommodations={accommodationItems}
+            activities={activityItems}
+            reservations={reservationItems}
+            transportItems={transportItems}
+            activeFilter={null}
+          />
+        </motion.div>
+
       </div>
     </div>
   );

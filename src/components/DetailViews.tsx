@@ -1,6 +1,7 @@
+import AIConciergeView from "@/components/AIConciergeView";
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car, Loader2, Sparkles } from 'lucide-react';
 import { CustomDatePicker } from '@/components/ui/custom-date-picker';
 import { CustomTimePicker } from '@/components/ui/custom-time-picker';
 
@@ -57,6 +58,7 @@ interface DetailViewProps {
   activityItems: ActivityItem[];
   setActivityItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>;
   reservationItems: ReservationItem[];
+  tripData?: { destination: string; days: number; names: string };
   setReservationItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>;
 }
 
@@ -66,6 +68,7 @@ interface BudgetViewProps {
   accommodationItems: AccommodationItem[];
   activityItems: ActivityItem[];
   reservationItems: ReservationItem[];
+  tripData?: { destination: string; days: number; names: string };
 }
 
 const DetailHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
@@ -88,18 +91,47 @@ const TodosView = ({ onBack }: { onBack: () => void }) => {
   const add = () => { if (!newItem.trim()) return; setItems([...items, { id: Date.now().toString(), text: newItem, completed: false }]); setNewItem(''); };
 
   return (
-    <div>
+    <div className="max-w-[560px] mx-auto">
       <DetailHeader title="To-Dos" onBack={onBack} />
-      <div className="flex gap-2 mb-6">
-        <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add a new task..." className="flex-1 bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
-        <button onClick={add} className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch"><Plus size={16} strokeWidth={1.8} className="text-primary-foreground" /></button>
+      <div className="flex gap-3 mb-8">
+        <input
+          value={newItem}
+          onChange={(e) => setNewItem(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && add()}
+          placeholder="Add a new task…"
+          className="flex-1 bg-card border border-foreground/5 pill-shape px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary/40 transition-colors"
+          style={{ boxShadow: '0 2px 12px -4px hsl(0 16% 43% / 0.08)' }}
+        />
+        <button
+          onClick={add}
+          className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch flex-shrink-0"
+        >
+          <Plus size={16} strokeWidth={1.8} className="text-primary-foreground" />
+        </button>
       </div>
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {items.map((item) => (
-          <motion.div key={item.id} layout whileHover={{ y: -1 }} className="flex items-center gap-3 px-4 sm:px-5 py-3.5 bg-card pill-shape shadow-soft">
-            <button onClick={() => toggle(item.id)} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${item.completed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.completed && <Check size={12} className="text-primary-foreground" />}</button>
-            <span className={`flex-1 font-body text-sm ${item.completed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
-            <button onClick={() => remove(item.id)}><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
+          <motion.div
+            key={item.id}
+            layout
+            whileHover={{ y: -1 }}
+            className="group flex items-center gap-4 px-5 py-4 bg-card pill-shape"
+            style={{ boxShadow: '0 2px 16px -4px hsl(0 16% 43% / 0.08), 0 1px 4px -2px hsl(0 16% 43% / 0.04)' }}
+          >
+            <button
+              onClick={() => toggle(item.id)}
+              className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-all flex-shrink-0 ${
+                item.completed ? 'bg-primary border-primary shadow-arch' : 'border-foreground/20 hover:border-primary/50'
+              }`}
+            >
+              {item.completed && <Check size={11} strokeWidth={2.5} className="text-primary-foreground" />}
+            </button>
+            <span className={`flex-1 font-body text-sm leading-relaxed transition-colors ${item.completed ? 'line-through text-foreground/30' : 'text-foreground/80'}`}>
+              {item.text}
+            </span>
+            <button onClick={() => remove(item.id)} className="flex-shrink-0 opacity-0 group-hover:opacity-100">
+              <Trash2 size={14} strokeWidth={1.5} className="text-foreground/20 hover:text-destructive transition-colors" />
+            </button>
           </motion.div>
         ))}
       </div>
@@ -144,10 +176,15 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
   };
 
   return (
-    <div>
+    <div className="max-w-[700px] mx-auto">
       <DetailHeader title="Budget" onBack={onBack} />
-      <div className="bg-primary/30 pill-shape p-6 sm:p-7 mb-6 text-center">
-        <p className="text-label mb-1">Total Budget</p>
+
+      {/* Hero total */}
+      <div
+        className="rounded-2xl p-7 sm:p-8 mb-8 text-center bg-subtle-gradient"
+        style={{ boxShadow: '0 4px 24px -6px hsl(0 16% 43% / 0.10), 0 1px 6px -2px hsl(0 16% 43% / 0.06)' }}
+      >
+        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-body mb-3">Total Budget</p>
         {editingTotal ? (
           <input
             type="number"
@@ -156,76 +193,232 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
             onBlur={() => setEditingTotal(false)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingTotal(false)}
             autoFocus
-            className="font-serif text-3xl text-foreground bg-transparent border-b border-primary text-center focus:outline-none w-40"
+            className="font-serif text-4xl text-foreground bg-transparent border-b border-primary/40 text-center focus:outline-none w-48"
           />
         ) : (
-          <button onClick={() => setEditingTotal(true)} className="flex items-center gap-2 mx-auto">
-            <span className="font-serif text-3xl text-foreground">{formatCost(totalEst)}</span>
-            <Pencil size={14} className="text-muted-foreground" />
+          <button onClick={() => setEditingTotal(true)} className="group flex items-center gap-2.5 mx-auto">
+            <span className="font-serif text-4xl text-foreground">{formatCost(totalEst)}</span>
+            <Pencil size={13} strokeWidth={1.5} className="text-foreground/25 group-hover:text-foreground/50 transition-colors" />
           </button>
         )}
-        <p className="text-sm text-foreground/45 mt-1.5">Spent: {formatCost(totalAct)}</p>
-      </div>
-      <div className="flex items-center justify-between px-4 sm:px-5 pb-2 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-        <span>Category</span>
-        <div className="flex gap-6 sm:gap-8">
-          <span>Estimated</span>
-          <span>Actual</span>
+        <div className="flex items-center justify-center gap-1.5 mt-3">
+          <span className="text-xs font-body uppercase tracking-[0.15em] text-muted-foreground">
+            Spent {formatCost(totalAct)}
+          </span>
+          {totalEst > 0 && (
+            <span className="text-[10px] font-body text-foreground/30 ml-1">
+              ({Math.round((totalAct / totalEst) * 100)}%)
+            </span>
+          )}
         </div>
       </div>
+
+      {/* Column labels */}
+      <div className="flex items-center justify-between px-5 pb-2.5 text-[10px] uppercase tracking-[0.18em] text-foreground/35 font-body">
+        <span>Category</span>
+        <div className="flex gap-8">
+          <span>Estimated</span>
+          <span className="w-24 text-right">Actual</span>
+        </div>
+      </div>
+
+      {/* Category rows */}
       <div className="space-y-3">
-        {categories.map((category) => (
-          <div key={category} className="flex items-center justify-between px-4 sm:px-5 py-4 bg-card pill-shape shadow-soft">
-            <span className="font-serif text-foreground">{category}</span>
-            <div className="flex gap-4 sm:gap-6 items-center">
-              {editingCategory === category ? (
-                <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={commitEdit} onKeyDown={(e) => e.key === 'Enter' && commitEdit()} autoFocus className="w-24 text-sm text-right bg-transparent border-b border-primary focus:outline-none font-body" />
-              ) : (
-                <button onClick={() => startEdit(category)} className="text-sm text-foreground hover:text-primary transition-colors">{formatCost(estimatedBudgets[category])}</button>
-              )}
-              <span className="text-sm text-muted-foreground w-24 text-right">{formatCost(actualsByCategory[category])}</span>
+        {categories.map((category) => {
+          const est = estimatedBudgets[category];
+          const act = actualsByCategory[category];
+          const pct = est > 0 ? Math.min((act / est) * 100, 100) : 0;
+          const overBudget = est > 0 && act > est;
+          return (
+            <div
+              key={category}
+              className="bg-card rounded-2xl overflow-hidden"
+              style={{ boxShadow: '0 2px 16px -4px hsl(0 16% 43% / 0.07), 0 1px 4px -2px hsl(0 16% 43% / 0.04)' }}
+            >
+              <div className="flex items-center justify-between px-5 py-4">
+                <span className="font-serif text-foreground/80">{category}</span>
+                <div className="flex gap-8 items-center">
+                  {editingCategory === category ? (
+                    <input
+                      type="number"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onBlur={commitEdit}
+                      onKeyDown={(e) => e.key === 'Enter' && commitEdit()}
+                      autoFocus
+                      className="w-24 text-sm text-right bg-transparent border-b border-primary/40 focus:outline-none font-body"
+                    />
+                  ) : (
+                    <button onClick={() => startEdit(category)} className="group flex items-center gap-1.5 text-sm font-body text-foreground/70 hover:text-foreground transition-colors">
+                      {formatCost(est)}
+                      <Pencil size={11} strokeWidth={1.5} className="text-foreground/20 group-hover:text-foreground/40 transition-colors" />
+                    </button>
+                  )}
+                  <span className={`text-sm font-body w-24 text-right ${overBudget ? 'text-destructive' : 'text-foreground/50'}`}>
+                    {formatCost(act)}
+                  </span>
+                </div>
+              </div>
+              {/* Progress bar */}
+              <div className="h-[3px] bg-foreground/5 mx-5 mb-3.5 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${pct}%`,
+                    background: overBudget
+                      ? 'hsl(0 60% 60% / 0.6)'
+                      : 'hsl(var(--primary) / 0.5)',
+                  }}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 };
 
 // ── Packing ──
-const PackingView = ({ onBack }: { onBack: () => void }) => {
+const PackingView = ({ onBack, tripData }: { onBack: () => void; tripData?: { destination: string; days: number } }) => {
   const [items, setItems] = useState<PackingItem[]>(samplePacking);
   const [newItem, setNewItem] = useState('');
   const [newTraveler, setNewTraveler] = useState('');
+  const [generating, setGenerating] = useState(false);
   const toggle = (id: string) => setItems(items.map(i => i.id === id ? { ...i, packed: !i.packed } : i));
   const add = () => { if (!newItem.trim()) return; setItems([...items, { id: Date.now().toString(), text: newItem, packed: false, traveler: newTraveler || undefined }]); setNewItem(''); setNewTraveler(''); };
   const packed = items.filter(i => i.packed).length;
   const travelers = [...new Set(items.map(i => i.traveler).filter(Boolean))];
 
+  const generatePackingList = async () => {
+    setGenerating(true);
+    const destination = tripData?.destination || 'a luxury destination';
+    const days = tripData?.days || 7;
+    const prompt = `Generate a curated packing list for a ${days}-day luxury honeymoon to ${destination}. Return ONLY a JSON array of strings — no other text, no markdown, no explanation. Each string is one specific item. Include destination-appropriate clothing, toiletries, travel documents, and romantic extras. Aim for 24–30 items.\nExample: ["Passport", "Silk dress", "Sunscreen SPF 50"]`;
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_ANTHROPIC_API_KEY || '',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5',
+          max_tokens: 1024,
+          messages: [{ role: 'user', content: prompt }],
+        }),
+      });
+      const data = await response.json();
+      const text = data.content?.map((b: any) => b.text || '').join('') || '';
+      const clean = text.replace(/```json|```/g, '').trim();
+      const parsed: string[] = JSON.parse(clean);
+      const aiItems: PackingItem[] = parsed.map((item, i) => ({
+        id: `ai-${Date.now()}-${i}`,
+        text: item,
+        packed: false,
+      }));
+      setItems(prev => [...prev, ...aiItems]);
+    } catch (err) {
+      console.error('Failed to generate packing list', err);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const pct = items.length > 0 ? (packed / items.length) * 100 : 0;
+
   return (
-    <div>
+    <div className="max-w-[560px] mx-auto">
       <DetailHeader title="Packing" onBack={onBack} />
-      <p className="text-sm text-muted-foreground mb-4">{packed} of {items.length} packed</p>
-      <div className="space-y-2 mb-6">
-        <div className="flex gap-2">
-          <input value={newItem} onChange={(e) => setNewItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Add item..." className="flex-1 bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary transition-colors" />
-          <button onClick={add} className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch"><Plus size={16} strokeWidth={1.8} className="text-primary-foreground" /></button>
+
+      {/* Progress bar + count */}
+      <div className="mb-7">
+        <div className="flex items-baseline justify-between mb-2">
+          <span className="font-serif text-foreground/50 text-sm">
+            {packed} <span className="text-foreground/30">of</span> {items.length} packed
+          </span>
+          {items.length > 0 && (
+            <span className="font-body text-[10px] uppercase tracking-[0.18em] text-foreground/30">
+              {Math.round(pct)}%
+            </span>
+          )}
         </div>
-        <input value={newTraveler} onChange={(e) => setNewTraveler(e.target.value)} placeholder="Assign to traveler (optional)" className="w-full bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3 text-xs font-body focus:outline-none focus:border-primary transition-colors" />
+        <div className="h-[3px] bg-foreground/6 rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{ width: `${pct}%`, background: 'hsl(var(--primary) / 0.55)' }}
+          />
+        </div>
       </div>
+
+      {/* AI generate button */}
+      <button
+        onClick={generatePackingList}
+        disabled={generating}
+        className="flex items-center gap-2 px-4 py-2 mb-6 rounded-full border border-foreground/10 text-foreground/45 hover:text-foreground/65 hover:border-foreground/20 transition-all disabled:opacity-40"
+        style={{ boxShadow: '0 1px 6px -2px hsl(0 16% 43% / 0.06)' }}
+      >
+        {generating ? (
+          <>
+            <Loader2 size={13} strokeWidth={1.5} className="animate-spin" />
+            <span className="font-serif text-sm">generating…</span>
+          </>
+        ) : (
+          <span className="font-serif text-sm">✦ Generate packing list with AI</span>
+        )}
+      </button>
+
+      {/* Add form */}
+      <div className="space-y-2.5 mb-8">
+        <div className="flex gap-3">
+          <input
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && add()}
+            placeholder="Add item…"
+            className="flex-1 bg-card border border-foreground/5 pill-shape px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary/40 transition-colors"
+            style={{ boxShadow: '0 2px 12px -4px hsl(0 16% 43% / 0.08)' }}
+          />
+          <button onClick={add} className="w-12 h-12 bg-primary pill-shape flex items-center justify-center shadow-arch flex-shrink-0">
+            <Plus size={16} strokeWidth={1.8} className="text-primary-foreground" />
+          </button>
+        </div>
+        <input
+          value={newTraveler}
+          onChange={(e) => setNewTraveler(e.target.value)}
+          placeholder="Assign to traveler (optional)"
+          className="w-full bg-card border border-foreground/5 pill-shape px-5 py-3 text-xs font-body focus:outline-none focus:border-primary/40 transition-colors text-foreground/60"
+          style={{ boxShadow: '0 2px 12px -4px hsl(0 16% 43% / 0.06)' }}
+        />
+      </div>
+
+      {/* Item lists */}
       {travelers.length > 0 ? (
         <>
           {[...travelers, undefined].map((traveler) => {
             const travelerItems = items.filter(i => i.traveler === traveler);
             if (travelerItems.length === 0) return null;
             return (
-              <div key={traveler ?? 'unassigned'} className="mb-5">
-                <p className="text-label mb-2">{traveler ?? 'Unassigned'}</p>
+              <div key={traveler ?? 'unassigned'} className="mb-6">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/35 font-body mb-3 pl-1">
+                  {traveler ?? 'Unassigned'}
+                </p>
                 <div className="space-y-2.5">
                   {travelerItems.map((item) => (
-                    <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-4 sm:px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
-                      <span className={`font-body text-sm ${item.packed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
+                    <button
+                      key={item.id}
+                      onClick={() => toggle(item.id)}
+                      className="w-full flex items-center gap-4 px-5 py-4 bg-card pill-shape text-left transition-all"
+                      style={{ boxShadow: '0 2px 16px -4px hsl(0 16% 43% / 0.07), 0 1px 4px -2px hsl(0 16% 43% / 0.04)' }}
+                    >
+                      <div className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-all flex-shrink-0 ${item.packed ? 'bg-primary border-primary shadow-arch' : 'border-foreground/20'}`}>
+                        {item.packed && <Check size={11} strokeWidth={2.5} className="text-primary-foreground" />}
+                      </div>
+                      <span className={`font-body text-sm leading-relaxed transition-colors ${item.packed ? 'line-through text-foreground/30' : 'text-foreground/80'}`}>
+                        {item.text}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -236,9 +429,18 @@ const PackingView = ({ onBack }: { onBack: () => void }) => {
       ) : (
         <div className="space-y-2.5">
           {items.map((item) => (
-            <button key={item.id} onClick={() => toggle(item.id)} className="w-full flex items-center gap-3 px-4 sm:px-5 py-3.5 bg-card pill-shape shadow-soft text-left">
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${item.packed ? 'bg-primary border-primary' : 'border-foreground/15'}`}>{item.packed && <Check size={12} className="text-primary-foreground" />}</div>
-              <span className={`font-body text-sm ${item.packed ? 'line-through text-foreground/35' : 'text-foreground'}`}>{item.text}</span>
+            <button
+              key={item.id}
+              onClick={() => toggle(item.id)}
+              className="w-full flex items-center gap-4 px-5 py-4 bg-card pill-shape text-left transition-all"
+              style={{ boxShadow: '0 2px 16px -4px hsl(0 16% 43% / 0.07), 0 1px 4px -2px hsl(0 16% 43% / 0.04)' }}
+            >
+              <div className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-all flex-shrink-0 ${item.packed ? 'bg-primary border-primary shadow-arch' : 'border-foreground/20'}`}>
+                {item.packed && <Check size={11} strokeWidth={2.5} className="text-primary-foreground" />}
+              </div>
+              <span className={`font-body text-sm leading-relaxed transition-colors ${item.packed ? 'line-through text-foreground/30' : 'text-foreground/80'}`}>
+                {item.text}
+              </span>
             </button>
           ))}
         </div>
@@ -260,21 +462,59 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
   const remove = (id: string) => setItems(items.filter(i => i.id !== id));
 
   return (
-    <div>
+    <div className="max-w-[560px] mx-auto">
       <DetailHeader title="Notes" onBack={onBack} />
-      <div className="space-y-3 mb-6">
-        <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Note title..." className="w-full bg-card border border-foreground/5 pill-shape px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary" />
-        <textarea value={newContent} onChange={(e) => setNewContent(e.target.value)} placeholder="Write your note..." rows={3} className="w-full bg-card border border-foreground/5 rounded-2xl px-4 sm:px-5 py-3.5 text-sm font-body focus:outline-none focus:border-primary resize-none" />
-        <button onClick={add} className="bg-primary pill-shape px-6 py-3 font-serif text-sm text-primary-foreground shadow-arch">Add Note</button>
+
+      {/* New note form */}
+      <div className="mb-8 space-y-4">
+        <input
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+          placeholder="Note title…"
+          className="w-full bg-transparent border-b border-foreground/15 pb-2 font-serif text-xl text-foreground placeholder:text-foreground/25 focus:outline-none focus:border-primary/50 transition-colors"
+        />
+        <textarea
+          value={newContent}
+          onChange={(e) => setNewContent(e.target.value)}
+          placeholder="Write your note…"
+          rows={5}
+          className="w-full bg-card border border-foreground/8 rounded-2xl px-5 py-4 text-sm font-body text-foreground/80 placeholder:text-foreground/30 focus:outline-none focus:border-primary/30 transition-colors resize-none leading-relaxed"
+          style={{ boxShadow: '0 2px 12px -4px hsl(0 16% 43% / 0.06)' }}
+        />
+        <motion.button
+          whileHover={{ scale: 0.98 }}
+          whileTap={{ scale: 0.96 }}
+          onClick={add}
+          className="w-full py-3.5 bg-primary pill-shape font-script text-2xl text-primary-foreground shadow-arch transition-shadow hover:shadow-lift"
+        >
+          Add Note
+        </motion.button>
       </div>
-      <div className="space-y-3">
+
+      {/* Notes list */}
+      <div className="space-y-4">
         {items.map((item) => (
-          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
-            <button onClick={() => remove(item.id)} className="absolute top-4 right-4"><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
-            <p className="text-label mb-1">{item.createdAt}</p>
-            <h3 className="font-serif text-lg text-foreground mb-1">{item.title}</h3>
-            <p className="text-sm text-foreground/60 font-body leading-relaxed">{item.content}</p>
-          </div>
+          <motion.div
+            key={item.id}
+            layout
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="group relative bg-card rounded-2xl px-6 py-5"
+            style={{ boxShadow: '0 2px 16px -4px hsl(0 16% 43% / 0.08), 0 1px 4px -2px hsl(0 16% 43% / 0.04)' }}
+          >
+            <button
+              onClick={() => remove(item.id)}
+              className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <Trash2 size={14} strokeWidth={1.5} className="text-foreground/20 hover:text-destructive transition-colors" />
+            </button>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/35 font-body mb-2">{item.createdAt}</p>
+            <h3 className="font-serif text-xl text-foreground mb-2 leading-snug pr-6">{item.title}</h3>
+            {item.content && (
+              <p className="font-body text-sm text-foreground/55 leading-relaxed">{item.content}</p>
+            )}
+          </motion.div>
         ))}
       </div>
     </div>
@@ -372,6 +612,8 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
 
 // ── Accommodations ──
 const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>> }) => {
+  const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
+
   const add = () => {
     setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 }]);
   };
@@ -379,6 +621,52 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
   const update = (id: string, field: keyof AccommodationItem, value: string | number) => {
     setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
   };
+
+  const autofill = async (id: string, name: string) => {
+    if (!name.trim()) return;
+    setLoadingIds(prev => new Set(prev).add(id));
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_ANTHROPIC_API_KEY || '',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5',
+          max_tokens: 512,
+          messages: [{
+            role: 'user',
+            content: `You are a luxury travel assistant. Return ONLY a JSON object — no markdown, no extra text — with details for the hotel "${name}":
+{
+  "address": "full street address",
+  "checkInTime": "standard check-in time, e.g. 3:00 PM",
+  "checkOutTime": "standard check-out time, e.g. 12:00 PM",
+  "notes": "one sentence luxury description of the property"
+}
+If the hotel is not found, use reasonable luxury defaults.`,
+          }],
+        }),
+      });
+      const data = await response.json();
+      const text = data.content?.map((b: any) => b.text || '').join('') || '';
+      const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+      setItems(prev => prev.map(i => i.id === id ? {
+        ...i,
+        ...(parsed.address && { address: parsed.address }),
+        ...(parsed.checkInTime && { checkInTime: parsed.checkInTime }),
+        ...(parsed.checkOutTime && { checkOutTime: parsed.checkOutTime }),
+        ...(parsed.notes && { confirmation: parsed.notes }),
+      } : i));
+    } catch {
+      // silently fail — user can fill manually
+    } finally {
+      setLoadingIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+    }
+  };
+
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -392,7 +680,19 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
               <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
             </button>
             <div className="space-y-2.5">
-              <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={inputClass} />
+              <div className="relative">
+                <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={`${inputClass} pr-9`} />
+                <button
+                  onClick={() => autofill(item.id, item.name)}
+                  disabled={loadingIds.has(item.id) || !item.name.trim()}
+                  title="Autofill hotel details with AI"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-all disabled:opacity-30 text-foreground/30 hover:text-primary hover:bg-primary/10 disabled:hover:text-foreground/30 disabled:hover:bg-transparent"
+                >
+                  {loadingIds.has(item.id)
+                    ? <Loader2 size={13} strokeWidth={1.5} className="animate-spin" />
+                    : <Sparkles size={13} strokeWidth={1.5} />}
+                </button>
+              </div>
               <PlacesAutocomplete value={item.address} onChange={(v) => update(item.id, 'address', v)} onPlaceSelect={(r) => { update(item.id, 'address', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Address (search or type)" className={inputClass} />
               <div className="grid grid-cols-2 gap-2.5">
                 <CustomDatePicker value={item.checkIn} onChange={(v) => update(item.id, 'checkIn', v)} placeholder="Check-in date" />
@@ -599,7 +899,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Main ──
-const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, accommodationItems, setAccommodationItems, activityItems, setActivityItems, reservationItems, setReservationItems }: DetailViewProps) => {
+const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, accommodationItems, setAccommodationItems, activityItems, setActivityItems, reservationItems, setReservationItems, tripData }: DetailViewProps) => {
   if (!view) return null;
   return (
     <motion.div
@@ -611,7 +911,7 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
     >
       {view === 'todos' && <TodosView onBack={onBack} />}
       {view === 'budget' && <BudgetView onBack={onBack} transportItems={transportItems} accommodationItems={accommodationItems} activityItems={activityItems} reservationItems={reservationItems} />}
-      {view === 'packing' && <PackingView onBack={onBack} />}
+      {view === 'packing' && <PackingView onBack={onBack} tripData={tripData} />}
       {view === 'notes' && <NotesView onBack={onBack} />}
       {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} />}
       {view === 'accommodations' && <AccommodationsView onBack={onBack} items={accommodationItems} setItems={setAccommodationItems} />}
@@ -619,6 +919,7 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
       {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} />}
       {view === 'map' && <MapView onBack={onBack} />}
       {view === 'travelerInfo' && <TravelerInfoView onBack={onBack} />}
+      {view === 'concierge' && <AIConciergeView onBack={onBack} tripData={tripData} />}
     </motion.div>
   );
 };

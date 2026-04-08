@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Wallet, Briefcase, PenLine, Camera } from 'lucide-react';
+import { Heart, Wallet, Briefcase, PenLine, Camera, Sparkles } from 'lucide-react';
 import type { DetailView, TripData } from '@/types/honeymoon';
 
 interface PlanningTabProps {
@@ -35,10 +35,10 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
   };
 
   return (
-    <div className="flex justify-center py-0 my-[125px]">
-      <div style={{ width: '70vw', height: 600 }} className="flex items-end">
+    <div className="flex justify-center py-0 mt-12 mb-8">
+      <div style={{ width: '70vw', height: 500 }} className="flex items-end">
         {/* Arch photo — left, full height */}
-        <div style={{ width: '46%', flexShrink: 0, height: 600 }}>
+        <div style={{ width: '46%', flexShrink: 0, height: 500 }}>
           <input
             ref={fileInputRef}
             type="file"
@@ -70,8 +70,8 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
         {/* 32px gap */}
         <div style={{ width: 32, flexShrink: 0 }} />
 
-        {/* Right column — bottom half has headline + cards */}
-        <div style={{ width: '54%', height: 600 }} className="flex flex-col justify-end">
+        {/* Right column */}
+        <div style={{ width: '54%', height: 500 }} className="flex flex-col justify-end">
           {/* Headline */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -112,7 +112,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
                 whileTap={{ scale: 0.97 }}
                 onClick={() => onOpenDetail(card.view)}
                 className="planning-card flex flex-col items-center justify-center gap-2.5 bg-primary/50 rounded-xl transition-shadow duration-200"
-                style={{ boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)', height: 160 }}
+                style={{ boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.08)', height: 110 }}
               >
                 <card.icon size={22} strokeWidth={1} className="text-foreground/50" />
                 <span className="font-body text-[10px] uppercase tracking-[0.14em] text-foreground/60">
@@ -120,6 +120,28 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
                 </span>
               </motion.button>
             ))}
+
+            {/* AI Concierge — full width */}
+            <motion.button
+              variants={item}
+              whileHover={{ scale: 1.01, boxShadow: '0 6px 24px -4px hsl(0 16% 43% / 0.16)', transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onOpenDetail('concierge')}
+              className="col-span-2 flex items-center justify-center gap-3 rounded-xl transition-shadow duration-200"
+              style={{
+                background: 'linear-gradient(135deg, hsl(0 20% 85% / 0.6), hsl(0 16% 75% / 0.4))',
+                boxShadow: '0 3px 16px -4px hsl(0 16% 43% / 0.12)',
+                height: 60,
+              }}
+            >
+              <Sparkles size={15} strokeWidth={1.5} className="text-foreground/50" />
+              <span className="font-serif" style={{ letterSpacing: '0.4em', fontWeight: 300, color: 'hsl(0 20% 38%)', fontSize: '1rem' }}>
+                AI CONCIERGE
+              </span>
+              <span className="font-body text-[9px] uppercase tracking-[0.18em] text-foreground/40 ml-1">
+                plan with AI
+              </span>
+            </motion.button>
           </motion.div>
         </div>
       </div>

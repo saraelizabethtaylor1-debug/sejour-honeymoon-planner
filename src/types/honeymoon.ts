@@ -121,4 +121,4 @@ export interface TravelerInfo {
 
 export type AppView = 'welcome' | 'home' | 'dashboard';
 export type DashboardTab = 'planning' | 'overview' | 'itinerary';
-export type DetailView = 'todos' | 'budget' | 'packing' | 'notes' | 'transportation' | 'accommodations' | 'activities' | 'reservations' | 'map' | 'travelerInfo' | null;
+export type DetailView = 'todos' | 'budget' | 'packing' | 'notes' | 'transportation' | 'accommodations' | 'activities' | 'reservations' | 'map' | 'travelerInfo' | 'concierge' | null;

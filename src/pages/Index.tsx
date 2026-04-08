@@ -55,7 +55,7 @@ const Index = () => {
           />
 
           {/* Spacer for fixed header */}
-          <div className="h-[100px] md:h-[140px] flex-shrink-0" />
+          <div className="h-[100px] md:h-[165px] flex-shrink-0" />
 
           <main className={`flex-1 px-4 sm:px-6 lg:px-8 pb-20 md:pb-0 ${tab === 'planning' ? 'py-0 flex flex-col overflow-y-auto md:overflow-hidden' : tab === 'overview' ? 'py-0 sm:py-0 flex flex-col overflow-hidden' : 'py-4 sm:py-5 overflow-y-auto'}`}>
             {tab === 'planning' && (
@@ -117,6 +117,7 @@ const Index = () => {
               setActivityItems={setActivityItems}
               reservationItems={reservationItems}
               setReservationItems={setReservationItems}
+              tripData={{ destination: tripData.destination, days: tripData.days, names: tripData.names }}
             />
           )}
         </AnimatePresence>,
