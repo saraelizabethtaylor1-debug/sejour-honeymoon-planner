@@ -1,41 +1,21 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204, corsHeaders);
-    return res.end();
-  }
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method !== 'POST') {
-    res.writeHead(405, corsHeaders);
-    return res.json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { prompt } = req.body as { prompt?: string };
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: 'prompt is required' });
 
-  if (!prompt || typeof prompt !== 'string') {
-    res.writeHead(400, corsHeaders);
-    return res.json({ error: 'prompt field is required and must be a string' });
-  }
-
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
-  if (!anthropicKey) {
-    res.writeHead(500, corsHeaders);
-    return res.json({ error: 'ANTHROPIC_API_KEY not configured' });
-  }
-
-  const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': anthropicKey,
+      'x-api-key': process.env.ANTHROPIC_API_KEY || '',
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
@@ -45,8 +25,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }),
   });
 
-  const data = await anthropicRes.json();
-
-  res.writeHead(anthropicRes.status, { ...corsHeaders, 'Content-Type': 'application/json' });
-  return res.end(JSON.stringify(data));
+  const data = await response.json();
+  return res.status(response.status).json(data);
 }
