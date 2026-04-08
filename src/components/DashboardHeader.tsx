@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import type { TripData, DashboardTab } from "@/types/honeymoon";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Settings, LogOut, CalendarDays, MapPin, Users } from "lucide-react";
+import { Menu, Settings, LogOut, CalendarDays, MapPin, Users } from "lucide-react";
 import moonLogo from "@/assets/moon-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { getFormattedDate } from "@/lib/dateUtils";
+import { getFormattedDate, getDaysUntilTrip } from "@/lib/dateUtils";
 
 interface DashboardHeaderProps {
   tripData: TripData;
@@ -72,7 +72,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings 
             onClick={() => setProfileOpen((p) => !p)}
             className="w-9 h-9 rounded-full bg-[#f5e6e2] border border-foreground/[0.06] flex items-center justify-center transition-colors duration-200 group hover:bg-[#e8d0cc]"
           >
-            <Heart size={18} strokeWidth={1.2} className="text-[#9e6b63] group-hover:fill-[#e8d0cc] transition-colors duration-200" />
+            <Menu size={18} strokeWidth={1.2} className="text-[#9e6b63] transition-colors duration-200" />
           </button>
 
           <AnimatePresence>
@@ -87,7 +87,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings 
               >
                 {/* Trip Info */}
                 <div className="px-5 pt-5 pb-4 border-b border-foreground/5">
-                  <p className="font-serif text-sm tracking-wide text-foreground/80">{tripData.names || "Travelers"}</p>
+                  <p className="font-serif text-xs uppercase tracking-widest text-foreground/80">MY TRIP</p>
                   <div className="mt-2 space-y-1.5">
                     {tripData.destination && (
                       <div className="flex items-center gap-2 text-foreground/45">
@@ -98,13 +98,13 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings 
                     {formattedDate && (
                       <div className="flex items-center gap-2 text-foreground/45">
                         <CalendarDays size={13} strokeWidth={1.3} />
-                        <span className="text-[11px] uppercase tracking-[0.15em]">{formattedDate}</span>
+                        <span className="text-[11px] uppercase tracking-[0.15em]">{formattedDate}{getDaysUntilTrip(tripData.date) ? ` · ${getDaysUntilTrip(tripData.date)!.toUpperCase()}` : ''}</span>
                       </div>
                     )}
                     {tripData.days > 0 && (
                       <div className="flex items-center gap-2 text-foreground/45">
                         <Users size={13} strokeWidth={1.3} />
-                        <span className="text-[11px] uppercase tracking-[0.15em]">{tripData.days} day trip</span>
+                        <span className="text-[11px] uppercase tracking-[0.15em]">{tripData.names || 'Travelers'}</span>
                       </div>
                     )}
                   </div>
