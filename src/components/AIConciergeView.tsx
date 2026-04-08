@@ -179,14 +179,14 @@ HOTELS
       <DetailHeader title="AI Concierge" onBack={onBack} />
 
       <div className="mb-6 p-5 bg-primary/20 rounded-2xl">
-        <p className="font-script text-4xl mb-1" style={{ color: 'hsl(0 20% 32%)' }}>your perfect honeymoon awaits</p>
-        <p className="font-body text-xs text-foreground/50 tracking-wide">Tell us your vision and we'll craft something magical.</p>
+        <p className="font-script text-5xl mb-2" style={{ color: 'hsl(0 20% 32%)' }}>your perfect honeymoon awaits</p>
+        <p className="font-serif text-sm uppercase tracking-widest text-foreground/40">Tell us your vision and we'll craft something magical.</p>
       </div>
 
       <div className="space-y-6">
         {/* Budget */}
         <div className="space-y-1.5">
-          <label className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1">Total Budget (USD)</label>
+          <label className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1 border-b border-foreground/10 pb-1 mb-3">Total Budget (USD)</label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
             <input
@@ -197,12 +197,11 @@ HOTELS
               className={`${inputClass} pl-8`}
             />
           </div>
-          <div className="border-b border-foreground/10 mt-4" />
         </div>
 
         {/* Vibe */}
         <div className="space-y-2">
-          <label className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1">Travel Vibe</label>
+          <label className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-semibold pl-1 border-b border-foreground/10 pb-1 mb-3">Travel Vibe</label>
           <div className="flex flex-wrap gap-2">
             {vibes.map((v) => (
               <button
@@ -219,7 +218,6 @@ HOTELS
               </button>
             ))}
           </div>
-          <div className="border-b border-foreground/10 mt-4" />
         </div>
 
         {/* Generate Button */}
