@@ -232,7 +232,7 @@ HOTELS
         {/* Travel Vibe */}
         <div>
           <label className={labelClass}>Travel Vibe</label>
-          <div className="flex items-center">
+          <div className="flex items-center justify-center">
             {vibes.map((v, idx) => {
               const selected = selectedVibes.includes(v);
               return (
@@ -267,7 +267,7 @@ HOTELS
           whileTap={{ scale: 0.96 }}
           onClick={generate}
           disabled={loading || (budget === '' && selectedVibes.length === 0)}
-          className="w-full py-4 bg-primary pill-shape font-script text-3xl text-primary-foreground shadow-arch transition-opacity disabled:opacity-40"
+          className="w-full py-4 bg-primary pill-shape font-script text-3xl text-primary-foreground shadow-arch"
         >
           {loading ? (
             <span className="font-body text-sm tracking-widest uppercase animate-pulse">crafting your journey...</span>
