@@ -842,14 +842,145 @@ const emptyTraveler = (id: string): TravelerInfo => ({
   emergencyContactPhone: '', preferredAirline: '', seatPreference: '', notes: '',
 });
 
+const getInitials = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+};
+
+const formatDOB = (dob: string) => {
+  if (!dob) return '';
+  // Try to parse MM/DD/YYYY or YYYY-MM-DD
+  const iso = dob.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const mdy = dob.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  let date: Date | null = null;
+  if (iso) date = new Date(`${iso[1]}-${iso[2]}-${iso[3]}`);
+  else if (mdy) date = new Date(`${mdy[3]}-${mdy[1].padStart(2,'0')}-${mdy[2].padStart(2,'0')}`);
+  if (!date || isNaN(date.getTime())) return dob;
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+};
+
+const PassportPill = ({ label, value }: { label: string; value: string }) => (
+  value ? (
+    <div className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl bg-background border border-foreground/[0.06]" style={{ minWidth: 80 }}>
+      <span className="text-[9px] uppercase tracking-widest text-foreground/35">{label}</span>
+      <span className="font-body text-xs text-foreground/65 text-center leading-tight">{value}</span>
+    </div>
+  ) : null
+);
+
+const TravelerCard = ({ traveler, onEdit }: { traveler: TravelerInfo; onEdit: () => void }) => {
+  const initials = getInitials(traveler.name);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="bg-card rounded-2xl shadow-soft p-6 relative overflow-hidden"
+    >
+      {/* Subtle decorative stripe */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl" style={{ background: 'linear-gradient(90deg, hsl(0 20% 78%), hsl(0 12% 88%))' }} />
+
+      {/* Edit button */}
+      <button
+        onClick={onEdit}
+        className="absolute top-5 right-5 p-1.5 rounded-lg text-foreground/30 hover:text-foreground/60 hover:bg-foreground/5 transition-colors"
+      >
+        <Pencil size={13} strokeWidth={1.5} />
+      </button>
+
+      {/* Header: initials circle + name/nationality */}
+      <div className="flex items-center gap-5 mb-5">
+        <div
+          className="flex-shrink-0 flex items-center justify-center rounded-full"
+          style={{ width: 64, height: 64, background: 'linear-gradient(135deg, hsl(0 20% 90%), hsl(0 12% 84%))', border: '1px solid hsl(0 20% 82%)' }}
+        >
+          <span className="font-serif text-xl text-foreground/60" style={{ letterSpacing: '0.05em' }}>{initials}</span>
+        </div>
+        <div>
+          <h3 className="font-serif text-xl text-foreground/85 leading-tight">{traveler.name}</h3>
+          {traveler.nationality && (
+            <p className="text-[11px] uppercase tracking-widest text-foreground/40 mt-0.5">{traveler.nationality}</p>
+          )}
+          {traveler.dateOfBirth && (
+            <p className="font-body text-xs text-foreground/45 mt-1">{formatDOB(traveler.dateOfBirth)}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Thin divider */}
+      <div className="border-t border-foreground/[0.07] mb-4" />
+
+      {/* Passport row */}
+      {(traveler.passportNumber || traveler.passportExpiry) && (
+        <div className="mb-4">
+          <p className="text-[9px] uppercase tracking-widest text-foreground/30 mb-2">Passport</p>
+          <div className="flex gap-4">
+            {traveler.passportNumber && (
+              <div>
+                <p className="text-[9px] uppercase tracking-widest text-foreground/30">Number</p>
+                <p className="font-body text-sm text-foreground/65 tracking-widest mt-0.5">{traveler.passportNumber}</p>
+              </div>
+            )}
+            {traveler.passportExpiry && (
+              <div>
+                <p className="text-[9px] uppercase tracking-widest text-foreground/30">Expires</p>
+                <p className="font-body text-sm text-foreground/65 mt-0.5">{traveler.passportExpiry}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Pills row */}
+      {(traveler.dietaryRestrictions || traveler.seatPreference || traveler.preferredAirline) && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          <PassportPill label="Diet" value={traveler.dietaryRestrictions} />
+          <PassportPill label="Seat" value={traveler.seatPreference} />
+          <PassportPill label="Airline" value={traveler.preferredAirline} />
+        </div>
+      )}
+
+      {/* Emergency contact */}
+      {(traveler.emergencyContactName || traveler.emergencyContactPhone) && (
+        <div className="border-t border-foreground/[0.07] pt-3 mt-1">
+          <p className="text-[9px] uppercase tracking-widest text-foreground/30 mb-1.5">Emergency Contact</p>
+          <p className="font-body text-xs text-foreground/55">
+            {[traveler.emergencyContactName, traveler.emergencyContactPhone].filter(Boolean).join(' · ')}
+          </p>
+        </div>
+      )}
+
+      {/* Notes */}
+      {traveler.notes && (
+        <div className="border-t border-foreground/[0.07] pt-3 mt-3">
+          <p className="font-body text-xs text-foreground/45 italic leading-relaxed">{traveler.notes}</p>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
 const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   const [travelers, setTravelers] = useState<TravelerInfo[]>([
     emptyTraveler('1'),
     emptyTraveler('2'),
   ]);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   const updateTraveler = (id: string, field: keyof TravelerInfo, value: string) => {
     setTravelers(travelers.map(t => t.id === id ? { ...t, [field]: value } : t));
+  };
+
+  const saveTraveler = (id: string) => {
+    const t = travelers.find(t => t.id === id);
+    if (!t?.name.trim()) return;
+    setSavedIds(prev => new Set(prev).add(id));
+  };
+
+  const editTraveler = (id: string) => {
+    setSavedIds(prev => { const next = new Set(prev); next.delete(id); return next; });
   };
 
   const addTraveler = () => {
@@ -858,6 +989,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
 
   const removeTraveler = (id: string) => {
     setTravelers(travelers.filter(t => t.id !== id));
+    setSavedIds(prev => { const next = new Set(prev); next.delete(id); return next; });
   };
 
   const inputClass = 'w-full bg-card border border-foreground/5 rounded-xl px-4 py-3 text-sm font-body focus:outline-none focus:border-primary transition-colors';
@@ -868,80 +1000,88 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
       <DetailHeader title="Traveler Profiles" onBack={onBack} />
       <div className="space-y-6">
         {travelers.map((traveler) => (
-          <div key={traveler.id} className="bg-card rounded-2xl p-4 sm:p-5 shadow-soft relative">
-            <button onClick={() => removeTraveler(traveler.id)} className="absolute top-4 right-4">
-              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
-            </button>
-            <div className="space-y-3">
-              {/* Identity */}
-              <div>
-                <label className="text-label mb-1 block">Full Name</label>
-                <input value={traveler.name} onChange={(e) => updateTraveler(traveler.id, 'name', e.target.value)} placeholder="Full legal name" className={inputClass} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+          savedIds.has(traveler.id) ? (
+            <TravelerCard key={traveler.id} traveler={traveler} onEdit={() => editTraveler(traveler.id)} />
+          ) : (
+            <div key={traveler.id} className="bg-card rounded-2xl p-4 sm:p-5 shadow-soft relative">
+              <button onClick={() => removeTraveler(traveler.id)} className="absolute top-4 right-4">
+                <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
+              </button>
+              <div className="space-y-3">
+                {/* Identity */}
                 <div>
-                  <label className="text-label mb-1 block">Date of Birth</label>
-                  <input value={traveler.dateOfBirth} onChange={(e) => updateTraveler(traveler.id, 'dateOfBirth', e.target.value)} placeholder="MM/DD/YYYY" className={inputClass} />
+                  <label className="text-label mb-1 block">Full Name</label>
+                  <input value={traveler.name} onChange={(e) => updateTraveler(traveler.id, 'name', e.target.value)} placeholder="Full legal name" className={inputClass} />
                 </div>
-                <div>
-                  <label className="text-label mb-1 block">Nationality</label>
-                  <input value={traveler.nationality} onChange={(e) => updateTraveler(traveler.id, 'nationality', e.target.value)} placeholder="e.g. American" className={inputClass} />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-label mb-1 block">Date of Birth</label>
+                    <input value={traveler.dateOfBirth} onChange={(e) => updateTraveler(traveler.id, 'dateOfBirth', e.target.value)} placeholder="MM/DD/YYYY" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="text-label mb-1 block">Nationality</label>
+                    <input value={traveler.nationality} onChange={(e) => updateTraveler(traveler.id, 'nationality', e.target.value)} placeholder="e.g. American" className={inputClass} />
+                  </div>
                 </div>
-              </div>
 
-              {/* Passport */}
-              <span className={sectionLabel}>Passport</span>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-label mb-1 block">Passport #</label>
-                  <input value={traveler.passportNumber} onChange={(e) => updateTraveler(traveler.id, 'passportNumber', e.target.value)} placeholder="Passport number" className={inputClass} />
+                {/* Passport */}
+                <span className={sectionLabel}>Passport</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-label mb-1 block">Passport #</label>
+                    <input value={traveler.passportNumber} onChange={(e) => updateTraveler(traveler.id, 'passportNumber', e.target.value)} placeholder="Passport number" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="text-label mb-1 block">Expiry</label>
+                    <input value={traveler.passportExpiry} onChange={(e) => updateTraveler(traveler.id, 'passportExpiry', e.target.value)} placeholder="MM/YYYY" className={inputClass} />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-label mb-1 block">Expiry</label>
-                  <input value={traveler.passportExpiry} onChange={(e) => updateTraveler(traveler.id, 'passportExpiry', e.target.value)} placeholder="MM/YYYY" className={inputClass} />
-                </div>
-              </div>
 
-              {/* Travel preferences */}
-              <span className={sectionLabel}>Travel Preferences</span>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-label mb-1 block">Preferred Airline</label>
-                  <input value={traveler.preferredAirline} onChange={(e) => updateTraveler(traveler.id, 'preferredAirline', e.target.value)} placeholder="e.g. Delta, United" className={inputClass} />
+                {/* Travel preferences */}
+                <span className={sectionLabel}>Travel Preferences</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-label mb-1 block">Preferred Airline</label>
+                    <input value={traveler.preferredAirline} onChange={(e) => updateTraveler(traveler.id, 'preferredAirline', e.target.value)} placeholder="e.g. Delta, United" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="text-label mb-1 block">Seat Preference</label>
+                    <input value={traveler.seatPreference} onChange={(e) => updateTraveler(traveler.id, 'seatPreference', e.target.value)} placeholder="e.g. Window, Aisle" className={inputClass} />
+                  </div>
                 </div>
                 <div>
-                  <label className="text-label mb-1 block">Seat Preference</label>
-                  <input value={traveler.seatPreference} onChange={(e) => updateTraveler(traveler.id, 'seatPreference', e.target.value)} placeholder="e.g. Window, Aisle" className={inputClass} />
+                  <label className="text-label mb-1 block">Dietary Restrictions / Allergies</label>
+                  <input value={traveler.dietaryRestrictions} onChange={(e) => updateTraveler(traveler.id, 'dietaryRestrictions', e.target.value)} placeholder="e.g. Vegetarian, nut allergy" className={inputClass} />
                 </div>
-              </div>
-              <div>
-                <label className="text-label mb-1 block">Dietary Restrictions / Allergies</label>
-                <input value={traveler.dietaryRestrictions} onChange={(e) => updateTraveler(traveler.id, 'dietaryRestrictions', e.target.value)} placeholder="e.g. Vegetarian, nut allergy" className={inputClass} />
-              </div>
 
-              {/* Emergency contact */}
-              <span className={sectionLabel}>Emergency Contact</span>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-label mb-1 block">Contact Name</label>
-                  <input value={traveler.emergencyContactName} onChange={(e) => updateTraveler(traveler.id, 'emergencyContactName', e.target.value)} placeholder="Full name" className={inputClass} />
+                {/* Emergency contact */}
+                <span className={sectionLabel}>Emergency Contact</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-label mb-1 block">Contact Name</label>
+                    <input value={traveler.emergencyContactName} onChange={(e) => updateTraveler(traveler.id, 'emergencyContactName', e.target.value)} placeholder="Full name" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="text-label mb-1 block">Phone</label>
+                    <input value={traveler.emergencyContactPhone} onChange={(e) => updateTraveler(traveler.id, 'emergencyContactPhone', e.target.value)} placeholder="+1 (555) 000-0000" className={inputClass} />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-label mb-1 block">Phone</label>
-                  <input value={traveler.emergencyContactPhone} onChange={(e) => updateTraveler(traveler.id, 'emergencyContactPhone', e.target.value)} placeholder="+1 (555) 000-0000" className={inputClass} />
-                </div>
-              </div>
 
-              {/* Notes */}
-              <span className={sectionLabel}>Notes</span>
-              <div>
-                <textarea value={traveler.notes} onChange={(e) => updateTraveler(traveler.id, 'notes', e.target.value)} placeholder="Any other notes or preferences..." rows={2} className={`${inputClass} resize-none`} />
+                {/* Notes */}
+                <span className={sectionLabel}>Notes</span>
+                <div>
+                  <textarea value={traveler.notes} onChange={(e) => updateTraveler(traveler.id, 'notes', e.target.value)} placeholder="Any other notes or preferences..." rows={2} className={`${inputClass} resize-none`} />
+                </div>
               </div>
+              <button
+                onClick={() => saveTraveler(traveler.id)}
+                disabled={!traveler.name.trim()}
+                className="w-full mt-4 py-2.5 rounded-xl text-white text-sm font-serif tracking-wide transition-colors shadow-soft bg-[#d4b5b0] hover:bg-[#c9a8a2] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Save Profile
+              </button>
             </div>
-            <div className="mt-4">
-              <SaveButton label="Traveler profile" />
-            </div>
-          </div>
+          )
         ))}
       </div>
       <button onClick={addTraveler} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
