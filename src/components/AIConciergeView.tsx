@@ -63,6 +63,7 @@ interface AIConciergeViewProps {
 }
 
 const AIConciergeView = ({ onBack, tripData, onAddToItinerary }: AIConciergeViewProps) => {
+  const [destination, setDestination] = useState(tripData.destination || '');
   const [budget, setBudget] = useState('');
   const [days, setDays] = useState(String(tripData.days || ''));
   const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
@@ -86,10 +87,11 @@ const AIConciergeView = ({ onBack, tripData, onAddToItinerary }: AIConciergeView
     setAdded(false);
 
     const numDays = days || String(tripData.days);
+    const dest = destination || tripData.destination || 'to be decided';
 
     const prompt = `You are a luxury honeymoon concierge. Create a personalized honeymoon plan.
 
-Destination: ${tripData.destination || 'to be decided'}
+Destination: ${dest}
 Duration: ${numDays} days
 Travelers: ${tripData.names || 'a couple'}
 Total Budget: $${budget}
@@ -188,6 +190,18 @@ HOTELS
       </div>
 
       <div className="space-y-10">
+        {/* Destination */}
+        <div>
+          <label className={labelClass}>Destination</label>
+          <input
+            type="text"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            placeholder="Where are you dreaming of?"
+            className={bareInputClass}
+          />
+        </div>
+
         {/* Budget + Days — side by side */}
         <div className="flex gap-8">
           <div className="flex-1">
