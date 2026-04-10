@@ -1,28 +1,6 @@
 /// <reference types="@types/google.maps" />
 import { useEffect, useRef, useState } from 'react';
 
-// ── Module-level PAC blur fix ─────────────────────────────────────────────────
-// Prevents .pac-container mousedown from blurring the input before the click
-// registers. Attaches in CAPTURE phase on document so it fires even if a
-// PAC item calls stopPropagation internally. Bubble-phase listeners on
-// .pac-container are blocked by Google's own internal handlers — capture
-// is the only reliable interception point.
-const _pacBlurHandler = (e: MouseEvent) => {
-  if ((e.target as HTMLElement).closest?.('.pac-container')) {
-    e.preventDefault();
-  }
-};
-
-let _pacGuardActive = false;
-
-const _ensurePacBlurFix = () => {
-  if (_pacGuardActive) return;
-  _pacGuardActive = true;
-  // true = capture phase: fires before stopPropagation on inner elements
-  document.addEventListener('mousedown', _pacBlurHandler, true);
-};
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface PlaceResult {
   address: string;
   lat?: number;
@@ -45,6 +23,7 @@ const PlacesAutocomplete = ({ value, onChange, onPlaceSelect, placeholder = 'Sea
   const skipNextChangeRef = useRef(false);
   const onChangeRef = useRef(onChange);
   const onPlaceSelectRef = useRef(onPlaceSelect);
+  const mouseDownOnPac = useRef(false);
 
   onChangeRef.current = onChange;
   onPlaceSelectRef.current = onPlaceSelect;
@@ -63,8 +42,16 @@ const PlacesAutocomplete = ({ value, onChange, onPlaceSelect, placeholder = 'Sea
     return () => clearInterval(interval);
   }, []);
 
-  // Start the module-level PAC blur fix (idempotent — safe to call per instance)
-  useEffect(() => { _ensurePacBlurFix(); }, []);
+  // Track mousedown on .pac-container so onBlur can refocus before place_changed fires
+  useEffect(() => {
+    const handleMouseDown = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest?.('.pac-container')) {
+        mouseDownOnPac.current = true;
+      }
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, []);
 
   useEffect(() => {
     if (!isReady || !inputRef.current || autocompleteRef.current) return;
@@ -79,10 +66,10 @@ const PlacesAutocomplete = ({ value, onChange, onPlaceSelect, placeholder = 'Sea
         const address = place.formatted_address || place.name || '';
         const lat = place.geometry?.location?.lat();
         const lng = place.geometry?.location?.lng();
-        
+
         // Skip the next React onChange since Google already set the input value
         skipNextChangeRef.current = true;
-        
+
         onChangeRef.current(address);
         onPlaceSelectRef.current?.({
           address,
@@ -112,6 +99,13 @@ const PlacesAutocomplete = ({ value, onChange, onPlaceSelect, placeholder = 'Sea
           return;
         }
         onChange(e.target.value);
+      }}
+      onBlur={() => {
+        if (mouseDownOnPac.current) {
+          mouseDownOnPac.current = false;
+          inputRef.current?.focus();
+          return;
+        }
       }}
       placeholder={placeholder}
       className={className}
