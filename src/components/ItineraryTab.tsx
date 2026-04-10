@@ -211,45 +211,69 @@ const buildSyncedActivities = (
   return activities;
 };
 
-/* ── Drive time + distance connector between activity cards ── */
-const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng }: {
+/* ── Travel time connector between activity cards ── */
+const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng, fromLocation, toLocation }: {
   fromLat?: number; fromLng?: number; toLat?: number; toLng?: number;
+  fromLocation?: string; toLocation?: string;
 }) => {
-  const [info, setInfo] = useState<{ duration: string; distance: string } | null>(null);
+  const [info, setInfo] = useState<{ duration: string; mode: 'driving' | 'walking' } | null>(null);
+
+  const origin: google.maps.LatLngLiteral | string | null =
+    fromLat && fromLng ? { lat: fromLat, lng: fromLng } : fromLocation?.trim() || null;
+  const destination: google.maps.LatLngLiteral | string | null =
+    toLat && toLng ? { lat: toLat, lng: toLng } : toLocation?.trim() || null;
 
   useEffect(() => {
-    if (!fromLat || !fromLng || !toLat || !toLng) return;
+    if (!origin || !destination) return;
     if (!window.google?.maps) return;
+
+    setInfo(null);
     const service = new google.maps.DistanceMatrixService();
+
     service.getDistanceMatrix(
-      {
-        origins: [{ lat: fromLat, lng: fromLng }],
-        destinations: [{ lat: toLat, lng: toLng }],
-        travelMode: google.maps.TravelMode.DRIVING,
-      },
+      { origins: [origin], destinations: [destination], travelMode: google.maps.TravelMode.DRIVING },
       (result, status) => {
-        if (status === 'OK' && result) {
-          const el = result.rows[0]?.elements[0];
-          const duration = el?.duration?.text;
-          const distance = el?.distance?.text;
-          if (duration) setInfo({ duration, distance: distance || '' });
+        if (status !== 'OK' || !result) return;
+        const el = result.rows[0]?.elements[0];
+        if (!el || el.status !== 'OK') return;
+        const distanceMeters = el.distance?.value ?? Infinity;
+        const drivingDuration = el.duration?.text;
+        if (!drivingDuration) return;
+
+        if (distanceMeters < 1000) {
+          // Under 1 km — prefer walking time
+          service.getDistanceMatrix(
+            { origins: [origin!], destinations: [destination!], travelMode: google.maps.TravelMode.WALKING },
+            (walkResult, walkStatus) => {
+              if (walkStatus !== 'OK' || !walkResult) {
+                setInfo({ duration: drivingDuration, mode: 'driving' });
+                return;
+              }
+              const walkEl = walkResult.rows[0]?.elements[0];
+              const walkDuration = walkEl?.duration?.text;
+              setInfo(walkDuration
+                ? { duration: walkDuration, mode: 'walking' }
+                : { duration: drivingDuration, mode: 'driving' });
+            }
+          );
+        } else {
+          setInfo({ duration: drivingDuration, mode: 'driving' });
         }
       }
     );
-  }, [fromLat, fromLng, toLat, toLng]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromLat, fromLng, toLat, toLng, fromLocation, toLocation]);
+
+  if (!origin || !destination || !info) return null;
 
   return (
     <div className="flex items-center gap-2 ml-[28px] py-0.5">
       <div className="flex flex-col items-center">
         <div className="w-px h-2.5 bg-primary/20" />
-        <Car size={10} strokeWidth={1.5} className="text-foreground/30 my-0.5" />
+        <span className="text-[11px] leading-none my-0.5">{info.mode === 'walking' ? '🚶' : '🚗'}</span>
         <div className="w-px h-2.5 bg-primary/20" />
       </div>
-      {info && (
-        <span className="font-body text-[11px] text-foreground/35">
-          {info.duration}{info.distance ? ` · ${info.distance}` : ''}
-        </span>
-      )}
+      <span className="font-body text-[11px] text-foreground/35">{info.duration}</span>
     </div>
   );
 };
@@ -645,8 +669,10 @@ const ItineraryItem = ({
                               <DriveTimeConnector
                                 fromLat={orderedActivities[idx - 1].lat}
                                 fromLng={orderedActivities[idx - 1].lng}
+                                fromLocation={orderedActivities[idx - 1].location}
                                 toLat={act.lat}
                                 toLng={act.lng}
+                                toLocation={act.location}
                               />
                             )}
                             <SortableActivityCard
