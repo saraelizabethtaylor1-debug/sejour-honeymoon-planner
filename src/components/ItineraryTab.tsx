@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map } from 'lucide-react';
+import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star } from 'lucide-react';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
@@ -10,7 +10,7 @@ import { parseDateString } from '@/lib/dateUtils';
 
 interface ItineraryTabProps {
   days: ItineraryDay[];
-  tripData?: { date: string; days: number; destination: string };
+  tripData?: { date: string; days: number; destination: string; clockFormat?: '12h' | '24h' };
   transportItems?: TransportItem[];
   accommodationItems?: AccommodationItem[];
   activityItems?: ActivityItem[];
@@ -26,12 +26,12 @@ const iconMap: Record<string, typeof Bed> = {
   train: TrainFront,
   car: Car,
   dining: UtensilsCrossed,
-  activity: Map,
+  activity: Star,
   spa: Sparkles,
   beach: Palmtree,
   sightseeing: Landmark,
-  transport: Bus,
-  default: Camera,
+  transport: Car,
+  default: Star,
 };
 
 const guessIconType = (title: string): ItineraryActivity['iconType'] => {
@@ -48,6 +48,21 @@ const guessIconType = (title: string): ItineraryActivity['iconType'] => {
   if (t.includes('wine') || t.includes('tasting')) return 'activity';
   if (t.includes('stay at') || t.includes('staying')) return 'hotel';
   return 'activity';
+};
+
+/** Convert a 24h time string like "14:30" to "2:30 PM" when clockFormat is '12h'. */
+const formatTime = (time: string, clockFormat?: '12h' | '24h'): string => {
+  if (!time || clockFormat !== '12h') return time;
+  // Already contains AM/PM — already 12h
+  if (/[ap]m/i.test(time)) return time;
+  const match = time.match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return time;
+  let h = parseInt(match[1], 10);
+  const m = match[2];
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return `${h}:${m} ${suffix}`;
 };
 
 const extractTime = (dateTimeStr: string): string => {
@@ -195,21 +210,11 @@ const buildSyncedActivities = (
   return activities;
 };
 
-/* ── Sortable Activity Card (new layout) ── */
-interface SortableActivityProps {
-  activity: TaggedActivity;
-  id: string;
-  onUpdate: (fields: Partial<ItineraryActivity> & { lat?: number; lng?: number }) => void;
-  onImageUpload: (file: File) => void;
-  onRemoveImage: () => void;
-  onDelete: () => void;
-}
-
-/* ── Drive time connector between activity cards ── */
+/* ── Drive time + distance connector between activity cards ── */
 const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng }: {
   fromLat?: number; fromLng?: number; toLat?: number; toLng?: number;
 }) => {
-  const [driveTime, setDriveTime] = useState<string | null>(null);
+  const [info, setInfo] = useState<{ duration: string; distance: string } | null>(null);
 
   useEffect(() => {
     if (!fromLat || !fromLng || !toLat || !toLng) return;
@@ -223,8 +228,10 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng }: {
       },
       (result, status) => {
         if (status === 'OK' && result) {
-          const duration = result.rows[0]?.elements[0]?.duration?.text;
-          if (duration) setDriveTime(duration);
+          const el = result.rows[0]?.elements[0];
+          const duration = el?.duration?.text;
+          const distance = el?.distance?.text;
+          if (duration) setInfo({ duration, distance: distance || '' });
         }
       }
     );
@@ -237,14 +244,27 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng }: {
         <Car size={10} strokeWidth={1.5} className="text-foreground/30 my-0.5" />
         <div className="w-px h-2.5 bg-primary/20" />
       </div>
-      {driveTime && (
-        <span className="font-body text-[11px] text-foreground/35">{driveTime}</span>
+      {info && (
+        <span className="font-body text-[11px] text-foreground/35">
+          {info.duration}{info.distance ? ` · ${info.distance}` : ''}
+        </span>
       )}
     </div>
   );
 };
 
-const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRemoveImage, onDelete }: SortableActivityProps) => {
+/* ── Sortable Activity Card ── */
+interface SortableActivityProps {
+  activity: TaggedActivity;
+  id: string;
+  clockFormat?: '12h' | '24h';
+  onUpdate: (fields: Partial<ItineraryActivity> & { lat?: number; lng?: number }) => void;
+  onImageUpload: (file: File) => void;
+  onRemoveImage: () => void;
+  onDelete: () => void;
+}
+
+const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImageUpload, onRemoveImage, onDelete }: SortableActivityProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : undefined, opacity: isDragging ? 0.5 : 1 };
   const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
@@ -256,40 +276,46 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
     setEditingField(null);
   };
 
+  const mapsUrl = act.location
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(act.location)}`
+    : null;
+
+  const displayTime = formatTime(act.time ? act.time.replace(/^.*?,\s*/, '') : '', clockFormat);
+
   return (
     <div ref={setNodeRef} style={style} className="flex items-start relative group/item">
       {/* Timeline dot */}
       <div className="flex-shrink-0 w-8 flex justify-center pt-6 relative z-10">
-        <div className="w-2.5 h-2.5 rounded-full bg-primary/40 border-2 border-primary/60" />
+        <div className="w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: 'hsl(0 20% 32%)', borderColor: 'hsl(0 20% 32%)' }} />
       </div>
 
       {/* Card */}
-      <div className="flex-1 bg-card rounded-2xl shadow-soft flex gap-3 sm:gap-4 min-w-0 overflow-hidden">
-        <div className="flex-1 flex gap-3 sm:gap-4 min-w-0 p-4 sm:p-5">
-        {/* Drag handle - 2x2 dot grid */}
-        <div
-          {...attributes}
-          {...listeners}
-          className="flex-shrink-0 cursor-grab active:cursor-grabbing touch-none pt-1"
-        >
-          <div className="grid grid-cols-2 gap-[3px]">
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-            <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-          </div>
-        </div>
+      <div className="flex-1 bg-card rounded-2xl shadow-soft flex gap-0 min-w-0 overflow-hidden">
 
-        {/* Category icon */}
-        <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <IconComponent size={18} strokeWidth={1.4} className="text-primary-foreground" />
+        {/* Left column: icon + drag handle */}
+        <div className="flex-shrink-0 flex flex-col items-center gap-2 pt-4 pb-3 px-3">
+          {/* Category icon */}
+          <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <IconComponent size={16} strokeWidth={1.4} className="text-primary-foreground" />
+          </div>
+          {/* Drag handle dots */}
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing touch-none"
+          >
+            <div className="grid grid-cols-2 gap-[3px]">
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
+            </div>
           </div>
         </div>
 
         {/* Content block */}
-        <div className="flex-1 min-w-0">
-          {/* Time - hide entirely for mid-stay hotel cards */}
+        <div className="flex-1 min-w-0 py-4 pr-4">
+          {/* Time */}
           {act._uid?.includes('sync-acc-stay-') ? null : (
             editingField === 'time' ? (
               <input
@@ -302,7 +328,7 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
             ) : (
               <button onClick={() => setEditingField('time')} className="text-left w-full">
                 <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 hover:text-foreground/70 transition-colors">
-                  {act.time ? act.time.replace(/^.*?,\s*/, '') : 'Add time'}
+                  {displayTime || 'Add time'}
                 </span>
               </button>
             )
@@ -355,43 +381,49 @@ const SortableActivityCard = ({ activity: act, id, onUpdate, onImageUpload, onRe
             </button>
           )}
 
-          {/* View on map link */}
-          {(act.location) && (
-            <button className="flex items-center gap-1 mt-2.5 text-xs text-primary-foreground hover:text-primary-foreground/70 transition-colors">
+          {/* View on map */}
+          {mapsUrl && (
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 mt-2.5 text-xs text-primary-foreground hover:text-primary-foreground/70 transition-colors"
+            >
               <span>View on map</span>
               <ExternalLink size={10} strokeWidth={1.5} />
-            </button>
+            </a>
           )}
-
-          {/* Delete button */}
-          <button
-            onClick={onDelete}
-            className="absolute top-3 right-3 p-1.5 hover:bg-destructive/10 rounded-lg transition-colors opacity-0 group-hover/item:opacity-100"
-          >
-            <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
-          </button>
-        </div>
         </div>
 
-        {/* Photo placeholder - full height, flush right */}
-        <div className="flex-shrink-0 w-24 self-stretch rounded-r-2xl overflow-hidden">
-          {act.imageUrl ? (
-            <div className="relative w-full h-full">
-              <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-              <button onClick={onRemoveImage} className="absolute bottom-2 left-2 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
-                <X size={10} className="text-background" />
+        {/* Photo — square 1:1 flush right */}
+        <div className="flex-shrink-0 self-start m-3 ml-0">
+          <div className="w-20 h-20 rounded-xl overflow-hidden">
+            {act.imageUrl ? (
+              <div className="relative w-full h-full">
+                <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+                <button onClick={onRemoveImage} className="absolute bottom-1.5 left-1.5 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
+                  <X size={10} className="text-background" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
+              >
+                <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
+                <span className="text-[10px] text-foreground/30">photo</span>
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
-            >
-              <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
-              <span className="text-[10px] text-foreground/30">photo</span>
-            </button>
-          )}
+            )}
+          </div>
         </div>
+
+        {/* Delete button */}
+        <button
+          onClick={onDelete}
+          className="absolute top-3 right-3 p-1.5 hover:bg-destructive/10 rounded-lg transition-colors opacity-0 group-hover/item:opacity-100"
+        >
+          <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
+        </button>
       </div>
 
       <input
@@ -414,6 +446,7 @@ const ItineraryItem = ({
   syncedActivities,
   dayDateStr,
   dayNumber,
+  clockFormat,
   onAddActivity,
   onRemoveActivity,
 }: {
@@ -421,6 +454,7 @@ const ItineraryItem = ({
   syncedActivities: TaggedActivity[];
   dayDateStr: string;
   dayNumber: number;
+  clockFormat?: '12h' | '24h';
   onAddActivity?: (activity: ActivityItem) => void;
   onRemoveActivity?: (id: string) => void;
 }) => {
@@ -543,18 +577,16 @@ const ItineraryItem = ({
 
   return (
     <div>
-      {/* Day accordion header - pill shape */}
+      {/* Day accordion header */}
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#d4b5b0] rounded-full transition-shadow hover:bg-[#d4b5b0]/90"
       >
         <div className="flex items-center gap-4">
-          {/* Large day number */}
           <span className="font-serif text-3xl sm:text-4xl font-light text-white leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
             {paddedNumber}
           </span>
-          {/* Stacked day label + date */}
           <div className="flex flex-col items-start">
             <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-white">
               Day {dayWord}
@@ -596,13 +628,11 @@ const ItineraryItem = ({
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            {/* Timeline area */}
             <div className="pt-6 pb-2 relative">
               {orderedActivities.length === 0 ? (
                 <p className="text-muted-foreground font-serif italic px-10 py-4">No activities planned yet</p>
               ) : (
                 <div className="relative">
-                  {/* Vertical timeline line */}
                   <div className="absolute left-[15px] top-6 bottom-0 w-[1.5px] bg-primary/20" />
 
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -621,6 +651,7 @@ const ItineraryItem = ({
                             <SortableActivityCard
                               id={act._uid}
                               activity={act}
+                              clockFormat={clockFormat}
                               onUpdate={(fields) => updateActivity(act._uid, fields)}
                               onImageUpload={(file) => handleImageUpload(act._uid, file)}
                               onRemoveImage={() => removeImage(act._uid)}
@@ -635,7 +666,6 @@ const ItineraryItem = ({
               )}
             </div>
 
-            {/* Add activity button - always visible, centered */}
             <div className="py-4">
               <button
                 onClick={addActivity}
@@ -679,10 +709,10 @@ const formatDayDate = (tripData: { date: string; days: number }, dayIndex: numbe
 };
 
 const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity }: ItineraryTabProps) => {
-  // Use explicitly-set days (e.g. from AI Concierge) if present; otherwise generate from trip dates
   const displayDays = days.length > 0 ? days : (tripData ? generateDaysFromTrip(tripData) : []);
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
+  const clockFormat = tripData?.clockFormat;
 
   return (
     <div className="w-full">
@@ -710,6 +740,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
               syncedActivities={syncedActivities}
               dayDateStr={dayDateStr}
               dayNumber={i + 1}
+              clockFormat={clockFormat}
               onAddActivity={onAddActivity}
               onRemoveActivity={onRemoveActivity}
             />
