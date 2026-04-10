@@ -87,6 +87,7 @@ const Index = () => {
                 reservationItems={reservationItems}
                 onAddActivity={(newAct) => setActivityItems(prev => [...prev, newAct])}
                 onRemoveActivity={(id) => setActivityItems(prev => prev.filter(a => a.id !== id))}
+                onGoToSettings={() => setView('welcome')}
               />
             )}
           </main>

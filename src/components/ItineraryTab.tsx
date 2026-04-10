@@ -17,6 +17,7 @@ interface ItineraryTabProps {
   reservationItems?: ReservationItem[];
   onAddActivity?: (activity: ActivityItem) => void;
   onRemoveActivity?: (id: string) => void;
+  onGoToSettings?: () => void;
 }
 
 const iconMap: Record<string, typeof Bed> = {
@@ -708,7 +709,7 @@ const formatDayDate = (tripData: { date: string; days: number }, dayIndex: numbe
   return `${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 };
 
-const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity }: ItineraryTabProps) => {
+const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity, onGoToSettings }: ItineraryTabProps) => {
   const displayDays = days.length > 0 ? days : (tripData ? generateDaysFromTrip(tripData) : []);
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
@@ -718,10 +719,33 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
     <div className="w-full">
       <div className="max-w-[1300px] mx-auto px-6 space-y-1 pb-20">
       {displayDays.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="font-serif text-lg mb-2 text-primary-foreground">No itinerary yet</p>
-          <p className="text-sm text-muted-foreground">Enter your trip dates on the welcome screen to generate your itinerary days.</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center justify-center py-24 text-center gap-4"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mb-1">
+            <Map size={26} strokeWidth={1.2} style={{ color: 'hsl(0 20% 52%)' }} />
+          </div>
+          <div className="space-y-1.5">
+            <p className="font-serif text-2xl text-foreground/75">Your adventure awaits</p>
+            <p className="font-body text-sm text-foreground/50 max-w-[260px] leading-relaxed">
+              Add your trip dates to start building your itinerary.
+            </p>
+          </div>
+          {onGoToSettings && (
+            <button
+              onClick={onGoToSettings}
+              className="font-serif text-sm mt-1 transition-colors"
+              style={{ color: 'hsl(0 20% 52%)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'hsl(0 20% 38%)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'hsl(0 20% 52%)')}
+            >
+              Edit trip settings →
+            </button>
+          )}
+        </motion.div>
       ) : (
         displayDays.map((day, i) => {
           let dayDate: Date | null = null;
