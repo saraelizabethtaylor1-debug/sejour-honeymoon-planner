@@ -1,5 +1,29 @@
 /// <reference types="@types/google.maps" />
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+// ── Module-level PAC blur fix ─────────────────────────────────────────────────
+// Prevents .pac-container mousedown from blurring the input before the click
+// registers. Uses a stable function reference so addEventListener never adds
+// duplicate listeners, and multiple component instances / unmounts can't
+// accidentally remove protection that other instances still need.
+const _preventPacBlur = (e: MouseEvent) => e.preventDefault();
+
+const _attachToPac = () => {
+  // querySelectorAll handles 0 or multiple containers safely
+  document.querySelectorAll<HTMLElement>('.pac-container').forEach(pac => {
+    pac.addEventListener('mousedown', _preventPacBlur);
+  });
+};
+
+let _pacObserver: MutationObserver | null = null;
+
+const _ensurePacBlurFix = () => {
+  if (_pacObserver) return; // already running
+  _attachToPac(); // catch any already-present container
+  _pacObserver = new MutationObserver(_attachToPac);
+  _pacObserver.observe(document.body, { childList: true, subtree: true });
+};
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface PlaceResult {
   address: string;
@@ -41,36 +65,8 @@ const PlacesAutocomplete = ({ value, onChange, onPlaceSelect, placeholder = 'Sea
     return () => clearInterval(interval);
   }, []);
 
-  // Prevent the Google .pac-container from triggering input blur.
-  // mousedown fires before blur; preventDefault on it stops the focus shift
-  // so Google's click handler can still fire and select the item.
-  useEffect(() => {
-    const prevent = (e: MouseEvent) => e.preventDefault();
-
-    const attach = () => {
-      const pac = document.querySelector('.pac-container');
-      if (pac && !pac.dataset.blurFixed) {
-        pac.addEventListener('mousedown', prevent);
-        pac.dataset.blurFixed = '1';
-      }
-    };
-
-    // Attach immediately if the container already exists
-    attach();
-
-    // Also watch for it appearing (or reappearing) in the DOM
-    const observer = new MutationObserver(attach);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    return () => {
-      observer.disconnect();
-      const pac = document.querySelector('.pac-container');
-      if (pac) {
-        pac.removeEventListener('mousedown', prevent);
-        delete pac.dataset.blurFixed;
-      }
-    };
-  }, []);
+  // Start the module-level PAC blur fix (idempotent — safe to call per instance)
+  useEffect(() => { _ensurePacBlurFix(); }, []);
 
   useEffect(() => {
     if (!isReady || !inputRef.current || autocompleteRef.current) return;
