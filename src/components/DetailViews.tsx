@@ -1,27 +1,29 @@
 import AIConciergeView from "@/components/AIConciergeView";
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car, Loader2, Sparkles, Bed, Star, CalendarDays } from 'lucide-react';
 import type { ItineraryDay } from '@/types/honeymoon';
 import { CustomDatePicker } from '@/components/ui/custom-date-picker';
 import { CustomTimePicker } from '@/components/ui/custom-time-picker';
 
-const SaveButton = ({ label }: { label: string }) => {
+const SaveButton = ({ label, onSave, disabled }: { label: string; onSave?: () => void; disabled?: boolean }) => {
   const [saved, setSaved] = useState(false);
   const [toast, setToast] = useState(false);
 
   const handleSave = useCallback(() => {
     setSaved(true);
     setToast(true);
+    onSave?.();
     setTimeout(() => setSaved(false), 2000);
     setTimeout(() => setToast(false), 2500);
-  }, []);
+  }, [onSave]);
 
   return (
     <>
       <button
         onClick={handleSave}
-        className={`w-full mt-1 py-2.5 rounded-xl text-white text-sm font-serif tracking-wide transition-colors shadow-soft ${
+        disabled={disabled}
+        className={`w-full mt-1 py-2.5 rounded-xl text-white text-sm font-serif tracking-wide transition-colors shadow-soft disabled:opacity-40 disabled:cursor-not-allowed ${
           saved ? 'bg-[#b8948f]' : 'bg-[#d4b5b0] hover:bg-[#c9a8a2]'
         }`}
       >
@@ -523,15 +525,39 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
+// ── Shared summary card primitives ──
+const CardStripe = () => (
+  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl" style={{ background: 'linear-gradient(90deg, hsl(0 20% 78%), hsl(0 12% 88%))' }} />
+);
+
+const CardIconBadge = ({ Icon }: { Icon: React.ElementType }) => (
+  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+    <Icon size={18} strokeWidth={1.3} className="text-primary-foreground" />
+  </div>
+);
+
+const CardField = ({ label, value }: { label: string; value?: string | number }) => {
+  if (!value && value !== 0) return null;
+  const display = typeof value === 'number' ? (value > 0 ? formatCost(value) : null) : value;
+  if (!display) return null;
+  return (
+    <div>
+      <p className="text-[9px] uppercase tracking-widest text-foreground/30 mb-0.5">{label}</p>
+      <p className="font-body text-sm text-foreground/65 leading-snug">{display}</p>
+    </div>
+  );
+};
+
 // ── Transportation ──
+const transportIconMap: Record<string, React.ElementType> = {
+  Plane, Ferry: Ship, Train: TrainFront, Car,
+};
+
 const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>> }) => {
-  const add = () => {
-    setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 }]);
-  };
-  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
-  const update = (id: string, field: keyof TransportItem, value: string | number) => {
-    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
-  };
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const add = () => setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 }]);
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
+  const update = (id: string, field: keyof TransportItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -539,73 +565,70 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
       <DetailHeader title="Transportation" onBack={onBack} />
       <div className="max-w-[820px] mx-auto">
       <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
-            <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
-              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
-            </button>
-            <div className="space-y-2.5">
-              <Select value={item.type || ''} onValueChange={(v) => update(item.id, 'type', v)}>
-                <SelectTrigger className="w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors h-auto">
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent className="z-[9999]">
-                  <SelectItem value="Plane"><span className="flex items-center gap-2"><Plane size={14} strokeWidth={1.4} /> Plane</span></SelectItem>
-                  <SelectItem value="Ferry"><span className="flex items-center gap-2"><Ship size={14} strokeWidth={1.4} /> Ferry</span></SelectItem>
-                  <SelectItem value="Train"><span className="flex items-center gap-2"><TrainFront size={14} strokeWidth={1.4} /> Train</span></SelectItem>
-                  <SelectItem value="Car"><span className="flex items-center gap-2"><Car size={14} strokeWidth={1.4} /> Car</span></SelectItem>
-                </SelectContent>
-              </Select>
-              <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details" className={inputClass} />
-              <PlacesAutocomplete
-                value={item.departureLocation || ''}
-                onChange={(v) => update(item.id, 'departureLocation' as any, v)}
-                onPlaceSelect={(r) => {
-                  update(item.id, 'departureLocation' as any, r.address);
-                  if (r.lat != null) update(item.id, 'departureLat' as any, r.lat);
-                  if (r.lng != null) update(item.id, 'departureLng' as any, r.lng);
-                  update(item.id, 'location', r.address);
-                  if (r.lat != null) update(item.id, 'lat' as any, r.lat);
-                  if (r.lng != null) update(item.id, 'lng' as any, r.lng);
-                }}
-                placeholder="Departure location"
-                className={inputClass}
-              />
-              <PlacesAutocomplete
-                value={item.arrivalLocation || ''}
-                onChange={(v) => update(item.id, 'arrivalLocation' as any, v)}
-                onPlaceSelect={(r) => {
-                  update(item.id, 'arrivalLocation' as any, r.address);
-                  if (r.lat != null) update(item.id, 'arrivalLat' as any, r.lat);
-                  if (r.lng != null) update(item.id, 'arrivalLng' as any, r.lng);
-                }}
-                placeholder="Arrival location"
-                className={inputClass}
-              />
-              <div className="grid grid-cols-3 gap-2.5">
-                <CustomDatePicker
-                  value={item.date || ''}
-                  onChange={(v) => update(item.id, 'date', v)}
-                  placeholder="Date"
-                />
-                <CustomTimePicker
-                  value={item.time || ''}
-                  onChange={(v) => update(item.id, 'time', v)}
-                  placeholder="Time"
-                />
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
-                  <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+        {items.map((item) => {
+          const Icon = transportIconMap[item.type] || Plane;
+          const route = [item.departureLocation, item.arrivalLocation].filter(Boolean).join(' → ') || item.details || item.type;
+          if (savedIds.has(item.id)) return (
+            <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+              className="bg-card rounded-2xl shadow-soft p-6 relative overflow-hidden">
+              <CardStripe />
+              <button onClick={() => setSavedIds(prev => { const n = new Set(prev); n.delete(item.id); return n; })}
+                className="absolute top-4 right-4 p-1.5 rounded-lg text-foreground/30 hover:text-foreground/60 hover:bg-foreground/5 transition-colors">
+                <Pencil size={13} strokeWidth={1.5} />
+              </button>
+              <div className="flex items-start gap-4">
+                <CardIconBadge Icon={Icon} />
+                <div className="flex-1 min-w-0 space-y-3">
+                  <h3 className="font-serif text-xl text-foreground/85 leading-tight pr-8">{route}</h3>
+                  <div className="border-t border-foreground/[0.07]" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <CardField label="Date" value={item.date} />
+                    <CardField label="Time" value={item.time} />
+                    <CardField label="Details" value={item.details} />
+                    <CardField label="Cost" value={item.cost} />
+                  </div>
                 </div>
               </div>
-              <SaveButton label="Transportation" />
+            </motion.div>
+          );
+          return (
+            <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+              <button onClick={() => remove(item.id)} className="absolute top-4 right-4"><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
+              <div className="space-y-2.5">
+                <Select value={item.type || ''} onValueChange={(v) => update(item.id, 'type', v)}>
+                  <SelectTrigger className="w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors h-auto">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[9999]">
+                    <SelectItem value="Plane"><span className="flex items-center gap-2"><Plane size={14} strokeWidth={1.4} /> Plane</span></SelectItem>
+                    <SelectItem value="Ferry"><span className="flex items-center gap-2"><Ship size={14} strokeWidth={1.4} /> Ferry</span></SelectItem>
+                    <SelectItem value="Train"><span className="flex items-center gap-2"><TrainFront size={14} strokeWidth={1.4} /> Train</span></SelectItem>
+                    <SelectItem value="Car"><span className="flex items-center gap-2"><Car size={14} strokeWidth={1.4} /> Car</span></SelectItem>
+                  </SelectContent>
+                </Select>
+                <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details (flight number, etc.)" className={inputClass} />
+                <PlacesAutocomplete value={item.departureLocation || ''} onChange={(v) => update(item.id, 'departureLocation' as any, v)}
+                  onPlaceSelect={(r) => { update(item.id, 'departureLocation' as any, r.address); if (r.lat != null) update(item.id, 'departureLat' as any, r.lat); if (r.lng != null) update(item.id, 'departureLng' as any, r.lng); update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }}
+                  placeholder="Departure location" className={inputClass} />
+                <PlacesAutocomplete value={item.arrivalLocation || ''} onChange={(v) => update(item.id, 'arrivalLocation' as any, v)}
+                  onPlaceSelect={(r) => { update(item.id, 'arrivalLocation' as any, r.address); if (r.lat != null) update(item.id, 'arrivalLat' as any, r.lat); if (r.lng != null) update(item.id, 'arrivalLng' as any, r.lng); }}
+                  placeholder="Arrival location" className={inputClass} />
+                <div className="grid grid-cols-3 gap-2.5">
+                  <CustomDatePicker value={item.date || ''} onChange={(v) => update(item.id, 'date', v)} placeholder="Date" />
+                  <CustomTimePicker value={item.time || ''} onChange={(v) => update(item.id, 'time', v)} placeholder="Time" />
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                    <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+                  </div>
+                </div>
+                <SaveButton label="Transportation" disabled={!item.type} onSave={() => setSavedIds(prev => new Set(prev).add(item.id))} />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <button onClick={add} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <Plus size={14} strokeWidth={1.5} />
-        <span className="font-body">Add transportation</span>
+        <Plus size={14} strokeWidth={1.5} /><span className="font-body">Add transportation</span>
       </button>
       </div>
     </div>
@@ -615,14 +638,11 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
 // ── Accommodations ──
 const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>> }) => {
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
-  const add = () => {
-    setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 }]);
-  };
-  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
-  const update = (id: string, field: keyof AccommodationItem, value: string | number) => {
-    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
-  };
+  const add = () => setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 }]);
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
+  const update = (id: string, field: keyof AccommodationItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
 
   const autofill = async (id: string, name: string) => {
     if (!name.trim()) return;
@@ -630,41 +650,14 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': import.meta.env.VITE_ANTHROPIC_API_KEY || '',
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5',
-          max_tokens: 512,
-          messages: [{
-            role: 'user',
-            content: `You are a luxury travel assistant. Return ONLY a JSON object — no markdown, no extra text — with details for the hotel "${name}":
-{
-  "address": "full street address",
-  "checkInTime": "standard check-in time, e.g. 3:00 PM",
-  "checkOutTime": "standard check-out time, e.g. 12:00 PM",
-  "notes": "one sentence luxury description of the property"
-}
-If the hotel is not found, use reasonable luxury defaults.`,
-          }],
-        }),
+        headers: { 'Content-Type': 'application/json', 'x-api-key': import.meta.env.VITE_ANTHROPIC_API_KEY || '', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: 512, messages: [{ role: 'user', content: `You are a luxury travel assistant. Return ONLY a JSON object — no markdown, no extra text — with details for the hotel "${name}":\n{\n  "address": "full street address",\n  "checkInTime": "standard check-in time, e.g. 3:00 PM",\n  "checkOutTime": "standard check-out time, e.g. 12:00 PM",\n  "notes": "one sentence luxury description of the property"\n}\nIf the hotel is not found, use reasonable luxury defaults.` }] }),
       });
       const data = await response.json();
       const text = data.content?.map((b: any) => b.text || '').join('') || '';
       const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-      setItems(prev => prev.map(i => i.id === id ? {
-        ...i,
-        ...(parsed.address && { address: parsed.address }),
-        ...(parsed.checkInTime && { checkInTime: parsed.checkInTime }),
-        ...(parsed.checkOutTime && { checkOutTime: parsed.checkOutTime }),
-        ...(parsed.notes && { confirmation: parsed.notes }),
-      } : i));
-    } catch {
-      // silently fail — user can fill manually
-    } finally {
+      setItems(prev => prev.map(i => i.id === id ? { ...i, ...(parsed.address && { address: parsed.address }), ...(parsed.checkInTime && { checkInTime: parsed.checkInTime }), ...(parsed.checkOutTime && { checkOutTime: parsed.checkOutTime }), ...(parsed.notes && { confirmation: parsed.notes }) } : i));
+    } catch { /* silently fail */ } finally {
       setLoadingIds(prev => { const n = new Set(prev); n.delete(id); return n; });
     }
   };
@@ -676,47 +669,68 @@ If the hotel is not found, use reasonable luxury defaults.`,
       <DetailHeader title="Accommodations" onBack={onBack} />
       <div className="max-w-[820px] mx-auto">
       <div className="space-y-4">
-        {items.map((item) => (
-          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
-            <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
-              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
-            </button>
-            <div className="space-y-2.5">
-              <div className="relative">
-                <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={`${inputClass} pr-9`} />
-                <button
-                  onClick={() => autofill(item.id, item.name)}
-                  disabled={loadingIds.has(item.id) || !item.name.trim()}
-                  title="Autofill hotel details with AI"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-all disabled:opacity-30 text-foreground/30 hover:text-primary hover:bg-primary/10 disabled:hover:text-foreground/30 disabled:hover:bg-transparent"
-                >
-                  {loadingIds.has(item.id)
-                    ? <Loader2 size={13} strokeWidth={1.5} className="animate-spin" />
-                    : <Sparkles size={13} strokeWidth={1.5} />}
+        {items.map((item) => {
+          if (savedIds.has(item.id)) {
+            const stayLine = [item.checkIn, item.checkOut].filter(Boolean).join(' → ');
+            const timesLine = [item.checkInTime && `In ${item.checkInTime}`, item.checkOutTime && `Out ${item.checkOutTime}`].filter(Boolean).join(' · ');
+            return (
+              <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+                className="bg-card rounded-2xl shadow-soft p-6 relative overflow-hidden">
+                <CardStripe />
+                <button onClick={() => setSavedIds(prev => { const n = new Set(prev); n.delete(item.id); return n; })}
+                  className="absolute top-4 right-4 p-1.5 rounded-lg text-foreground/30 hover:text-foreground/60 hover:bg-foreground/5 transition-colors">
+                  <Pencil size={13} strokeWidth={1.5} />
                 </button>
+                <div className="flex items-start gap-4">
+                  <CardIconBadge Icon={Bed} />
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <h3 className="font-serif text-xl text-foreground/85 leading-tight pr-8">{item.name}</h3>
+                    {item.address && <p className="font-body text-xs text-foreground/45 -mt-1">{item.address}</p>}
+                    <div className="border-t border-foreground/[0.07]" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <CardField label="Stay" value={stayLine} />
+                      <CardField label="Times" value={timesLine} />
+                      <CardField label="Cost" value={item.cost} />
+                      {item.confirmation && <CardField label="Notes" value={item.confirmation.slice(0, 80) + (item.confirmation.length > 80 ? '…' : '')} />}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          }
+          return (
+            <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+              <button onClick={() => remove(item.id)} className="absolute top-4 right-4"><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
+              <div className="space-y-2.5">
+                <div className="relative">
+                  <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Hotel name" className={`${inputClass} pr-9`} />
+                  <button onClick={() => autofill(item.id, item.name)} disabled={loadingIds.has(item.id) || !item.name.trim()} title="Autofill with AI"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-all disabled:opacity-30 text-foreground/30 hover:text-primary hover:bg-primary/10 disabled:hover:text-foreground/30 disabled:hover:bg-transparent">
+                    {loadingIds.has(item.id) ? <Loader2 size={13} strokeWidth={1.5} className="animate-spin" /> : <Sparkles size={13} strokeWidth={1.5} />}
+                  </button>
+                </div>
+                <PlacesAutocomplete value={item.address} onChange={(v) => update(item.id, 'address', v)} onPlaceSelect={(r) => { update(item.id, 'address', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Address (search or type)" className={inputClass} />
+                <div className="grid grid-cols-2 gap-2.5">
+                  <CustomDatePicker value={item.checkIn} onChange={(v) => update(item.id, 'checkIn', v)} placeholder="Check-in date" />
+                  <CustomTimePicker value={item.checkInTime} onChange={(v) => update(item.id, 'checkInTime', v)} placeholder="Check-in time" />
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <CustomDatePicker value={item.checkOut} onChange={(v) => update(item.id, 'checkOut', v)} placeholder="Check-out date" />
+                  <CustomTimePicker value={item.checkOutTime} onChange={(v) => update(item.id, 'checkOutTime', v)} placeholder="Check-out time" />
+                </div>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                  <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+                </div>
+                <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Notes" className={inputClass} />
+                <SaveButton label="Accommodations" disabled={!item.name.trim()} onSave={() => setSavedIds(prev => new Set(prev).add(item.id))} />
               </div>
-              <PlacesAutocomplete value={item.address} onChange={(v) => update(item.id, 'address', v)} onPlaceSelect={(r) => { update(item.id, 'address', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Address (search or type)" className={inputClass} />
-              <div className="grid grid-cols-2 gap-2.5">
-                <CustomDatePicker value={item.checkIn} onChange={(v) => update(item.id, 'checkIn', v)} placeholder="Check-in date" />
-                <CustomTimePicker value={item.checkInTime} onChange={(v) => update(item.id, 'checkInTime', v)} placeholder="Check-in time" />
-              </div>
-              <div className="grid grid-cols-2 gap-2.5">
-                <CustomDatePicker value={item.checkOut} onChange={(v) => update(item.id, 'checkOut', v)} placeholder="Check-out date" />
-                <CustomTimePicker value={item.checkOutTime} onChange={(v) => update(item.id, 'checkOutTime', v)} placeholder="Check-out time" />
-              </div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
-                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
-              </div>
-              <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Notes" className={inputClass} />
-              <SaveButton label="Accommodations" />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <button onClick={add} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <Plus size={14} strokeWidth={1.5} />
-        <span className="font-body">Add accommodation</span>
+        <Plus size={14} strokeWidth={1.5} /><span className="font-body">Add accommodation</span>
       </button>
       </div>
     </div>
@@ -725,13 +739,10 @@ If the hotel is not found, use reasonable luxury defaults.`,
 
 // ── Activities ──
 const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>> }) => {
-  const add = () => {
-    setItems([...items, { id: Date.now().toString(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
-  };
-  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
-  const update = (id: string, field: keyof ActivityItem, value: string | number) => {
-    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
-  };
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const add = () => setItems([...items, { id: Date.now().toString(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
+  const update = (id: string, field: keyof ActivityItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -739,34 +750,58 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
       <DetailHeader title="Activities" onBack={onBack} />
       <div className="max-w-[820px] mx-auto">
       <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
-            <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
-              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
-            </button>
-            <div className="space-y-2.5">
-              <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Activity name" className={inputClass} />
-              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
-              <div className="grid grid-cols-2 gap-2.5">
-                <CustomDatePicker value={item.time?.split(',')[0]?.trim() || ''} onChange={(v) => {
-                  const timePart = item.time?.match(/,\s*(.+)/)?.[1] || '';
-                  update(item.id, 'time', timePart ? `${v}, ${timePart}` : v);
-                }} placeholder="Date" />
-                <CustomTimePicker value={item.confirmation || ''} onChange={(v) => update(item.id, 'confirmation', v)} placeholder="Time" />
+        {items.map((item) => {
+          if (savedIds.has(item.id)) {
+            const datePart = item.time?.split(',')[0]?.trim();
+            const timePart = item.confirmation;
+            const dateTimeLine = [datePart, timePart].filter(Boolean).join(' · ');
+            return (
+              <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+                className="bg-card rounded-2xl shadow-soft p-6 relative overflow-hidden">
+                <CardStripe />
+                <button onClick={() => setSavedIds(prev => { const n = new Set(prev); n.delete(item.id); return n; })}
+                  className="absolute top-4 right-4 p-1.5 rounded-lg text-foreground/30 hover:text-foreground/60 hover:bg-foreground/5 transition-colors">
+                  <Pencil size={13} strokeWidth={1.5} />
+                </button>
+                <div className="flex items-start gap-4">
+                  <CardIconBadge Icon={Star} />
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <h3 className="font-serif text-xl text-foreground/85 leading-tight pr-8">{item.name}</h3>
+                    {item.location && <p className="font-body text-xs text-foreground/45 -mt-1">{item.location}</p>}
+                    <div className="border-t border-foreground/[0.07]" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <CardField label="Date & Time" value={dateTimeLine} />
+                      <CardField label="Cost" value={item.cost} />
+                      {item.notes && <CardField label="Notes" value={item.notes.slice(0, 80) + (item.notes.length > 80 ? '…' : '')} />}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          }
+          return (
+            <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+              <button onClick={() => remove(item.id)} className="absolute top-4 right-4"><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
+              <div className="space-y-2.5">
+                <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Activity name" className={inputClass} />
+                <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
+                <div className="grid grid-cols-2 gap-2.5">
+                  <CustomDatePicker value={item.time?.split(',')[0]?.trim() || ''} onChange={(v) => { const timePart = item.time?.match(/,\s*(.+)/)?.[1] || ''; update(item.id, 'time', timePart ? `${v}, ${timePart}` : v); }} placeholder="Date" />
+                  <CustomTimePicker value={item.confirmation || ''} onChange={(v) => update(item.id, 'confirmation', v)} placeholder="Time" />
+                </div>
+                <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                  <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+                </div>
+                <SaveButton label="Activities" disabled={!item.name.trim()} onSave={() => setSavedIds(prev => new Set(prev).add(item.id))} />
               </div>
-              <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
-                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
-              </div>
-              <SaveButton label="Activities" />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <button onClick={add} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <Plus size={14} strokeWidth={1.5} />
-        <span className="font-body">Add activity</span>
+        <Plus size={14} strokeWidth={1.5} /><span className="font-body">Add activity</span>
       </button>
       </div>
     </div>
@@ -775,13 +810,10 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
 
 // ── Reservations ──
 const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>> }) => {
-  const add = () => {
-    setItems([...items, { id: Date.now().toString(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 }]);
-  };
-  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
-  const update = (id: string, field: keyof ReservationItem, value: string | number) => {
-    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
-  };
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const add = () => setItems([...items, { id: Date.now().toString(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 }]);
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
+  const update = (id: string, field: keyof ReservationItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -789,31 +821,58 @@ const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; ite
       <DetailHeader title="Reservations" onBack={onBack} />
       <div className="max-w-[820px] mx-auto">
       <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
-            <button onClick={() => remove(item.id)} className="absolute top-4 right-4">
-              <Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" />
-            </button>
-            <div className="space-y-2.5">
-              <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Restaurant / Venue" className={inputClass} />
-              <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
-              <div className="grid grid-cols-2 gap-2.5">
-                <CustomDatePicker value={item.date} onChange={(v) => update(item.id, 'date', v)} placeholder="Date" />
-                <CustomTimePicker value={item.time} onChange={(v) => update(item.id, 'time', v)} placeholder="Time" />
+        {items.map((item) => {
+          if (savedIds.has(item.id)) {
+            const dateTimeLine = [item.date, item.time].filter(Boolean).join(' · ');
+            return (
+              <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+                className="bg-card rounded-2xl shadow-soft p-6 relative overflow-hidden">
+                <CardStripe />
+                <button onClick={() => setSavedIds(prev => { const n = new Set(prev); n.delete(item.id); return n; })}
+                  className="absolute top-4 right-4 p-1.5 rounded-lg text-foreground/30 hover:text-foreground/60 hover:bg-foreground/5 transition-colors">
+                  <Pencil size={13} strokeWidth={1.5} />
+                </button>
+                <div className="flex items-start gap-4">
+                  <CardIconBadge Icon={CalendarDays} />
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <h3 className="font-serif text-xl text-foreground/85 leading-tight pr-8">{item.name}</h3>
+                    {item.location && <p className="font-body text-xs text-foreground/45 -mt-1">{item.location}</p>}
+                    <div className="border-t border-foreground/[0.07]" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <CardField label="Date & Time" value={dateTimeLine} />
+                      <CardField label="Cost" value={item.cost} />
+                      {item.confirmation && <CardField label="Confirmation" value={item.confirmation} />}
+                      {item.notes && <CardField label="Notes" value={item.notes.slice(0, 80) + (item.notes.length > 80 ? '…' : '')} />}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          }
+          return (
+            <div key={item.id} className="px-4 sm:px-5 py-5 bg-card rounded-2xl shadow-soft relative">
+              <button onClick={() => remove(item.id)} className="absolute top-4 right-4"><Trash2 size={14} className="text-foreground/20 hover:text-destructive transition-colors" /></button>
+              <div className="space-y-2.5">
+                <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Restaurant / Venue" className={inputClass} />
+                <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
+                <div className="grid grid-cols-2 gap-2.5">
+                  <CustomDatePicker value={item.date} onChange={(v) => update(item.id, 'date', v)} placeholder="Date" />
+                  <CustomTimePicker value={item.time} onChange={(v) => update(item.id, 'time', v)} placeholder="Time" />
+                </div>
+                <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
+                <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                  <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+                </div>
+                <SaveButton label="Reservations" disabled={!item.name.trim()} onSave={() => setSavedIds(prev => new Set(prev).add(item.id))} />
               </div>
-              <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
-                <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
-              </div>
-              <SaveButton label="Reservations" />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <button onClick={add} className="mt-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <Plus size={14} strokeWidth={1.5} />
-        <span className="font-body">Add reservation</span>
+        <Plus size={14} strokeWidth={1.5} /><span className="font-body">Add reservation</span>
       </button>
       </div>
     </div>
