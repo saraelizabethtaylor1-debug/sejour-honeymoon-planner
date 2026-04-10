@@ -3,25 +3,23 @@ import { useEffect, useRef, useState } from 'react';
 
 // ── Module-level PAC blur fix ─────────────────────────────────────────────────
 // Prevents .pac-container mousedown from blurring the input before the click
-// registers. Uses a stable function reference so addEventListener never adds
-// duplicate listeners, and multiple component instances / unmounts can't
-// accidentally remove protection that other instances still need.
-const _preventPacBlur = (e: MouseEvent) => e.preventDefault();
-
-const _attachToPac = () => {
-  // querySelectorAll handles 0 or multiple containers safely
-  document.querySelectorAll<HTMLElement>('.pac-container').forEach(pac => {
-    pac.addEventListener('mousedown', _preventPacBlur);
-  });
+// registers. Attaches in CAPTURE phase on document so it fires even if a
+// PAC item calls stopPropagation internally. Bubble-phase listeners on
+// .pac-container are blocked by Google's own internal handlers — capture
+// is the only reliable interception point.
+const _pacBlurHandler = (e: MouseEvent) => {
+  if ((e.target as HTMLElement).closest?.('.pac-container')) {
+    e.preventDefault();
+  }
 };
 
-let _pacObserver: MutationObserver | null = null;
+let _pacGuardActive = false;
 
 const _ensurePacBlurFix = () => {
-  if (_pacObserver) return; // already running
-  _attachToPac(); // catch any already-present container
-  _pacObserver = new MutationObserver(_attachToPac);
-  _pacObserver.observe(document.body, { childList: true, subtree: true });
+  if (_pacGuardActive) return;
+  _pacGuardActive = true;
+  // true = capture phase: fires before stopPropagation on inner elements
+  document.addEventListener('mousedown', _pacBlurHandler, true);
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
