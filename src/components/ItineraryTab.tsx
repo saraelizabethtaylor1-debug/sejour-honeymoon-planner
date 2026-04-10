@@ -679,7 +679,8 @@ const formatDayDate = (tripData: { date: string; days: number }, dayIndex: numbe
 };
 
 const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity }: ItineraryTabProps) => {
-  const displayDays = tripData ? generateDaysFromTrip(tripData) : days;
+  // Use explicitly-set days (e.g. from AI Concierge) if present; otherwise generate from trip dates
+  const displayDays = days.length > 0 ? days : (tripData ? generateDaysFromTrip(tripData) : []);
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
 
