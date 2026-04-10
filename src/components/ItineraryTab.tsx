@@ -317,12 +317,8 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
       {/* Card */}
       <div className="flex-1 bg-card rounded-2xl shadow-soft flex gap-0 min-w-0 overflow-hidden">
 
-        {/* Left column: icon + drag handle */}
-        <div className="flex-shrink-0 flex flex-col items-center gap-2 pt-4 pb-3 px-3">
-          {/* Category icon */}
-          <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <IconComponent size={16} strokeWidth={1.4} className="text-primary-foreground" />
-          </div>
+        {/* Left column: drag handle only */}
+        <div className="flex-shrink-0 flex flex-col items-center justify-center pb-3 px-3 pt-4">
           {/* Drag handle dots */}
           <div
             {...attributes}
@@ -359,20 +355,27 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
             )
           )}
 
-          {/* Title */}
-          {editingField === 'title' ? (
-            <input
-              autoFocus
-              defaultValue={act.title}
-              onBlur={(e) => handleBlur('title', e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleBlur('title', (e.target as HTMLInputElement).value)}
-              className="font-serif text-base font-semibold text-foreground leading-snug bg-transparent border-b border-primary/40 focus:outline-none w-full"
-            />
-          ) : (
-            <button onClick={() => setEditingField('title')} className="text-left w-full">
-              <h4 className="font-serif text-base font-semibold text-foreground leading-snug hover:text-foreground/70 transition-colors">{act.title}</h4>
-            </button>
-          )}
+          {/* Title row: icon inline-left of title */}
+          <div className="flex items-start gap-2">
+            <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mt-0.5">
+              <IconComponent size={16} strokeWidth={1.4} className="text-primary-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              {editingField === 'title' ? (
+                <input
+                  autoFocus
+                  defaultValue={act.title}
+                  onBlur={(e) => handleBlur('title', e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleBlur('title', (e.target as HTMLInputElement).value)}
+                  className="font-serif text-base font-semibold text-foreground leading-snug bg-transparent border-b border-primary/40 focus:outline-none w-full"
+                />
+              ) : (
+                <button onClick={() => setEditingField('title')} className="text-left w-full">
+                  <h4 className="font-serif text-base font-semibold text-foreground leading-snug hover:text-foreground/70 transition-colors">{act.title}</h4>
+                </button>
+              )}
+            </div>
+          </div>
 
           {/* Location */}
           <PlacesAutocomplete
@@ -420,26 +423,24 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
           )}
         </div>
 
-        {/* Photo — square 1:1 flush right */}
-        <div className="flex-shrink-0 self-start m-3 ml-0">
-          <div className="w-20 h-20 rounded-xl overflow-hidden">
-            {act.imageUrl ? (
-              <div className="relative w-full h-full">
-                <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-                <button onClick={onRemoveImage} className="absolute bottom-1.5 left-1.5 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
-                  <X size={10} className="text-background" />
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
-              >
-                <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
-                <span className="text-[10px] text-foreground/30">photo</span>
+        {/* Photo — full-height cover, flush top/bottom/right */}
+        <div className="flex-shrink-0 self-stretch w-24 overflow-hidden">
+          {act.imageUrl ? (
+            <div className="relative w-full h-full">
+              <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+              <button onClick={onRemoveImage} className="absolute bottom-1.5 left-1.5 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
+                <X size={10} className="text-background" />
               </button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
+            >
+              <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
+              <span className="text-[10px] text-foreground/30">photo</span>
+            </button>
+          )}
         </div>
 
         {/* Delete button */}
