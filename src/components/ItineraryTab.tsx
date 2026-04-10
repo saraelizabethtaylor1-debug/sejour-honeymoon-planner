@@ -311,7 +311,7 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
     <div ref={setNodeRef} style={style} className="flex items-start relative group/item">
       {/* Timeline dot */}
       <div className="flex-shrink-0 w-8 flex justify-center pt-6 relative z-10">
-        <div className="w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: 'hsl(0 20% 32%)', borderColor: 'hsl(0 20% 32%)' }} />
+        <div className="w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: '#d4b5b0', borderColor: '#d4b5b0' }} />
       </div>
 
       {/* Card */}
@@ -658,7 +658,7 @@ const ItineraryItem = ({
                 <p className="text-muted-foreground font-serif italic px-10 py-4">No activities planned yet</p>
               ) : (
                 <div className="relative">
-                  <div className="absolute left-[15px] top-6 bottom-0 w-[1.5px] bg-primary/20" />
+                  <div className="absolute left-[15px] top-6 bottom-0 w-[1.5px]" style={{ backgroundColor: '#a89490' }} />
 
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={activityIds} strategy={verticalListSortingStrategy}>
