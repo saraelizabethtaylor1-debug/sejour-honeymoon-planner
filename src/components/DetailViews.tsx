@@ -557,7 +557,7 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 }]);
   const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof TransportItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const update = (id: string, field: keyof TransportItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -642,7 +642,7 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
 
   const add = () => setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 }]);
   const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof AccommodationItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const update = (id: string, field: keyof AccommodationItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
 
   const autofill = async (id: string, name: string) => {
     if (!name.trim()) return;
@@ -742,7 +742,7 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => setItems([...items, { id: Date.now().toString(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
   const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof ActivityItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const update = (id: string, field: keyof ActivityItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -813,7 +813,7 @@ const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; ite
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => setItems([...items, { id: Date.now().toString(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 }]);
   const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof ReservationItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const update = (id: string, field: keyof ReservationItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
