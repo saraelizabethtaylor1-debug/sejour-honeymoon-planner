@@ -320,14 +320,38 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng, fromLocation, toLo
 
   if (!origin || !destination || !info) return null;
 
+  const originStr = typeof origin === 'string' ? origin : `${origin.lat},${origin.lng}`;
+  const destStr = typeof destination === 'string' ? destination : `${destination.lat},${destination.lng}`;
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originStr)}&destination=${encodeURIComponent(destStr)}`;
+
   return (
-    <div className="flex items-center gap-2 ml-[28px] py-0.5">
-      <div className="flex flex-col items-center">
-        <div className="w-px h-2.5 bg-primary/20" />
-        <span className="text-[11px] leading-none my-0.5">{info.mode === 'walking' ? '🚶' : '🚗'}</span>
-        <div className="w-px h-2.5 bg-primary/20" />
+    <div className="ml-8 flex flex-col items-center gap-0.5 py-1">
+      {/* Downward chevron pointing toward the next card */}
+      <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className="text-foreground/20">
+        <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      {/* Travel info row */}
+      <div className="flex items-center gap-1.5 text-foreground/35">
+        {info.mode === 'walking' ? (
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="13" cy="4" r="1.5"/><path d="M9 20l1.5-5 2.5 2 1-5.5"/><path d="M6.5 13.5l2-6.5 4 1.5-1 3.5h3"/>
+          </svg>
+        ) : (
+          <svg width="13" height="11" viewBox="0 0 24 16" fill="currentColor">
+            <path d="M22 8h-1L18.5 2A2 2 0 0 0 16.7 1H7.3A2 2 0 0 0 5.5 2L3 8H2A2 2 0 0 0 0 10v3a1 1 0 0 0 1 1h1a3 3 0 0 0 6 0h8a3 3 0 0 0 6 0h1a1 1 0 0 0 1-1v-3a2 2 0 0 0-2-2zM7.3 3h9.4l2 5H5.3l2-5zM5 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm14 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+          </svg>
+        )}
+        <span className="font-body text-[11px]">{info.duration}</span>
+        <span className="text-[11px] opacity-40">·</span>
+        <a
+          href={directionsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-body text-[11px] hover:text-foreground/60 transition-colors underline-offset-2 hover:underline"
+        >
+          Directions
+        </a>
       </div>
-      <span className="font-body text-[11px] text-foreground/35">{info.duration}</span>
     </div>
   );
 };
@@ -371,9 +395,11 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
       {/* Card */}
       <div className="flex-1 bg-card rounded-2xl shadow-soft flex gap-0 min-w-0 overflow-hidden">
 
-        {/* Left column: drag handle only */}
-        <div className="flex-shrink-0 flex flex-col items-center justify-center pb-3 px-3 pt-4">
-          {/* Drag handle dots */}
+        {/* Left column: icon top, drag handle below */}
+        <div className="flex-shrink-0 flex flex-col items-center gap-2 pt-4 pb-3 px-3">
+          <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <IconComponent size={16} strokeWidth={1.4} className="text-primary-foreground" />
+          </div>
           <div
             {...attributes}
             {...listeners}
@@ -390,45 +416,41 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
 
         {/* Content block */}
         <div className="flex-1 min-w-0 py-4 pr-4">
-          {/* Time */}
-          {act._uid?.includes('sync-acc-stay-') ? null : (
-            editingField === 'time' ? (
+          {/* Time | Title — single line */}
+          <div className="flex items-baseline gap-1.5 flex-wrap mb-0.5">
+            {!act._uid?.includes('sync-acc-stay-') && (
+              <>
+                {editingField === 'time' ? (
+                  <input
+                    autoFocus
+                    defaultValue={act.time}
+                    onBlur={(e) => handleBlur('time', e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleBlur('time', (e.target as HTMLInputElement).value)}
+                    className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase bg-transparent border-b border-primary/40 focus:outline-none"
+                  />
+                ) : (
+                  <button onClick={() => setEditingField('time')} className="text-left">
+                    <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase hover:text-foreground/70 transition-colors">
+                      {displayTime || 'Add time'}
+                    </span>
+                  </button>
+                )}
+                <span className="text-[11px] text-foreground/20 select-none">|</span>
+              </>
+            )}
+            {editingField === 'title' ? (
               <input
                 autoFocus
-                defaultValue={act.time}
-                onBlur={(e) => handleBlur('time', e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleBlur('time', (e.target as HTMLInputElement).value)}
-                className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 bg-transparent border-b border-primary/40 focus:outline-none w-full"
+                defaultValue={act.title}
+                onBlur={(e) => handleBlur('title', e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleBlur('title', (e.target as HTMLInputElement).value)}
+                className="font-serif text-base font-semibold text-foreground leading-snug bg-transparent border-b border-primary/40 focus:outline-none flex-1"
               />
             ) : (
-              <button onClick={() => setEditingField('time')} className="text-left w-full">
-                <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 hover:text-foreground/70 transition-colors">
-                  {displayTime || 'Add time'}
-                </span>
+              <button onClick={() => setEditingField('title')} className="text-left">
+                <h4 className="font-serif text-base font-semibold text-foreground leading-snug hover:text-foreground/70 transition-colors">{act.title}</h4>
               </button>
-            )
-          )}
-
-          {/* Title row: icon inline-left of title */}
-          <div className="flex items-start gap-2">
-            <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mt-0.5">
-              <IconComponent size={16} strokeWidth={1.4} className="text-primary-foreground" />
-            </div>
-            <div className="flex-1 min-w-0">
-              {editingField === 'title' ? (
-                <input
-                  autoFocus
-                  defaultValue={act.title}
-                  onBlur={(e) => handleBlur('title', e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleBlur('title', (e.target as HTMLInputElement).value)}
-                  className="font-serif text-base font-semibold text-foreground leading-snug bg-transparent border-b border-primary/40 focus:outline-none w-full"
-                />
-              ) : (
-                <button onClick={() => setEditingField('title')} className="text-left w-full">
-                  <h4 className="font-serif text-base font-semibold text-foreground leading-snug hover:text-foreground/70 transition-colors">{act.title}</h4>
-                </button>
-              )}
-            </div>
+            )}
           </div>
 
           {/* Location */}
@@ -477,8 +499,8 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
           )}
         </div>
 
-        {/* Photo — perfect square flush right */}
-        <div className="flex-shrink-0 self-stretch w-24 overflow-hidden">
+        {/* Photo — perfect square: self-stretch sets height, aspect-square matches width to it */}
+        <div className="flex-shrink-0 self-stretch aspect-square overflow-hidden">
           {act.imageUrl ? (
             <div className="w-full h-full">
               <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
@@ -658,7 +680,7 @@ const ItineraryItem = ({
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#f4dcd8] rounded-full transition-shadow hover:bg-[#f4dcd8]/90"
+        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#f7e6e2] rounded-full transition-shadow hover:bg-[#f7e6e2]/90"
       >
         <div className="flex items-center gap-4">
           <span className="font-serif text-3xl sm:text-4xl font-light leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: '#4a3028' }}>
@@ -670,12 +692,15 @@ const ItineraryItem = ({
             </span>
             <span className="font-serif text-sm sm:text-base leading-snug" style={{ color: '#4a3028' }}>
               {initialDay.date} · {editingDestination ? null : (
-                <button
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={(e) => { e.stopPropagation(); setEditingDestination(true); }}
-                  className="hover:opacity-60 transition-opacity"
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setEditingDestination(true); } }}
+                  className="hover:opacity-60 transition-opacity cursor-pointer"
                 >
                   {destination || 'Add destination'}
-                </button>
+                </span>
               )}
               {editingDestination && (
                 <input
@@ -683,7 +708,7 @@ const ItineraryItem = ({
                   defaultValue={destination}
                   onClick={(e) => e.stopPropagation()}
                   onBlur={(e) => { setDestination(e.target.value); setEditingDestination(false); }}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { setDestination((e.target as HTMLInputElement).value); setEditingDestination(false); } }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { setDestination((e.target as HTMLInputElement).value); setEditingDestination(false); } e.stopPropagation(); }}
                   className="bg-transparent border-b border-[#4a3028]/40 focus:outline-none font-serif text-sm sm:text-base w-24 sm:w-32" style={{ color: '#4a3028' }}
                 />
               )}
