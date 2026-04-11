@@ -219,46 +219,100 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng, fromLocation, toLo
   const [info, setInfo] = useState<{ duration: string; mode: 'driving' | 'walking' } | null>(null);
 
   const origin: google.maps.LatLngLiteral | string | null =
-    fromLat && fromLng ? { lat: fromLat, lng: fromLng } : fromLocation?.trim() || null;
+    (fromLat != null && fromLng != null) ? { lat: fromLat, lng: fromLng } : fromLocation?.trim() || null;
   const destination: google.maps.LatLngLiteral | string | null =
-    toLat && toLng ? { lat: toLat, lng: toLng } : toLocation?.trim() || null;
+    (toLat != null && toLng != null) ? { lat: toLat, lng: toLng } : toLocation?.trim() || null;
+
+  // Directions API fallback — used when Distance Matrix is not enabled on the key
+  const tryDirections = useCallback((
+    org: google.maps.LatLngLiteral | string,
+    dest: google.maps.LatLngLiteral | string,
+    mode: google.maps.TravelMode,
+    onResult: (duration: string, distanceMeters: number) => void,
+    onFail: () => void,
+  ) => {
+    const svc = new google.maps.DirectionsService();
+    svc.route(
+      { origin: org, destination: dest, travelMode: mode },
+      (result, status) => {
+        if (status === 'OK' && result) {
+          const leg = result.routes[0]?.legs[0];
+          const duration = leg?.duration?.text;
+          const meters = leg?.distance?.value ?? Infinity;
+          if (duration) { onResult(duration, meters); return; }
+        }
+        console.error('[DriveTimeConnector] Directions API error:', status, { org, dest, mode });
+        onFail();
+      }
+    );
+  }, []);
 
   useEffect(() => {
     if (!origin || !destination) return;
-    if (!window.google?.maps) return;
+    if (!window.google?.maps) {
+      console.warn('[DriveTimeConnector] Google Maps not loaded yet');
+      return;
+    }
 
     setInfo(null);
-    const service = new google.maps.DistanceMatrixService();
+    console.log('[DriveTimeConnector] Requesting travel time', { origin, destination });
 
-    service.getDistanceMatrix(
-      { origins: [origin], destinations: [destination], travelMode: google.maps.TravelMode.DRIVING },
-      (result, status) => {
-        if (status !== 'OK' || !result) return;
-        const el = result.rows[0]?.elements[0];
-        if (!el || el.status !== 'OK') return;
-        const distanceMeters = el.distance?.value ?? Infinity;
-        const drivingDuration = el.duration?.text;
-        if (!drivingDuration) return;
-
-        if (distanceMeters < 1000) {
-          // Under 1 km — prefer walking time
-          service.getDistanceMatrix(
-            { origins: [origin!], destinations: [destination!], travelMode: google.maps.TravelMode.WALKING },
-            (walkResult, walkStatus) => {
-              if (walkStatus !== 'OK' || !walkResult) {
-                setInfo({ duration: drivingDuration, mode: 'driving' });
+    const applyResult = (drivingDuration: string, distanceMeters: number) => {
+      if (distanceMeters < 1000) {
+        // Under 1 km — prefer walking
+        const walkFallback = () => setInfo({ duration: drivingDuration, mode: 'driving' });
+        const dmSvc = new google.maps.DistanceMatrixService();
+        dmSvc.getDistanceMatrix(
+          { origins: [origin!], destinations: [destination!], travelMode: google.maps.TravelMode.WALKING },
+          (wRes, wStatus) => {
+            if (wStatus === 'OK' && wRes) {
+              const wEl = wRes.rows[0]?.elements[0];
+              if (wEl?.status === 'OK' && wEl.duration?.text) {
+                setInfo({ duration: wEl.duration.text, mode: 'walking' });
                 return;
               }
-              const walkEl = walkResult.rows[0]?.elements[0];
-              const walkDuration = walkEl?.duration?.text;
-              setInfo(walkDuration
-                ? { duration: walkDuration, mode: 'walking' }
-                : { duration: drivingDuration, mode: 'driving' });
+              console.warn('[DriveTimeConnector] Walking element status:', wEl?.status);
+            } else if (wStatus === 'REQUEST_DENIED') {
+              // Distance Matrix not enabled — try Directions for walking
+              tryDirections(origin!, destination!, google.maps.TravelMode.WALKING,
+                (dur) => setInfo({ duration: dur, mode: 'walking' }),
+                walkFallback,
+              );
+              return;
+            } else {
+              console.warn('[DriveTimeConnector] Walking Distance Matrix status:', wStatus);
             }
-          );
-        } else {
-          setInfo({ duration: drivingDuration, mode: 'driving' });
+            walkFallback();
+          }
+        );
+      } else {
+        setInfo({ duration: drivingDuration, mode: 'driving' });
+      }
+    };
+
+    // Try Distance Matrix first
+    const dmSvc = new google.maps.DistanceMatrixService();
+    dmSvc.getDistanceMatrix(
+      { origins: [origin], destinations: [destination], travelMode: google.maps.TravelMode.DRIVING },
+      (result, status) => {
+        if (status === 'OK' && result) {
+          const el = result.rows[0]?.elements[0];
+          if (el?.status === 'OK') {
+            const meters = el.distance?.value ?? Infinity;
+            const duration = el.duration?.text;
+            if (duration) { applyResult(duration, meters); return; }
+          }
+          console.warn('[DriveTimeConnector] Distance Matrix element status:', el?.status, el);
+          return;
         }
+
+        console.warn('[DriveTimeConnector] Distance Matrix status:', status, '— trying Directions API fallback');
+
+        // Fallback: Directions API
+        tryDirections(origin!, destination!, google.maps.TravelMode.DRIVING,
+          (duration, meters) => applyResult(duration, meters),
+          () => { /* both APIs failed — connector stays hidden */ },
+        );
       }
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
