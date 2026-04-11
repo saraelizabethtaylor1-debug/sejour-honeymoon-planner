@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, X, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star } from 'lucide-react';
+import { ChevronDown, Plus, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star } from 'lucide-react';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
@@ -311,7 +311,7 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
     <div ref={setNodeRef} style={style} className="flex items-start relative group/item">
       {/* Timeline dot */}
       <div className="flex-shrink-0 w-8 flex justify-center pt-6 relative z-10">
-        <div className="w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: '#d4b5b0', borderColor: '#d4b5b0' }} />
+        <div className="w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: '#8d604f', borderColor: '#8d604f' }} />
       </div>
 
       {/* Card */}
@@ -423,14 +423,11 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
           )}
         </div>
 
-        {/* Photo — full-height cover, flush top/bottom/right */}
+        {/* Photo — perfect square flush right */}
         <div className="flex-shrink-0 self-stretch w-24 overflow-hidden">
           {act.imageUrl ? (
-            <div className="relative w-full h-full">
+            <div className="w-full h-full">
               <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-              <button onClick={onRemoveImage} className="absolute bottom-1.5 left-1.5 w-5 h-5 bg-foreground/60 rounded-full flex items-center justify-center">
-                <X size={10} className="text-background" />
-              </button>
             </div>
           ) : (
             <button
@@ -607,21 +604,21 @@ const ItineraryItem = ({
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#d4b5b0] rounded-full transition-shadow hover:bg-[#d4b5b0]/90"
+        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#f4dcd8] rounded-full transition-shadow hover:bg-[#f4dcd8]/90"
       >
         <div className="flex items-center gap-4">
-          <span className="font-serif text-3xl sm:text-4xl font-light text-white leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>
+          <span className="font-serif text-3xl sm:text-4xl font-light leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: '#4a3028' }}>
             {paddedNumber}
           </span>
           <div className="flex flex-col items-start">
-            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase text-white">
+            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase" style={{ color: '#4a3028' }}>
               Day {dayWord}
             </span>
-            <span className="font-serif text-sm sm:text-base text-white leading-snug">
+            <span className="font-serif text-sm sm:text-base leading-snug" style={{ color: '#4a3028' }}>
               {initialDay.date} · {editingDestination ? null : (
                 <button
                   onClick={(e) => { e.stopPropagation(); setEditingDestination(true); }}
-                  className="hover:text-white transition-colors"
+                  className="hover:opacity-60 transition-opacity"
                 >
                   {destination || 'Add destination'}
                 </button>
@@ -633,14 +630,14 @@ const ItineraryItem = ({
                   onClick={(e) => e.stopPropagation()}
                   onBlur={(e) => { setDestination(e.target.value); setEditingDestination(false); }}
                   onKeyDown={(e) => { if (e.key === 'Enter') { setDestination((e.target as HTMLInputElement).value); setEditingDestination(false); } }}
-                  className="bg-transparent border-b border-white/40 focus:outline-none text-white font-serif text-sm sm:text-base w-24 sm:w-32"
+                  className="bg-transparent border-b border-[#4a3028]/40 focus:outline-none font-serif text-sm sm:text-base w-24 sm:w-32" style={{ color: '#4a3028' }}
                 />
               )}
             </span>
           </div>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={18} className="text-white/60" />
+          <ChevronDown size={18} style={{ color: '#4a3028', opacity: 0.5 }} />
         </motion.div>
       </motion.button>
 
@@ -659,7 +656,7 @@ const ItineraryItem = ({
                 <p className="text-muted-foreground font-serif italic px-10 py-4">No activities planned yet</p>
               ) : (
                 <div className="relative">
-                  <div className="absolute left-[15px] top-6 bottom-0 w-[1.5px]" style={{ backgroundColor: '#a89490' }} />
+                  <div className="absolute left-[15px] top-6 bottom-0 w-[1.5px] border-t-0 bg-foreground/10" />
 
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={activityIds} strategy={verticalListSortingStrategy}>
