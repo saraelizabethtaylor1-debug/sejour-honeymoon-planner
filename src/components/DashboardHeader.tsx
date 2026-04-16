@@ -54,15 +54,15 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
           <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
           {initials && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-foreground/70 text-base" style={{ fontSize: "11px", letterSpacing: "0.15em", transform: "translateX(-0.5px)" }}>
+              <span className="font-serif text-base" style={{ fontSize: "11px", letterSpacing: "0.15em", transform: "translateX(-0.5px)", color: '#52210e' }}>
                 {initials}
               </span>
             </div>
           )}
         </div>
         <span
-          className="font-serif text-foreground/80"
-          style={{ fontSize: "40px", letterSpacing: "0.4em", fontWeight: 300 }}
+          className="font-serif"
+          style={{ fontSize: "40px", letterSpacing: "0.4em", fontWeight: 300, color: '#52210e' }}
         >
           SÉJOUR
         </span>
@@ -73,7 +73,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
             onClick={() => setProfileOpen((p) => !p)}
             className="w-9 h-9 rounded-full bg-[#f5e6e2] border border-foreground/[0.06] flex items-center justify-center transition-colors duration-200 group hover:bg-[#e8d0cc]"
           >
-            <Menu size={18} strokeWidth={1.2} className="text-[#9e6b63] transition-colors duration-200" />
+            <Menu size={18} strokeWidth={1.2} className="text-[#52210e] transition-colors duration-200" />
           </button>
 
           <AnimatePresence>

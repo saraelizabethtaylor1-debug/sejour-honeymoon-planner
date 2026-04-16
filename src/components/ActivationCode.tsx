@@ -68,8 +68,8 @@ const ActivationCode = () => {
           <img src={moonLogo} alt="Séjour" className="w-full h-full object-contain" />
         </div>
         <span
-          className="font-serif text-foreground/80"
-          style={{ fontSize: 28, letterSpacing: '0.4em', fontWeight: 300 }}
+          className="font-serif"
+          style={{ fontSize: 28, letterSpacing: '0.4em', fontWeight: 300, color: '#52210e' }}
         >
           SÉJOUR
         </span>

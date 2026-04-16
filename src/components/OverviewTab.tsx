@@ -104,7 +104,7 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
             </span>
             <span
               className="font-script block"
-              style={{ fontSize: '2.25rem', color: 'hsl(0 20% 32%)', lineHeight: 1.15 }}
+              style={{ fontSize: '2.25rem', color: '#52210e', lineHeight: 1.15 }}
             >
               adventure
             </span>

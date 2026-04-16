@@ -658,14 +658,14 @@ const ItineraryItem = ({
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#f4dcd8] rounded-full transition-shadow hover:bg-[#f4dcd8]/90"
+        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#f6ebe9] rounded-full transition-shadow hover:bg-[#f6ebe9]/90"
       >
         <div className="flex items-center gap-4">
           <span className="font-serif text-3xl sm:text-4xl font-light leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: '#4a3028' }}>
             {paddedNumber}
           </span>
           <div className="flex flex-col items-start">
-            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase" style={{ color: '#4a3028' }}>
+            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase" style={{ color: '#000000' }}>
               Day {dayWord}
             </span>
             <span className="font-serif text-sm sm:text-base leading-snug" style={{ color: '#4a3028' }}>

@@ -45,8 +45,8 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
         <div className="space-y-5 sm:space-y-6">
           <header className="text-center">
             <span
-              className="font-serif text-accent-foreground"
-              style={{ fontSize: "34px", letterSpacing: "0.4em", fontWeight: 300 }}
+              className="font-serif"
+              style={{ fontSize: "34px", letterSpacing: "0.4em", fontWeight: 300, color: '#52210e' }}
             >
               SÉJOUR
             </span>
@@ -138,7 +138,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
                   className={`font-serif text-base px-3 py-1 pill-shape transition-all ${
                     clockFormat === '12h'
                       ? 'bg-primary text-primary-foreground shadow-arch'
-                      : 'text-foreground/40 hover:text-foreground/60'
+                      : 'text-foreground/40 hover:text-[#52210e]'
                   }`}
                 >
                   12-hour
@@ -148,7 +148,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
                   className={`font-serif text-base px-3 py-1 pill-shape transition-all ${
                     clockFormat === '24h'
                       ? 'bg-primary text-primary-foreground shadow-arch'
-                      : 'text-foreground/40 hover:text-foreground/60'
+                      : 'text-foreground/40 hover:text-[#52210e]'
                   }`}
                 >
                   24-hour
@@ -163,6 +163,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
           whileTap={{ scale: 0.96 }}
           onClick={handleSubmit}
           className="w-full py-3.5 bg-primary pill-shape font-script text-3xl text-primary-foreground shadow-arch transition-shadow hover:shadow-lift px-0 mb-4"
+          style={{ color: '#52210e' }}
         >
           plan your adventure
         </motion.button>

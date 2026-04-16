@@ -80,7 +80,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
             className="leading-[1.1] whitespace-nowrap"
             style={{ marginBottom: 24 }}
           >
-            <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem]" style={{ color: 'hsl(0 20% 32%)' }}>
+            <span className="font-script text-3xl sm:text-4xl lg:text-[3.4rem]" style={{ color: '#52210e' }}>
               happily ever after
             </span>
             <span
@@ -135,7 +135,7 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
               }}
             >
               <Sparkles size={15} strokeWidth={1.5} className="text-foreground/50" />
-              <span className="font-serif" style={{ letterSpacing: '0.4em', fontWeight: 300, color: 'hsl(0 20% 38%)', fontSize: '1rem' }}>
+              <span className="font-serif" style={{ letterSpacing: '0.4em', fontWeight: 300, color: '#52210e', fontSize: '1rem' }}>
                 AI CONCIERGE
               </span>
               <span className="font-body text-[9px] uppercase tracking-[0.18em] text-foreground/40 ml-1">
