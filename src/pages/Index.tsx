@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence } from 'framer-motion';
-import type { TripData, AppView, DashboardTab, DetailView, ItineraryDay } from '@/types/honeymoon';
-import { sampleItinerary } from '@/data/sampleData';
+import type { TripData, AppView, DashboardTab, DetailView } from '@/types/honeymoon';
 import { useTripData } from '@/hooks/useTripData';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import DashboardHeader from '@/components/DashboardHeader';
@@ -18,7 +17,6 @@ const Index = () => {
   const [tab, setTab] = useState<DashboardTab>('planning');
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailView, setDetailView] = useState<DetailView>(null);
-  const [itineraryDays, setItineraryDays] = useState<ItineraryDay[]>(sampleItinerary);
 
   const {
     loading,
@@ -38,7 +36,26 @@ const Index = () => {
     reservationItems,
     setReservationItems,
     reservationCallbacks,
+    itineraryDays,
+    setItineraryDays,
+    saveItineraryDays,
   } = useTripData();
+
+  const saveItineraryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasItineraryLoadedRef = useRef(false);
+
+  // Debounced save whenever itineraryDays changes (skip the initial load)
+  useEffect(() => {
+    if (loading) return;
+    if (!hasItineraryLoadedRef.current) {
+      hasItineraryLoadedRef.current = true;
+      return;
+    }
+    if (saveItineraryTimerRef.current) clearTimeout(saveItineraryTimerRef.current);
+    saveItineraryTimerRef.current = setTimeout(() => {
+      saveItineraryDays(itineraryDays);
+    }, 1000);
+  }, [itineraryDays, loading]);
 
   // Returning users skip the setup screen
   useEffect(() => {
@@ -111,6 +128,7 @@ const Index = () => {
                 onAddActivity={(newAct) => { setActivityItems(prev => [...prev, newAct]); activityCallbacks.onAdd(newAct); }}
                 onRemoveActivity={(id) => { setActivityItems(prev => prev.filter(a => a.id !== id)); activityCallbacks.onDelete(id); }}
                 onGoToSettings={() => setView('welcome')}
+                onDaysChange={setItineraryDays}
               />
             )}
           </main>

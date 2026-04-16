@@ -8,6 +8,8 @@ import type {
   AccommodationItem,
   ActivityItem,
   ReservationItem,
+  ItineraryDay,
+  ItineraryActivity,
 } from '@/types/honeymoon';
 
 // ── Column mappers ──────────────────────────────────────────────────────────
@@ -167,6 +169,7 @@ export const useTripData = () => {
   const [accommodationItems, setAccommodationItems] = useState<AccommodationItem[]>([]);
   const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
   const [reservationItems, setReservationItems] = useState<ReservationItem[]>([]);
+  const [itineraryDays, setItineraryDays] = useState<ItineraryDay[]>([]);
 
   // Refs so debounced callbacks always see current state
   const transportRef = useRef(transportItems);
@@ -194,12 +197,14 @@ export const useTripData = () => {
 
     (async () => {
       try {
-        const [profileRes, transportRes, accommodationRes, activityRes, reservationRes] = await Promise.all([
+        const [profileRes, transportRes, accommodationRes, activityRes, reservationRes, itineraryDaysRes, itineraryActivitiesRes] = await Promise.all([
           db.from('profiles').select('*').eq('user_id', user.id).maybeSingle(),
           db.from('transport_items').select('*').eq('user_id', user.id),
           db.from('accommodation_items').select('*').eq('user_id', user.id),
           db.from('activity_items').select('*').eq('user_id', user.id),
           db.from('reservation_items').select('*').eq('user_id', user.id),
+          db.from('itinerary_days').select('*').eq('user_id', user.id).order('day_number'),
+          db.from('itinerary_activities').select('*').eq('user_id', user.id).order('sort_order'),
         ]);
 
         if (profileRes.error) console.error('[useTripData] profile load error:', profileRes.error);
@@ -207,6 +212,8 @@ export const useTripData = () => {
         if (accommodationRes.error) console.error('[useTripData] accommodation load error:', accommodationRes.error);
         if (activityRes.error) console.error('[useTripData] activity load error:', activityRes.error);
         if (reservationRes.error) console.error('[useTripData] reservation load error:', reservationRes.error);
+        if (itineraryDaysRes.error) console.error('[useTripData] itinerary_days load error:', itineraryDaysRes.error);
+        if (itineraryActivitiesRes.error) console.error('[useTripData] itinerary_activities load error:', itineraryActivitiesRes.error);
 
         const profile = profileRes.data;
         if (profile) {
@@ -226,6 +233,27 @@ export const useTripData = () => {
         if (accommodationRes.data?.length) setAccommodationItems(accommodationRes.data.map(fromDbAccommodation));
         if (activityRes.data?.length) setActivityItems(activityRes.data.map(fromDbActivity));
         if (reservationRes.data?.length) setReservationItems(reservationRes.data.map(fromDbReservation));
+
+        if (itineraryDaysRes.data?.length) {
+          const allActivities: any[] = itineraryActivitiesRes.data ?? [];
+          const loadedDays: ItineraryDay[] = itineraryDaysRes.data.map((row: any): ItineraryDay => ({
+            id: row.id,
+            dayLabel: row.title || `Day ${row.day_number}`,
+            date: row.date || '',
+            destination: row.destination || '',
+            activities: allActivities
+              .filter((a: any) => a.day_id === row.id)
+              .map((a: any): ItineraryActivity => ({
+                time: a.time || '',
+                title: a.title || '',
+                location: a.location || '',
+                notes: a.notes || '',
+                imageUrl: a.image_url || undefined,
+                iconType: undefined,
+              })),
+          }));
+          setItineraryDays(loadedDays);
+        }
       } catch (err) {
         console.error('[useTripData] unexpected load error:', err);
       } finally {
@@ -374,6 +402,48 @@ export const useTripData = () => {
     },
   };
 
+  // ── Itinerary save (delete-then-reinsert on every debounced call) ──
+  const saveItineraryDays = useCallback(async (days: ItineraryDay[]) => {
+    if (!user) return;
+    try {
+      // Delete all existing days; CASCADE on FK removes activities too
+      const { error: deleteError } = await db.from('itinerary_days').delete().eq('user_id', user.id);
+      if (deleteError) { console.error('[saveItineraryDays] delete error:', deleteError); return; }
+
+      if (days.length === 0) return;
+
+      const dayRows = days.map((d, i) => ({
+        id: d.id,
+        user_id: user.id,
+        day_number: i + 1,
+        title: d.dayLabel,
+        date: d.date,
+        destination: d.destination,
+      }));
+      const { error: daysError } = await db.from('itinerary_days').insert(dayRows);
+      if (daysError) { console.error('[saveItineraryDays] days insert error:', daysError); return; }
+
+      const activityRows = days.flatMap((d) =>
+        d.activities.map((a, i) => ({
+          user_id: user.id,
+          day_id: d.id,
+          title: a.title || '',
+          location: a.location || '',
+          time: a.time || '',
+          notes: a.notes || '',
+          image_url: a.imageUrl ?? null,
+          sort_order: i,
+        }))
+      );
+      if (activityRows.length > 0) {
+        const { error: actError } = await db.from('itinerary_activities').insert(activityRows);
+        if (actError) console.error('[saveItineraryDays] activities insert error:', actError);
+      }
+    } catch (err) {
+      console.error('[saveItineraryDays] unexpected error:', err);
+    }
+  }, [user]);
+
   return {
     loading,
     hasProfile,
@@ -392,5 +462,8 @@ export const useTripData = () => {
     reservationItems,
     setReservationItems,
     reservationCallbacks,
+    itineraryDays,
+    setItineraryDays,
+    saveItineraryDays,
   };
 };

@@ -19,6 +19,7 @@ interface ItineraryTabProps {
   onAddActivity?: (activity: ActivityItem) => void;
   onRemoveActivity?: (id: string) => void;
   onGoToSettings?: () => void;
+  onDaysChange?: (days: ItineraryDay[]) => void;
 }
 
 const iconMap: Record<string, typeof Bed> = {
@@ -522,6 +523,7 @@ const ItineraryItem = ({
   clockFormat,
   onAddActivity,
   onRemoveActivity,
+  onDayChange,
 }: {
   day: ItineraryDay;
   syncedActivities: TaggedActivity[];
@@ -530,6 +532,7 @@ const ItineraryItem = ({
   clockFormat?: '12h' | '24h';
   onAddActivity?: (activity: ActivityItem) => void;
   onRemoveActivity?: (id: string) => void;
+  onDayChange?: (destination: string, activities: ItineraryActivity[]) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [destination, setDestination] = useState(initialDay.destination);
@@ -537,6 +540,29 @@ const ItineraryItem = ({
 
   const [orderedActivities, setOrderedActivities] = useState<TaggedActivity[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const hasFiredRef = useRef(false);
+
+  // Fire onDayChange whenever the user modifies activities or destination,
+  // but skip the first post-initialization fire (that's just loading, not a user edit).
+  useEffect(() => {
+    if (!initialized) return;
+    if (!hasFiredRef.current) {
+      hasFiredRef.current = true;
+      return;
+    }
+    const manualActivities: ItineraryActivity[] = orderedActivities
+      .filter(a => !a._synced)
+      .map((a): ItineraryActivity => ({
+        time: a.time,
+        title: a.title,
+        location: a.location,
+        notes: a.notes,
+        imageUrl: a.imageUrl,
+        iconType: a.iconType,
+      }));
+    onDayChange?.(destination, manualActivities);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderedActivities, destination, initialized]);
 
   useEffect(() => {
     const manualTagged: TaggedActivity[] = initialDay.activities.map(a => ({
@@ -782,11 +808,25 @@ const formatDayDate = (tripData: { date: string; days: number }, dayIndex: numbe
   return `${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 };
 
-const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity, onGoToSettings }: ItineraryTabProps) => {
+const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity, onGoToSettings, onDaysChange }: ItineraryTabProps) => {
   const displayDays = days.length > 0 ? days : (tripData ? generateDaysFromTrip(tripData) : []);
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
   const clockFormat = tripData?.clockFormat;
+
+  // Refs for propagating per-day changes up to the parent
+  const displayDaysRef = useRef<ItineraryDay[]>(displayDays);
+  displayDaysRef.current = displayDays;
+  const dayOverridesRef = useRef<Map<string, { destination: string; activities: ItineraryActivity[] }>>(new Map());
+
+  const handleDayChange = useCallback((dayId: string, destination: string, activities: ItineraryActivity[]) => {
+    dayOverridesRef.current.set(dayId, { destination, activities });
+    const updated = displayDaysRef.current.map(d => {
+      const override = dayOverridesRef.current.get(d.id);
+      return override ? { ...d, destination: override.destination, activities: override.activities } : d;
+    });
+    onDaysChange?.(updated);
+  }, [onDaysChange]);
 
   return (
     <div className="w-full">
@@ -840,6 +880,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
               clockFormat={clockFormat}
               onAddActivity={onAddActivity}
               onRemoveActivity={onRemoveActivity}
+              onDayChange={(dest, acts) => handleDayChange(day.id, dest, acts)}
             />
           );
         })
