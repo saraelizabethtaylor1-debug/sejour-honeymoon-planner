@@ -50,7 +50,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-foreground/5" style={{ boxShadow: "0 1px 8px -2px hsl(10 8% 12% / 0.04)" }}>
       {/* Top row: logo + wordmark + profile avatar */}
       <div className="relative flex items-center justify-center gap-4 pt-6 pb-4 px-4 sm:px-6 lg:px-8">
-        <div className="relative flex-shrink-0" style={{ width: 90, height: 90 }}>
+        <div className="relative flex-shrink-0" style={{ width: 70, height: 70 }}>
           <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
           {initials && (
             <div className="absolute inset-0 flex items-center justify-center">
