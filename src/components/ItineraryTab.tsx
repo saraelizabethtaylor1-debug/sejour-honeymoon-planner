@@ -817,7 +817,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
   // Refs for propagating per-day changes up to the parent
   const displayDaysRef = useRef<ItineraryDay[]>(displayDays);
   displayDaysRef.current = displayDays;
-  const dayOverridesRef = useRef<Map<string, { destination: string; activities: ItineraryActivity[] }>>(new Map());
+  const dayOverridesRef = useRef<globalThis.Map<string, { destination: string; activities: ItineraryActivity[] }>>(new globalThis.Map());
 
   const handleDayChange = useCallback((dayId: string, destination: string, activities: ItineraryActivity[]) => {
     dayOverridesRef.current.set(dayId, { destination, activities });
