@@ -6,6 +6,7 @@ interface CustomTimePickerProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  triggerClassName?: string;
 }
 
 const inputBase = 'w-full bg-[#fdf8f6] border border-[#e8d0cc] rounded-lg px-4 py-2.5 text-sm font-body text-[#4a3030] focus:outline-none focus:border-[#7d5a58] transition-colors cursor-pointer';
@@ -25,7 +26,7 @@ for (let h = 0; h < 24; h++) {
   }
 }
 
-export function CustomTimePicker({ value, onChange, placeholder = 'Select time', className }: CustomTimePickerProps) {
+export function CustomTimePicker({ value, onChange, placeholder = 'Select time', className, triggerClassName }: CustomTimePickerProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ export function CustomTimePicker({ value, onChange, placeholder = 'Select time',
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`${inputBase} flex items-center justify-between text-left`}
+        className={`${triggerClassName ?? inputBase} flex items-center justify-between text-left`}
       >
         <span className={value ? 'text-[#4a3030]' : 'text-[#4a3030]/40'}>
           {value ? formatTo12h(value) : placeholder}

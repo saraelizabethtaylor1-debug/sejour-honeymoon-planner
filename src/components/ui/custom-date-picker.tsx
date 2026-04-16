@@ -8,11 +8,12 @@ interface CustomDatePickerProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  triggerClassName?: string;
 }
 
 const inputBase = 'w-full bg-[#fdf8f6] border border-[#e8d0cc] rounded-lg px-4 py-2.5 text-sm font-body text-[#4a3030] focus:outline-none focus:border-[#7d5a58] transition-colors cursor-pointer';
 
-export function CustomDatePicker({ value, onChange, placeholder = 'Select date', className }: CustomDatePickerProps) {
+export function CustomDatePicker({ value, onChange, placeholder = 'Select date', className, triggerClassName }: CustomDatePickerProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,7 +33,7 @@ export function CustomDatePicker({ value, onChange, placeholder = 'Select date',
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`${inputBase} flex items-center justify-between text-left`}
+        className={`${triggerClassName ?? inputBase} flex items-center justify-between text-left`}
       >
         <span className={displayValue ? 'text-[#4a3030]' : 'text-[#4a3030]/40'}>
           {displayValue || placeholder}
