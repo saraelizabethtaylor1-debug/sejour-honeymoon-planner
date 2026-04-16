@@ -2,6 +2,7 @@ import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star } from 'lucide-react';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
+import ImagePickerModal from '@/components/ImagePickerModal';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -338,16 +339,16 @@ interface SortableActivityProps {
   id: string;
   clockFormat?: '12h' | '24h';
   onUpdate: (fields: Partial<ItineraryActivity> & { lat?: number; lng?: number }) => void;
-  onImageUpload: (file: File) => void;
+  onSelectImage: (url: string) => void;
   onRemoveImage: () => void;
   onDelete: () => void;
 }
 
-const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImageUpload, onRemoveImage, onDelete }: SortableActivityProps) => {
+const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSelectImage, onRemoveImage, onDelete }: SortableActivityProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : undefined, opacity: isDragging ? 0.5 : 1 };
   const IconComponent = iconMap[act.iconType || 'default'] || iconMap.default;
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
 
   const handleBlur = (field: string, value: string) => {
@@ -479,13 +480,19 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
 
         {/* Photo — perfect square flush right */}
         <div className="flex-shrink-0 self-stretch w-24 overflow-hidden">
+          {pickerOpen && (
+            <ImagePickerModal
+              onSelect={(url) => { onSelectImage(url); setPickerOpen(false); }}
+              onClose={() => setPickerOpen(false)}
+            />
+          )}
           {act.imageUrl ? (
             <div className="w-full h-full">
               <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
             </div>
           ) : (
             <button
-              onClick={() => fileRef.current?.click()}
+              onClick={() => setPickerOpen(true)}
               className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
             >
               <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
@@ -502,17 +509,6 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onImag
           <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
         </button>
       </div>
-
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) onImageUpload(file);
-        }}
-      />
     </div>
   );
 };
@@ -598,8 +594,7 @@ const ItineraryItem = ({
     );
   }, []);
 
-  const handleImageUpload = useCallback((uid: string, file: File) => {
-    const url = URL.createObjectURL(file);
+  const handleSelectImage = useCallback((uid: string, url: string) => {
     setOrderedActivities(prev =>
       prev.map(a => a._uid === uid ? { ...a, imageUrl: url } : a)
     );
@@ -732,7 +727,7 @@ const ItineraryItem = ({
                               activity={act}
                               clockFormat={clockFormat}
                               onUpdate={(fields) => updateActivity(act._uid, fields)}
-                              onImageUpload={(file) => handleImageUpload(act._uid, file)}
+                              onSelectImage={(url) => handleSelectImage(act._uid, url)}
                               onRemoveImage={() => removeImage(act._uid)}
                               onDelete={() => deleteActivity(act._uid)}
                             />

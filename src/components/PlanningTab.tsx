@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Wallet, Briefcase, PenLine, Camera, Sparkles } from 'lucide-react';
 import type { DetailView, TripData } from '@/types/honeymoon';
+import ImagePickerModal from '@/components/ImagePickerModal';
 
 interface PlanningTabProps {
   onOpenDetail: (view: DetailView) => void;
@@ -21,37 +22,25 @@ const item = {
 
 const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTabProps) => {
   const hasCoverImage = !!tripData.coverImage;
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const result = ev.target?.result as string;
-      onUpdateCoverImage?.(result);
-    };
-    reader.readAsDataURL(file);
-  };
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   return (
     <div className="flex justify-center py-0 mt-12 mb-8">
       <div style={{ width: '70vw', height: 500 }} className="flex items-end">
         {/* Arch photo — left, full height */}
         <div style={{ width: '46%', flexShrink: 0, height: 500 }}>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageUpload}
-          />
+          {pickerOpen && (
+            <ImagePickerModal
+              onSelect={(url) => { onUpdateCoverImage?.(url); setPickerOpen(false); }}
+              onClose={() => setPickerOpen(false)}
+            />
+          )}
           <div
             className="w-full h-full arch-shape overflow-hidden border-[8px] border-card cursor-pointer"
             style={{
               boxShadow: '0 12px 40px -8px hsl(0 16% 43% / 0.12), 0 4px 16px -4px hsl(0 16% 43% / 0.06)',
             }}
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => setPickerOpen(true)}
           >
             {hasCoverImage ? (
               <img
@@ -60,8 +49,9 @@ const PlanningTab = ({ onOpenDetail, tripData, onUpdateCoverImage }: PlanningTab
                 alt={tripData.destination}
               />
             ) : (
-              <div className="w-full h-full bg-primary/40 flex items-center justify-center">
+              <div className="w-full h-full bg-primary/40 flex flex-col items-center justify-center gap-2">
                 <Camera size={40} strokeWidth={1} className="text-foreground/25" />
+                <span className="font-serif text-sm text-foreground/30">Trip inspiration photo</span>
               </div>
             )}
           </div>
