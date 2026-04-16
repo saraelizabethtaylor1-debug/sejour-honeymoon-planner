@@ -656,18 +656,6 @@ const ItineraryItem = ({
     };
     setOrderedActivities(prev => [...prev, newAct]);
     if (!isOpen) setIsOpen(true);
-
-    if (onAddActivity) {
-      const newActivityItem: ActivityItem = {
-        id: newUid,
-        name: 'New Activity',
-        notes: '',
-        time: dayDateStr,
-        confirmation: '',
-        cost: 0,
-      };
-      onAddActivity(newActivityItem);
-    }
   };
 
   const paddedNumber = String(dayNumber).padStart(2, '0');
