@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence } from 'framer-motion';
-import type { TripData, AppView, DashboardTab, DetailView, TransportItem, AccommodationItem, ActivityItem, ReservationItem, ItineraryDay } from '@/types/honeymoon';
-import { defaultTripData, sampleItinerary, sampleTransport, sampleAccommodations, sampleActivities, sampleReservations } from '@/data/sampleData';
+import type { TripData, AppView, DashboardTab, DetailView, ItineraryDay } from '@/types/honeymoon';
+import { sampleItinerary } from '@/data/sampleData';
+import { useTripData } from '@/hooks/useTripData';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import DashboardHeader from '@/components/DashboardHeader';
 import BottomNav from '@/components/BottomNav';
@@ -15,18 +16,38 @@ import DetailViewComponent from '@/components/DetailViews';
 const Index = () => {
   const [view, setView] = useState<AppView>('welcome');
   const [tab, setTab] = useState<DashboardTab>('planning');
-  const [tripData, setTripData] = useState<TripData>(defaultTripData);
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailView, setDetailView] = useState<DetailView>(null);
-
-  const [transportItems, setTransportItems] = useState<TransportItem[]>([]);
-  const [accommodationItems, setAccommodationItems] = useState<AccommodationItem[]>([]);
-  const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
-  const [reservationItems, setReservationItems] = useState<ReservationItem[]>([]);
   const [itineraryDays, setItineraryDays] = useState<ItineraryDay[]>(sampleItinerary);
+
+  const {
+    loading,
+    hasProfile,
+    tripData,
+    setTripData,
+    saveProfile,
+    transportItems,
+    setTransportItems,
+    transportCallbacks,
+    accommodationItems,
+    setAccommodationItems,
+    accommodationCallbacks,
+    activityItems,
+    setActivityItems,
+    activityCallbacks,
+    reservationItems,
+    setReservationItems,
+    reservationCallbacks,
+  } = useTripData();
+
+  // Returning users skip the setup screen
+  useEffect(() => {
+    if (!loading && hasProfile) setView('dashboard');
+  }, [loading, hasProfile]);
 
   const handleWelcomeComplete = (data: TripData) => {
     setTripData(data);
+    saveProfile(data);
     setView('dashboard');
   };
 
@@ -36,6 +57,8 @@ const Index = () => {
       ? `${parts[0].charAt(0).toUpperCase()}${parts[1].charAt(0).toUpperCase()}`
       : tripData.names.substring(0, 2).toUpperCase();
   };
+
+  if (loading) return null;
 
   return (
     <div className="w-full max-w-[430px] md:max-w-none mx-auto min-h-screen bg-background text-foreground overflow-hidden shadow-card relative bg-subtle-gradient">
@@ -85,8 +108,8 @@ const Index = () => {
                 accommodationItems={accommodationItems}
                 activityItems={activityItems}
                 reservationItems={reservationItems}
-                onAddActivity={(newAct) => setActivityItems(prev => [...prev, newAct])}
-                onRemoveActivity={(id) => setActivityItems(prev => prev.filter(a => a.id !== id))}
+                onAddActivity={(newAct) => { setActivityItems(prev => [...prev, newAct]); activityCallbacks.onAdd(newAct); }}
+                onRemoveActivity={(id) => { setActivityItems(prev => prev.filter(a => a.id !== id)); activityCallbacks.onDelete(id); }}
                 onGoToSettings={() => setView('welcome')}
               />
             )}
