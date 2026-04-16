@@ -661,14 +661,14 @@ const ItineraryItem = ({
         className="w-full flex items-center justify-between px-5 sm:px-6 py-4 bg-[#f6ebe9] rounded-full transition-shadow hover:bg-[#f6ebe9]/90"
       >
         <div className="flex items-center gap-4">
-          <span className="font-serif text-3xl sm:text-4xl font-light leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: '#4a3028' }}>
+          <span className="font-serif text-3xl sm:text-4xl font-light leading-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: '#000000' }}>
             {paddedNumber}
           </span>
           <div className="flex flex-col items-start">
             <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase" style={{ color: '#000000' }}>
               Day {dayWord}
             </span>
-            <span className="font-serif text-sm sm:text-base leading-snug" style={{ color: '#4a3028' }}>
+            <span className="font-serif text-sm sm:text-base leading-snug" style={{ color: '#000000' }}>
               {initialDay.date} · {editingDestination ? null : (
                 <button
                   onClick={(e) => { e.stopPropagation(); setEditingDestination(true); }}
@@ -684,14 +684,14 @@ const ItineraryItem = ({
                   onClick={(e) => e.stopPropagation()}
                   onBlur={(e) => { setDestination(e.target.value); setEditingDestination(false); }}
                   onKeyDown={(e) => { if (e.key === 'Enter') { setDestination((e.target as HTMLInputElement).value); setEditingDestination(false); } }}
-                  className="bg-transparent border-b border-[#4a3028]/40 focus:outline-none font-serif text-sm sm:text-base w-24 sm:w-32" style={{ color: '#4a3028' }}
+                  className="bg-transparent border-b border-black/40 focus:outline-none font-serif text-sm sm:text-base w-24 sm:w-32" style={{ color: '#000000' }}
                 />
               )}
             </span>
           </div>
         </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={18} style={{ color: '#4a3028', opacity: 0.5 }} />
+          <ChevronDown size={18} style={{ color: '#000000', opacity: 0.5 }} />
         </motion.div>
       </motion.button>
 

@@ -50,18 +50,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { DetailView, TodoItem, PackingItem, NoteItem, TransportItem, AccommodationItem, ActivityItem, ReservationItem, TravelerInfo } from '@/types/honeymoon';
 import { sampleTodos, samplePacking, sampleNotes } from '@/data/sampleData';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
+import type { ItemCallbacks } from '@/hooks/useTripData';
 
 interface DetailViewProps {
   view: DetailView;
   onBack: () => void;
   transportItems: TransportItem[];
   setTransportItems: React.Dispatch<React.SetStateAction<TransportItem[]>>;
+  transportCallbacks?: ItemCallbacks;
   accommodationItems: AccommodationItem[];
   setAccommodationItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>>;
+  accommodationCallbacks?: ItemCallbacks;
   activityItems: ActivityItem[];
   setActivityItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>;
   reservationItems: ReservationItem[];
   setReservationItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>;
+  reservationCallbacks?: ItemCallbacks;
   tripData?: { destination: string; days: number; names: string };
   onAddToItinerary?: (days: ItineraryDay[]) => void;
 }
@@ -553,11 +557,15 @@ const transportIconMap: Record<string, React.ElementType> = {
   Plane, Ferry: Ship, Train: TrainFront, Car,
 };
 
-const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>> }) => {
+const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>>; callbacks?: ItemCallbacks }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const add = () => setItems([...items, { id: Date.now().toString(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 }]);
-  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof TransportItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const add = () => {
+    const newItem: TransportItem = { id: Date.now().toString(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 };
+    setItems(prev => [...prev, newItem]);
+    callbacks?.onAdd(newItem);
+  };
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); callbacks?.onDelete(id); };
+  const update = (id: string, field: keyof TransportItem, value: string | number) => { setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i)); callbacks?.onUpdate(id); };
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -636,13 +644,17 @@ const TransportView = ({ onBack, items, setItems }: { onBack: () => void; items:
 };
 
 // ── Accommodations ──
-const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>> }) => {
+const AccommodationsView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>>; callbacks?: ItemCallbacks }) => {
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
-  const add = () => setItems([...items, { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 }]);
-  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof AccommodationItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const add = () => {
+    const newItem: AccommodationItem = { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 };
+    setItems(prev => [...prev, newItem]);
+    callbacks?.onAdd(newItem);
+  };
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); callbacks?.onDelete(id); };
+  const update = (id: string, field: keyof AccommodationItem, value: string | number) => { setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i)); callbacks?.onUpdate(id); };
 
   const autofill = async (id: string, name: string) => {
     if (!name.trim()) return;
@@ -657,6 +669,7 @@ const AccommodationsView = ({ onBack, items, setItems }: { onBack: () => void; i
       const text = data.content?.map((b: any) => b.text || '').join('') || '';
       const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
       setItems(prev => prev.map(i => i.id === id ? { ...i, ...(parsed.address && { address: parsed.address }), ...(parsed.checkInTime && { checkInTime: parsed.checkInTime }), ...(parsed.checkOutTime && { checkOutTime: parsed.checkOutTime }), ...(parsed.notes && { confirmation: parsed.notes }) } : i));
+      callbacks?.onUpdate(id);
     } catch { /* silently fail */ } finally {
       setLoadingIds(prev => { const n = new Set(prev); n.delete(id); return n; });
     }
@@ -809,11 +822,15 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
 };
 
 // ── Reservations ──
-const ReservationsView = ({ onBack, items, setItems }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>> }) => {
+const ReservationsView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>; callbacks?: ItemCallbacks }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const add = () => setItems([...items, { id: Date.now().toString(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 }]);
-  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof ReservationItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const add = () => {
+    const newItem: ReservationItem = { id: Date.now().toString(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 };
+    setItems(prev => [...prev, newItem]);
+    callbacks?.onAdd(newItem);
+  };
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); callbacks?.onDelete(id); };
+  const update = (id: string, field: keyof ReservationItem, value: string | number) => { setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i)); callbacks?.onUpdate(id); };
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -1152,7 +1169,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Main ──
-const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, accommodationItems, setAccommodationItems, activityItems, setActivityItems, reservationItems, setReservationItems, tripData, onAddToItinerary }: DetailViewProps) => {
+const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, transportCallbacks, accommodationItems, setAccommodationItems, accommodationCallbacks, activityItems, setActivityItems, reservationItems, setReservationItems, reservationCallbacks, tripData, onAddToItinerary }: DetailViewProps) => {
   if (!view) return null;
   return (
     <motion.div
@@ -1166,10 +1183,10 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
       {view === 'budget' && <BudgetView onBack={onBack} transportItems={transportItems} accommodationItems={accommodationItems} activityItems={activityItems} reservationItems={reservationItems} />}
       {view === 'packing' && <PackingView onBack={onBack} tripData={tripData} />}
       {view === 'notes' && <NotesView onBack={onBack} />}
-      {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} />}
-      {view === 'accommodations' && <AccommodationsView onBack={onBack} items={accommodationItems} setItems={setAccommodationItems} />}
+      {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} callbacks={transportCallbacks} />}
+      {view === 'accommodations' && <AccommodationsView onBack={onBack} items={accommodationItems} setItems={setAccommodationItems} callbacks={accommodationCallbacks} />}
       {view === 'activities' && <ActivitiesView onBack={onBack} items={activityItems} setItems={setActivityItems} />}
-      {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} />}
+      {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} callbacks={reservationCallbacks} />}
       {view === 'map' && <MapView onBack={onBack} />}
       {view === 'travelerInfo' && <TravelerInfoView onBack={onBack} />}
       {view === 'concierge' && <AIConciergeView onBack={onBack} tripData={tripData} onAddToItinerary={onAddToItinerary} />}

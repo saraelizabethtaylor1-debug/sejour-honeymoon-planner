@@ -137,12 +137,15 @@ const Index = () => {
               onBack={() => setDetailView(null)}
               transportItems={transportItems}
               setTransportItems={setTransportItems}
+              transportCallbacks={transportCallbacks}
               accommodationItems={accommodationItems}
               setAccommodationItems={setAccommodationItems}
+              accommodationCallbacks={accommodationCallbacks}
               activityItems={activityItems}
               setActivityItems={setActivityItems}
               reservationItems={reservationItems}
               setReservationItems={setReservationItems}
+              reservationCallbacks={reservationCallbacks}
               tripData={{ destination: tripData.destination, days: tripData.days, names: tripData.names }}
               onAddToItinerary={(days) => {
                 setItineraryDays(days);
