@@ -51,7 +51,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
       {/* Top row: logo + wordmark + profile avatar */}
       <div className="relative flex items-center justify-center gap-4 pt-6 pb-4 px-4 sm:px-6 lg:px-8">
         <div className="relative flex-shrink-0" style={{ width: 90, height: 90 }}>
-          <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" />
+          <img src={moonLogo} alt="Logo" className="w-full h-full object-contain" style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(57%) saturate(1200%) hue-rotate(340deg) brightness(85%)' }} />
           {initials && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="font-serif text-base" style={{ fontSize: "11px", letterSpacing: "0.15em", transform: "translateX(-0.5px)", color: '#52210e' }}>
