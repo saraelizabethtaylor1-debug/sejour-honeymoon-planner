@@ -81,7 +81,7 @@ const Index = () => {
     <div className="w-full max-w-[430px] md:max-w-none mx-auto min-h-screen bg-background text-foreground overflow-hidden shadow-card relative bg-subtle-gradient">
       <AnimatePresence mode="wait">
         {view === 'welcome' && (
-          <WelcomeScreen key="welcome" onComplete={handleWelcomeComplete} />
+          <WelcomeScreen key="welcome" onComplete={handleWelcomeComplete} initialData={tripData} />
         )}
       </AnimatePresence>
 

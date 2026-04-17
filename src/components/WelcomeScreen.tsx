@@ -5,15 +5,16 @@ import type { TripData } from '@/types/honeymoon';
 
 interface WelcomeScreenProps {
   onComplete: (data: TripData) => void;
+  initialData?: TripData;
 }
 
-const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
-  const [destination, setDestination] = useState('');
-  const [days, setDays] = useState('');
-  const [date, setDate] = useState('');
-  const [names, setNames] = useState('');
-  const [coverImage, setCoverImage] = useState<string | undefined>();
-  const [clockFormat, setClockFormat] = useState<'12h' | '24h'>('12h');
+const WelcomeScreen = ({ onComplete, initialData }: WelcomeScreenProps) => {
+  const [destination, setDestination] = useState(initialData?.destination ?? '');
+  const [days, setDays] = useState(initialData?.days ? String(initialData.days) : '');
+  const [date, setDate] = useState(initialData?.date ?? '');
+  const [names, setNames] = useState(initialData?.names ?? '');
+  const [coverImage, setCoverImage] = useState<string | undefined>(initialData?.coverImage);
+  const [clockFormat, setClockFormat] = useState<'12h' | '24h'>(initialData?.clockFormat ?? '12h');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleCoverUpload = (file: File) => {

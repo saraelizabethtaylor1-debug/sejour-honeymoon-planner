@@ -540,16 +540,16 @@ const ItineraryItem = ({
 
   const [orderedActivities, setOrderedActivities] = useState<TaggedActivity[]>([]);
   const [initialized, setInitialized] = useState(false);
-  const hasFiredRef = useRef(false);
 
-  // Fire onDayChange whenever the user modifies activities or destination,
-  // but skip the first post-initialization fire (that's just loading, not a user edit).
+  // Track the last-persisted snapshot so we only call onDayChange when content
+  // actually changes. Using JSON content (not array reference) means React
+  // StrictMode's double-invoke of effects — which creates new array references
+  // with identical content — does not trigger a spurious save on mount.
+  const prevActivitiesJsonRef = useRef<string | null>(null);
+  const prevDestRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (!initialized) return;
-    if (!hasFiredRef.current) {
-      hasFiredRef.current = true;
-      return;
-    }
     const manualActivities: ItineraryActivity[] = orderedActivities
       .filter(a => !a._synced)
       .map((a): ItineraryActivity => ({
@@ -560,6 +560,19 @@ const ItineraryItem = ({
         imageUrl: a.imageUrl,
         iconType: a.iconType,
       }));
+    const activitiesJson = JSON.stringify(manualActivities);
+
+    if (prevActivitiesJsonRef.current === null || prevDestRef.current === null) {
+      // First run after initialization — record baseline, do not fire.
+      prevActivitiesJsonRef.current = activitiesJson;
+      prevDestRef.current = destination;
+      return;
+    }
+    if (prevActivitiesJsonRef.current === activitiesJson && prevDestRef.current === destination) {
+      return; // content unchanged (e.g. StrictMode re-run with new array reference)
+    }
+    prevActivitiesJsonRef.current = activitiesJson;
+    prevDestRef.current = destination;
     onDayChange?.(destination, manualActivities);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderedActivities, destination, initialized]);
