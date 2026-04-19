@@ -1248,13 +1248,15 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
       return;
     }
     (async () => {
+      console.log('[TravelerInfoView] loading profiles for user:', user.id);
       const { data, error } = await db
         .from('traveler_profiles')
         .select('*')
         .eq('user_id', user.id)
         .order('sort_order');
+      console.log('[TravelerInfoView] load result — data:', data, '| error:', error);
       if (error) {
-        console.error('[TravelerInfoView] load error:', error);
+        console.error('[TravelerInfoView] load error — message:', error.message, '| code:', error.code, '| details:', error.details, '| hint:', error.hint);
         setTravelers([emptyTraveler(crypto.randomUUID()), emptyTraveler(crypto.randomUUID())]);
         return;
       }
@@ -1262,6 +1264,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
         setTravelers(data.map(fromDbTraveler));
         setSavedIds(new Set(data.map((r: any) => r.id as string)));
       } else {
+        console.log('[TravelerInfoView] no saved profiles found — showing empty forms');
         setTravelers([emptyTraveler(crypto.randomUUID()), emptyTraveler(crypto.randomUUID())]);
       }
     })();
@@ -1293,8 +1296,11 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
       const t = travelersRef.current.find(t => t.id === id);
       const sortOrder = travelersRef.current.findIndex(t => t.id === id);
       if (!t) return;
-      const { error } = await db.from('traveler_profiles').upsert(toDbRow(t, sortOrder)).select();
-      if (error) console.error('[TravelerInfoView] upsert error:', error);
+      const payload = toDbRow(t, sortOrder);
+      console.log('[TravelerInfoView] auto-save payload:', payload);
+      const { data, error } = await db.from('traveler_profiles').upsert(payload).select();
+      if (error) console.error('[TravelerInfoView] auto-save error — message:', error.message, '| code:', error.code, '| details:', error.details, '| hint:', error.hint);
+      else console.log('[TravelerInfoView] auto-save success:', data);
     }, 1000);
     updateTimers.current.set(id, timer);
   };
@@ -1302,13 +1308,19 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   const saveTraveler = async (id: string) => {
     const t = travelersRef.current.find(t => t.id === id);
     if (!t?.name.trim()) return;
-    setSavedIds(prev => new Set(prev).add(id));
     if (!user) return;
     const existing = updateTimers.current.get(id);
     if (existing) { clearTimeout(existing); updateTimers.current.delete(id); }
     const sortOrder = travelersRef.current.findIndex(t => t.id === id);
-    const { error } = await db.from('traveler_profiles').upsert(toDbRow(t, sortOrder)).select();
-    if (error) console.error('[TravelerInfoView] save error:', error);
+    const payload = toDbRow(t, sortOrder);
+    console.log('[TravelerInfoView] save payload:', payload);
+    const { data, error } = await db.from('traveler_profiles').upsert(payload).select();
+    if (error) {
+      console.error('[TravelerInfoView] save error — message:', error.message, '| code:', error.code, '| details:', error.details, '| hint:', error.hint);
+    } else {
+      console.log('[TravelerInfoView] save success:', data);
+      setSavedIds(prev => new Set(prev).add(id));
+    }
   };
 
   const editTraveler = (id: string) => {
