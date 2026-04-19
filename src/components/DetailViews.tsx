@@ -229,13 +229,18 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
         className="rounded-2xl p-7 sm:p-8 mb-8 text-center bg-subtle-gradient"
         style={{ boxShadow: '0 4px 24px -6px hsl(0 16% 43% / 0.10), 0 1px 6px -2px hsl(0 16% 43% / 0.06)' }}
       >
+        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-body mb-1.5">Total Spent</p>
         <span className="font-serif text-4xl text-foreground">{formatCost(totalAct)}</span>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-body mt-1.5 mb-3">Total Spent</p>
+        <div className="mb-3" />
         {editingTotal ? (
           <input
-            type="number"
-            value={totalBudgetOverride ?? categories.reduce((s, c) => s + estimatedBudgets[c], 0)}
-            onChange={(e) => setTotalBudgetOverride(parseFloat(e.target.value) || 0)}
+            type="text"
+            inputMode="decimal"
+            value={totalBudgetOverride !== null ? String(totalBudgetOverride) : String(categories.reduce((s, c) => s + estimatedBudgets[c], 0))}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/[^0-9.]/g, '');
+              setTotalBudgetOverride(raw === '' ? 0 : parseFloat(raw) || 0);
+            }}
             onBlur={() => setEditingTotal(false)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingTotal(false)}
             autoFocus
@@ -257,7 +262,7 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
                 style={{
                   width: `${Math.min((totalAct / totalEst) * 100, 100)}%`,
                   background: totalAct > totalEst
-                    ? 'hsl(0 60% 60% / 0.7)'
+                    ? 'hsl(0 28% 68% / 0.85)'
                     : 'hsl(var(--primary) / 0.55)',
                 }}
               />
