@@ -14,7 +14,9 @@ import DetailViewComponent from '@/components/DetailViews';
 
 const Index = () => {
   const [view, setView] = useState<AppView>('welcome');
-  const [tab, setTab] = useState<DashboardTab>('planning');
+  const [tab, setTab] = useState<DashboardTab>(
+    () => (sessionStorage.getItem('activeTab') as DashboardTab) || 'planning'
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailView, setDetailView] = useState<DetailView>(null);
 
@@ -56,6 +58,11 @@ const Index = () => {
       saveItineraryDays(itineraryDays);
     }, 1000);
   }, [itineraryDays, loading]);
+
+  // Persist active tab across refreshes
+  useEffect(() => {
+    sessionStorage.setItem('activeTab', tab);
+  }, [tab]);
 
   // Returning users skip the setup screen
   useEffect(() => {
