@@ -483,7 +483,7 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
           )}
         </div>
 
-        {/* Photo — perfect square flush right, delete button bottom-left */}
+        {/* Photo — perfect square flush right */}
         <div className="flex-shrink-0 self-stretch w-24 relative">
           <div className="w-full h-full overflow-hidden">
             {pickerOpen && (
@@ -493,9 +493,12 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
               />
             )}
             {act.imageUrl ? (
-              <div className="w-full h-full">
+              <button
+                onClick={() => setPickerOpen(true)}
+                className="w-full h-full block cursor-pointer"
+              >
                 <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-              </div>
+              </button>
             ) : (
               <button
                 onClick={() => setPickerOpen(true)}
@@ -506,12 +509,13 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
               </button>
             )}
           </div>
-          {/* Delete — bottom-left corner of photo, subtle until hovered */}
+          {/* Delete — bottom-left corner overlapping the photo */}
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="absolute bottom-1.5 left-1.5 p-1 rounded-md transition-all opacity-0 group-hover/item:opacity-100 hover:bg-background/60"
+            className="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
+            style={{ background: 'rgba(0,0,0,0.45)' }}
           >
-            <Trash2 size={11} strokeWidth={1.3} className="text-foreground/25 hover:text-destructive transition-colors" />
+            <Trash2 size={10} strokeWidth={1.5} className="text-white/80" />
           </button>
         </div>
       </div>
