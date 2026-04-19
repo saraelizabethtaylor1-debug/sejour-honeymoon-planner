@@ -367,7 +367,7 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
     <div ref={setNodeRef} style={style} className="flex items-start relative group/item">
       {/* Timeline dot */}
       <div className="flex-shrink-0 w-8 flex justify-center pt-6 relative z-10">
-        <div className="w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: '#8d604f', borderColor: '#8d604f' }} />
+        <div className="w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: '#52210e', borderColor: '#52210e' }} />
       </div>
 
       {/* Card */}
@@ -484,32 +484,34 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
         </div>
 
         {/* Photo — perfect square flush right, delete button bottom-left */}
-        <div className="flex-shrink-0 self-stretch w-24 overflow-hidden relative">
-          {pickerOpen && (
-            <ImagePickerModal
-              onSelect={(url) => { onSelectImage(url); setPickerOpen(false); }}
-              onClose={() => setPickerOpen(false)}
-            />
-          )}
-          {act.imageUrl ? (
-            <div className="w-full h-full">
-              <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
-            </div>
-          ) : (
-            <button
-              onClick={() => setPickerOpen(true)}
-              className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
-            >
-              <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
-              <span className="text-[10px] text-foreground/30">photo</span>
-            </button>
-          )}
-          {/* Delete — secondary action, bottom-left of photo */}
+        <div className="flex-shrink-0 self-stretch w-24 relative">
+          <div className="w-full h-full overflow-hidden">
+            {pickerOpen && (
+              <ImagePickerModal
+                onSelect={(url) => { onSelectImage(url); setPickerOpen(false); }}
+                onClose={() => setPickerOpen(false)}
+              />
+            )}
+            {act.imageUrl ? (
+              <div className="w-full h-full">
+                <img src={act.imageUrl} alt={act.title} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <button
+                onClick={() => setPickerOpen(true)}
+                className="w-full h-full bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-primary/10 transition-colors"
+              >
+                <Plus size={14} strokeWidth={1.2} className="text-foreground/30" />
+                <span className="text-[10px] text-foreground/30">photo</span>
+              </button>
+            )}
+          </div>
+          {/* Delete — bottom-left corner of photo, subtle until hovered */}
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="absolute bottom-2 left-2 p-1 rounded-md transition-all opacity-0 group-hover/item:opacity-100 hover:bg-background/60"
+            className="absolute bottom-1.5 left-1.5 p-1 rounded-md transition-all opacity-0 group-hover/item:opacity-100 hover:bg-background/60"
           >
-            <Trash2 size={12} strokeWidth={1.3} className="text-foreground/25 hover:text-destructive transition-colors" />
+            <Trash2 size={11} strokeWidth={1.3} className="text-foreground/25 hover:text-destructive transition-colors" />
           </button>
         </div>
       </div>
