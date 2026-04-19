@@ -397,9 +397,9 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
             {/* Icon — sized to span both time and name lines */}
             <div
               className="flex-shrink-0 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center"
-              style={{ width: 36, height: 36 }}
+              style={{ width: 42, height: 42 }}
             >
-              <IconComponent size={17} strokeWidth={1.4} className="text-primary-foreground" />
+              <IconComponent size={19} strokeWidth={1.4} className="text-primary-foreground" />
             </div>
             {/* Stacked text: time on top, name below */}
             <div className="flex-1 min-w-0">
