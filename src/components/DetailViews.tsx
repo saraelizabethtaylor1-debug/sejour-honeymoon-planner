@@ -617,36 +617,23 @@ const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => v
                 <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details (flight number, etc.)" className={inputClass} />
                 <PlacesAutocomplete value={item.departureLocation || ''} onChange={(v) => update(item.id, 'departureLocation' as any, v)}
                   onPlaceSelect={(r) => { update(item.id, 'departureLocation' as any, r.address); if (r.lat != null) update(item.id, 'departureLat' as any, r.lat); if (r.lng != null) update(item.id, 'departureLng' as any, r.lng); update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }}
-                  placeholder={item.type === 'Plane' ? 'JFK – John F. Kennedy International Airport' : 'Departure location'} className={inputClass} />
+                  placeholder={item.type === 'Plane' ? 'Departing airport' : 'Departure location'} className={inputClass} />
                 <PlacesAutocomplete value={item.arrivalLocation || ''} onChange={(v) => update(item.id, 'arrivalLocation' as any, v)}
                   onPlaceSelect={(r) => { update(item.id, 'arrivalLocation' as any, r.address); if (r.lat != null) update(item.id, 'arrivalLat' as any, r.lat); if (r.lng != null) update(item.id, 'arrivalLng' as any, r.lng); }}
-                  placeholder={item.type === 'Plane' ? 'LHR – London Heathrow Airport' : 'Arrival location'} className={inputClass} />
-                {item.type === 'Plane' ? (
-                  <>
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <CustomDatePicker value={item.takeoffDate || ''} onChange={(v) => { update(item.id, 'takeoffDate' as any, v); update(item.id, 'date', v); }} placeholder="Takeoff date" triggerClassName={inputClass} />
-                      <CustomTimePicker value={item.takeoffTime || ''} onChange={(v) => { update(item.id, 'takeoffTime' as any, v); update(item.id, 'time', v); }} placeholder="Takeoff time" triggerClassName={inputClass} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <CustomDatePicker value={item.landingDate || ''} onChange={(v) => update(item.id, 'landingDate' as any, v)} placeholder="Arrival date" triggerClassName={inputClass} />
-                      <CustomTimePicker value={item.landingTime || ''} onChange={(v) => update(item.id, 'landingTime' as any, v)} placeholder="Arrival time" triggerClassName={inputClass} />
-                    </div>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
-                      <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
-                    </div>
-                    <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Add any notes here…" className={inputClass} />
-                  </>
-                ) : (
-                  <div className="grid grid-cols-3 gap-2.5">
-                    <CustomDatePicker value={item.date || ''} onChange={(v) => update(item.id, 'date', v)} placeholder="Date" triggerClassName={inputClass} />
-                    <CustomTimePicker value={item.time || ''} onChange={(v) => update(item.id, 'time', v)} placeholder="Time" triggerClassName={inputClass} />
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
-                      <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
-                    </div>
-                  </div>
-                )}
+                  placeholder={item.type === 'Plane' ? 'Arrival airport' : 'Arrival location'} className={inputClass} />
+                <div className="grid grid-cols-2 gap-2.5">
+                  <CustomDatePicker value={item.takeoffDate || ''} onChange={(v) => { update(item.id, 'takeoffDate' as any, v); update(item.id, 'date', v); }} placeholder="Departure date" triggerClassName={inputClass} />
+                  <CustomTimePicker value={item.takeoffTime || ''} onChange={(v) => { update(item.id, 'takeoffTime' as any, v); update(item.id, 'time', v); }} placeholder="Departure time" triggerClassName={inputClass} />
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <CustomDatePicker value={item.landingDate || ''} onChange={(v) => update(item.id, 'landingDate' as any, v)} placeholder="Arrival date" triggerClassName={inputClass} />
+                  <CustomTimePicker value={item.landingTime || ''} onChange={(v) => update(item.id, 'landingTime' as any, v)} placeholder="Arrival time" triggerClassName={inputClass} />
+                </div>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
+                  <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
+                </div>
+                <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Add any notes here…" className={inputClass} />
                 <SaveButton label="Transportation" disabled={!item.type} onSave={() => setSavedIds(prev => new Set(prev).add(item.id))} />
               </div>
             </div>
