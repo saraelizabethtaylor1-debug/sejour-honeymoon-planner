@@ -560,7 +560,7 @@ const transportIconMap: Record<string, React.ElementType> = {
 const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>>; callbacks?: ItemCallbacks }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => {
-    const newItem: TransportItem = { id: Date.now().toString(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 };
+    const newItem: TransportItem = { id: crypto.randomUUID(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 };
     setItems(prev => [...prev, newItem]);
     callbacks?.onAdd(newItem);
   };

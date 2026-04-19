@@ -21,8 +21,9 @@ function toDbTransport(item: TransportItem, userId: string) {
     type: item.type,
     details: item.details,
     confirmation: item.confirmation,
+    // Keep date/time populated for itinerary sync (ItineraryTab matches transport to days via t.date)
     date: item.date || '',
-    time: item.time,
+    time: item.time || '',
     cost: item.cost,
     departure_location: item.departureLocation ?? null,
     departure_lat: item.departureLat ?? null,
@@ -33,17 +34,24 @@ function toDbTransport(item: TransportItem, userId: string) {
     location: item.location ?? null,
     lat: item.lat ?? null,
     lng: item.lng ?? null,
+    takeoff_date: item.takeoffDate ?? '',
+    takeoff_time: item.takeoffTime ?? '',
+    landing_date: item.landingDate ?? '',
+    landing_time: item.landingTime ?? '',
   };
 }
 
 function fromDbTransport(row: Record<string, unknown>): TransportItem {
+  // takeoff_date/time are the dedicated columns; fall back to legacy date/time for older rows
+  const takeoffDate = (row.takeoff_date as string) || (row.date as string) || '';
+  const takeoffTime = (row.takeoff_time as string) || (row.time as string) || '';
   return {
     id: row.id as string,
     type: (row.type as string) || '',
     details: (row.details as string) || '',
     confirmation: (row.confirmation as string) || '',
-    date: (row.date as string) || '',
-    time: (row.time as string) || '',
+    date: takeoffDate,
+    time: takeoffTime,
     cost: (row.cost as number) || 0,
     departureLocation: (row.departure_location as string) || undefined,
     departureLat: (row.departure_lat as number) || undefined,
@@ -54,6 +62,10 @@ function fromDbTransport(row: Record<string, unknown>): TransportItem {
     location: (row.location as string) || undefined,
     lat: (row.lat as number) || undefined,
     lng: (row.lng as number) || undefined,
+    takeoffDate,
+    takeoffTime,
+    landingDate: (row.landing_date as string) || '',
+    landingTime: (row.landing_time as string) || '',
   };
 }
 
