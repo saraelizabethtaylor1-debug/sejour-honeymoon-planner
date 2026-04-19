@@ -34,7 +34,7 @@ const ImagePickerModal = ({ onSelect, onClose }: ImagePickerModalProps) => {
     setSearchError(null);
     setResults([]);
     try {
-      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+      const apiKey = import.meta.env.VITE_GOOGLE_SEARCH_API_KEY;
       const cx = import.meta.env.VITE_GOOGLE_CSE_ID;
       const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=${cx}&key=${apiKey}&searchType=image&num=9`;
       const res = await fetch(url);
