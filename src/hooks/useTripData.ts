@@ -34,10 +34,7 @@ function toDbTransport(item: TransportItem, userId: string) {
     location: item.location ?? null,
     lat: item.lat ?? null,
     lng: item.lng ?? null,
-    takeoff_date: item.takeoffDate ?? '',
-    takeoff_time: item.takeoffTime ?? '',
-    landing_date: item.landingDate ?? '',
-    landing_time: item.landingTime ?? '',
+    // takeoff_date, takeoff_time, landing_date, landing_time omitted until migration 20260419000000 is applied
   };
 }
 
