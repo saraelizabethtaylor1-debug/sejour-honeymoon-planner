@@ -1,5 +1,7 @@
 import AIConciergeView from "@/components/AIConciergeView";
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plus, Trash2, Check, Pencil, Plane, Ship, TrainFront, Car, Loader2, Sparkles, Bed, Star, CalendarDays } from 'lucide-react';
 import type { ItineraryDay } from '@/types/honeymoon';
@@ -63,6 +65,7 @@ interface DetailViewProps {
   accommodationCallbacks?: ItemCallbacks;
   activityItems: ActivityItem[];
   setActivityItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>;
+  activityCallbacks?: ItemCallbacks;
   reservationItems: ReservationItem[];
   setReservationItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>;
   reservationCallbacks?: ItemCallbacks;
@@ -756,11 +759,15 @@ const AccommodationsView = ({ onBack, items, setItems, callbacks }: { onBack: ()
 };
 
 // ── Activities ──
-const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>> }) => {
+const ActivitiesView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>; callbacks?: ItemCallbacks }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const add = () => setItems([...items, { id: crypto.randomUUID(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
-  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
-  const update = (id: string, field: keyof ActivityItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
+  const add = () => {
+    const newItem: ActivityItem = { id: crypto.randomUUID(), name: '', notes: '', time: '', confirmation: '', cost: 0 };
+    setItems(prev => [...prev, newItem]);
+    callbacks?.onAdd(newItem);
+  };
+  const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); callbacks?.onDelete(id); };
+  const update = (id: string, field: keyof ActivityItem, value: string | number) => { setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i)); callbacks?.onUpdate(id); };
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -923,6 +930,21 @@ const emptyTraveler = (id: string): TravelerInfo => ({
   emergencyContactPhone: '', preferredAirline: '', seatPreference: '', notes: '',
 });
 
+const fromDbTraveler = (row: Record<string, unknown>): TravelerInfo => ({
+  id: row.id as string,
+  name: (row.name as string) || '',
+  passportNumber: (row.passport_number as string) || '',
+  passportExpiry: (row.passport_expiry as string) || '',
+  dateOfBirth: (row.date_of_birth as string) || '',
+  nationality: (row.nationality as string) || '',
+  dietaryRestrictions: (row.dietary_restrictions as string) || '',
+  emergencyContactName: (row.emergency_contact_name as string) || '',
+  emergencyContactPhone: (row.emergency_contact_phone as string) || '',
+  preferredAirline: (row.preferred_airline as string) || '',
+  seatPreference: (row.seat_preference as string) || '',
+  notes: (row.notes as string) || '',
+});
+
 const getInitials = (name: string) => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return '?';
@@ -1044,20 +1066,83 @@ const TravelerCard = ({ traveler, onEdit }: { traveler: TravelerInfo; onEdit: ()
 };
 
 const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
-  const [travelers, setTravelers] = useState<TravelerInfo[]>([
-    emptyTraveler('1'),
-    emptyTraveler('2'),
-  ]);
+  const { user } = useAuth();
+  const db = supabase as any;
+
+  const [travelers, setTravelers] = useState<TravelerInfo[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const travelersRef = useRef<TravelerInfo[]>([]);
+  travelersRef.current = travelers;
+  const updateTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  // Load from DB on mount; fall back to 2 empty forms if no data yet
+  useEffect(() => {
+    if (!user) {
+      setTravelers([emptyTraveler(crypto.randomUUID()), emptyTraveler(crypto.randomUUID())]);
+      return;
+    }
+    (async () => {
+      const { data, error } = await db
+        .from('traveler_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('sort_order');
+      if (error) {
+        console.error('[TravelerInfoView] load error:', error);
+        setTravelers([emptyTraveler(crypto.randomUUID()), emptyTraveler(crypto.randomUUID())]);
+        return;
+      }
+      if (data?.length) {
+        setTravelers(data.map(fromDbTraveler));
+        setSavedIds(new Set(data.map((r: any) => r.id as string)));
+      } else {
+        setTravelers([emptyTraveler(crypto.randomUUID()), emptyTraveler(crypto.randomUUID())]);
+      }
+    })();
+  }, [user]);
+
+  const toDbRow = (t: TravelerInfo, sortOrder: number) => ({
+    id: t.id,
+    user_id: user!.id,
+    name: t.name,
+    passport_number: t.passportNumber,
+    passport_expiry: t.passportExpiry,
+    date_of_birth: t.dateOfBirth,
+    nationality: t.nationality,
+    dietary_restrictions: t.dietaryRestrictions,
+    emergency_contact_name: t.emergencyContactName,
+    emergency_contact_phone: t.emergencyContactPhone,
+    preferred_airline: t.preferredAirline,
+    seat_preference: t.seatPreference,
+    notes: t.notes,
+    sort_order: sortOrder,
+  });
 
   const updateTraveler = (id: string, field: keyof TravelerInfo, value: string) => {
-    setTravelers(travelers.map(t => t.id === id ? { ...t, [field]: value } : t));
+    setTravelers(prev => prev.map(t => t.id === id ? { ...t, [field]: value } : t));
+    if (!user) return;
+    const existing = updateTimers.current.get(id);
+    if (existing) clearTimeout(existing);
+    const timer = setTimeout(async () => {
+      const t = travelersRef.current.find(t => t.id === id);
+      const sortOrder = travelersRef.current.findIndex(t => t.id === id);
+      if (!t) return;
+      const { error } = await db.from('traveler_profiles').upsert(toDbRow(t, sortOrder)).select();
+      if (error) console.error('[TravelerInfoView] upsert error:', error);
+    }, 1000);
+    updateTimers.current.set(id, timer);
   };
 
-  const saveTraveler = (id: string) => {
-    const t = travelers.find(t => t.id === id);
+  const saveTraveler = async (id: string) => {
+    const t = travelersRef.current.find(t => t.id === id);
     if (!t?.name.trim()) return;
     setSavedIds(prev => new Set(prev).add(id));
+    if (!user) return;
+    const existing = updateTimers.current.get(id);
+    if (existing) { clearTimeout(existing); updateTimers.current.delete(id); }
+    const sortOrder = travelersRef.current.findIndex(t => t.id === id);
+    const { error } = await db.from('traveler_profiles').upsert(toDbRow(t, sortOrder)).select();
+    if (error) console.error('[TravelerInfoView] save error:', error);
   };
 
   const editTraveler = (id: string) => {
@@ -1065,12 +1150,17 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
   };
 
   const addTraveler = () => {
-    setTravelers([...travelers, emptyTraveler(Date.now().toString())]);
+    setTravelers(prev => [...prev, emptyTraveler(crypto.randomUUID())]);
   };
 
-  const removeTraveler = (id: string) => {
-    setTravelers(travelers.filter(t => t.id !== id));
+  const removeTraveler = async (id: string) => {
+    setTravelers(prev => prev.filter(t => t.id !== id));
     setSavedIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+    const existing = updateTimers.current.get(id);
+    if (existing) { clearTimeout(existing); updateTimers.current.delete(id); }
+    if (!user) return;
+    const { error } = await db.from('traveler_profiles').delete().eq('id', id).eq('user_id', user.id);
+    if (error) console.error('[TravelerInfoView] delete error:', error);
   };
 
   const inputClass = 'w-full bg-card border border-foreground/5 rounded-xl px-4 py-3 text-sm font-body focus:outline-none focus:border-primary transition-colors';
@@ -1174,7 +1264,7 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
 };
 
 // ── Main ──
-const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, transportCallbacks, accommodationItems, setAccommodationItems, accommodationCallbacks, activityItems, setActivityItems, reservationItems, setReservationItems, reservationCallbacks, tripData, onAddToItinerary }: DetailViewProps) => {
+const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, transportCallbacks, accommodationItems, setAccommodationItems, accommodationCallbacks, activityItems, setActivityItems, activityCallbacks, reservationItems, setReservationItems, reservationCallbacks, tripData, onAddToItinerary }: DetailViewProps) => {
   if (!view) return null;
   return (
     <motion.div
@@ -1190,7 +1280,7 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
       {view === 'notes' && <NotesView onBack={onBack} />}
       {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} callbacks={transportCallbacks} />}
       {view === 'accommodations' && <AccommodationsView onBack={onBack} items={accommodationItems} setItems={setAccommodationItems} callbacks={accommodationCallbacks} />}
-      {view === 'activities' && <ActivitiesView onBack={onBack} items={activityItems} setItems={setActivityItems} />}
+      {view === 'activities' && <ActivitiesView onBack={onBack} items={activityItems} setItems={setActivityItems} callbacks={activityCallbacks} />}
       {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} callbacks={reservationCallbacks} />}
       {view === 'map' && <MapView onBack={onBack} />}
       {view === 'travelerInfo' && <TravelerInfoView onBack={onBack} />}

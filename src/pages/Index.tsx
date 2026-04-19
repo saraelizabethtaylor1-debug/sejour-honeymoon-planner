@@ -161,6 +161,7 @@ const Index = () => {
               accommodationCallbacks={accommodationCallbacks}
               activityItems={activityItems}
               setActivityItems={setActivityItems}
+              activityCallbacks={activityCallbacks}
               reservationItems={reservationItems}
               setReservationItems={setReservationItems}
               reservationCallbacks={reservationCallbacks}
