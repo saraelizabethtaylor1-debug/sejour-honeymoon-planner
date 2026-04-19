@@ -52,6 +52,10 @@ export interface TransportItem {
   location?: string;
   lat?: number;
   lng?: number;
+  takeoffDate?: string;
+  takeoffTime?: string;
+  landingDate?: string;
+  landingTime?: string;
 }
 
 export interface AccommodationItem {
