@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Camera, Clock } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import type { TripData } from '@/types/honeymoon';
 
 interface WelcomeScreenProps {
@@ -14,7 +14,6 @@ const WelcomeScreen = ({ onComplete, initialData }: WelcomeScreenProps) => {
   const [date, setDate] = useState(initialData?.date ?? '');
   const [names, setNames] = useState(initialData?.names ?? '');
   const [coverImage, setCoverImage] = useState<string | undefined>(initialData?.coverImage);
-  const [clockFormat, setClockFormat] = useState<'12h' | '24h'>(initialData?.clockFormat ?? '12h');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleCoverUpload = (file: File) => {
@@ -30,7 +29,6 @@ const WelcomeScreen = ({ onComplete, initialData }: WelcomeScreenProps) => {
       names: names || '',
       quote: '"you are my greatest adventure yet"',
       coverImage,
-      clockFormat,
     });
   };
 
@@ -129,33 +127,6 @@ const WelcomeScreen = ({ onComplete, initialData }: WelcomeScreenProps) => {
               />
             </div>
 
-            {/* Clock Format */}
-            <div className="space-y-1">
-              <label className="text-label pl-1 font-semibold">Clock Format</label>
-              <div className="flex items-center gap-4 py-1.5">
-                <Clock size={16} strokeWidth={1.5} className="text-foreground/40" />
-                <button
-                  onClick={() => setClockFormat('12h')}
-                  className={`font-serif text-base px-3 py-1 pill-shape transition-all ${
-                    clockFormat === '12h'
-                      ? 'bg-primary text-primary-foreground shadow-arch'
-                      : 'text-foreground/40 hover:text-[#52210e]'
-                  }`}
-                >
-                  12-hour
-                </button>
-                <button
-                  onClick={() => setClockFormat('24h')}
-                  className={`font-serif text-base px-3 py-1 pill-shape transition-all ${
-                    clockFormat === '24h'
-                      ? 'bg-primary text-primary-foreground shadow-arch'
-                      : 'text-foreground/40 hover:text-[#52210e]'
-                  }`}
-                >
-                  24-hour
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 

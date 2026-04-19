@@ -288,7 +288,6 @@ export const useTripData = () => {
       names: data.names || '',
       quote: data.quote || '"you are my greatest adventure yet"',
       cover_image: data.coverImage ?? null,
-      clock_format: data.clockFormat || '12h',
     };
     console.log('[saveProfile] upserting payload:', payload);
     const { error } = await db
