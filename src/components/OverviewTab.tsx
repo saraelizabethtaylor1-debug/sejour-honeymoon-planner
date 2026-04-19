@@ -46,7 +46,6 @@ const OverviewTab = ({ onOpenDetail, tripData, accommodationItems, activityItems
           </p>
         )}
       </div>
-      <div className="w-full border-b border-foreground/10 flex-shrink-0" />
 
       {/* Two-column layout */}
       <div className="flex-1 min-h-0 flex px-6 pt-5 pb-4" style={{ gap: 40, maxWidth: 1100, alignSelf: 'center', width: '100%' }}>
