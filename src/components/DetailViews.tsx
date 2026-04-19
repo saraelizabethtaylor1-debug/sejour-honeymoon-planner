@@ -95,11 +95,42 @@ const formatCost = (val: number) => `$${val.toLocaleString('en-US', { minimumFra
 
 // ── To-Dos ──
 const TodosView = ({ onBack }: { onBack: () => void }) => {
-  const [items, setItems] = useState<TodoItem[]>(sampleTodos);
+  const { user } = useAuth();
+  const [items, setItems] = useState<TodoItem[]>([]);
   const [newItem, setNewItem] = useState('');
-  const toggle = (id: string) => setItems(items.map(i => i.id === id ? { ...i, completed: !i.completed } : i));
-  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
-  const add = () => { if (!newItem.trim()) return; setItems([...items, { id: Date.now().toString(), text: newItem, completed: false }]); setNewItem(''); };
+
+  useEffect(() => {
+    if (!user) return;
+    (supabase as any).from('todo_items').select('*').eq('user_id', user.id).order('created_at')
+      .then(({ data, error }: { data: any[] | null; error: any }) => {
+        if (error) { console.error('Failed to load todos:', error); return; }
+        if (data) setItems(data.map((r: any) => ({ id: r.id, text: r.text, completed: r.completed })));
+      });
+  }, [user]);
+
+  const toggle = async (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const completed = !item.completed;
+    setItems(prev => prev.map(i => i.id === id ? { ...i, completed } : i));
+    const { error } = await (supabase as any).from('todo_items').update({ completed }).eq('id', id);
+    if (error) console.error('Failed to update todo:', error);
+  };
+
+  const remove = async (id: string) => {
+    setItems(prev => prev.filter(i => i.id !== id));
+    const { error } = await (supabase as any).from('todo_items').delete().eq('id', id);
+    if (error) console.error('Failed to delete todo:', error);
+  };
+
+  const add = async () => {
+    if (!newItem.trim() || !user) return;
+    const newTodo: TodoItem = { id: crypto.randomUUID(), text: newItem, completed: false };
+    setItems(prev => [...prev, newTodo]);
+    setNewItem('');
+    const { error } = await (supabase as any).from('todo_items').insert({ id: newTodo.id, user_id: user.id, text: newTodo.text, completed: false });
+    if (error) console.error('Failed to save todo:', error);
+  };
 
   return (
     <div className="max-w-[560px] mx-auto">
@@ -292,12 +323,38 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
 
 // ── Packing ──
 const PackingView = ({ onBack, tripData }: { onBack: () => void; tripData?: { destination: string; days: number } }) => {
-  const [items, setItems] = useState<PackingItem[]>(samplePacking);
+  const { user } = useAuth();
+  const [items, setItems] = useState<PackingItem[]>([]);
   const [newItem, setNewItem] = useState('');
   const [newTraveler, setNewTraveler] = useState('');
   const [generating, setGenerating] = useState(false);
-  const toggle = (id: string) => setItems(items.map(i => i.id === id ? { ...i, packed: !i.packed } : i));
-  const add = () => { if (!newItem.trim()) return; setItems([...items, { id: Date.now().toString(), text: newItem, packed: false, traveler: newTraveler || undefined }]); setNewItem(''); setNewTraveler(''); };
+
+  useEffect(() => {
+    if (!user) return;
+    (supabase as any).from('packing_items').select('*').eq('user_id', user.id).order('created_at')
+      .then(({ data, error }: { data: any[] | null; error: any }) => {
+        if (error) { console.error('Failed to load packing items:', error); return; }
+        if (data) setItems(data.map((r: any) => ({ id: r.id, text: r.text, packed: r.packed, traveler: r.traveler ?? undefined })));
+      });
+  }, [user]);
+
+  const toggle = async (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const packed = !item.packed;
+    setItems(prev => prev.map(i => i.id === id ? { ...i, packed } : i));
+    const { error } = await (supabase as any).from('packing_items').update({ packed }).eq('id', id);
+    if (error) console.error('Failed to update packing item:', error);
+  };
+
+  const add = async () => {
+    if (!newItem.trim() || !user) return;
+    const newPacking: PackingItem = { id: crypto.randomUUID(), text: newItem, packed: false, traveler: newTraveler || undefined };
+    setItems(prev => [...prev, newPacking]);
+    setNewItem(''); setNewTraveler('');
+    const { error } = await (supabase as any).from('packing_items').insert({ id: newPacking.id, user_id: user.id, text: newPacking.text, packed: false, traveler: newPacking.traveler ?? null });
+    if (error) console.error('Failed to save packing item:', error);
+  };
   const packed = items.filter(i => i.packed).length;
   const travelers = [...new Set(items.map(i => i.traveler).filter(Boolean))];
 
@@ -325,12 +382,16 @@ const PackingView = ({ onBack, tripData }: { onBack: () => void; tripData?: { de
       const text = data.content?.map((b: any) => b.text || '').join('') || '';
       const clean = text.replace(/```json|```/g, '').trim();
       const parsed: string[] = JSON.parse(clean);
-      const aiItems: PackingItem[] = parsed.map((item, i) => ({
-        id: `ai-${Date.now()}-${i}`,
+      const aiItems: PackingItem[] = parsed.map((item) => ({
+        id: crypto.randomUUID(),
         text: item,
         packed: false,
       }));
       setItems(prev => [...prev, ...aiItems]);
+      if (user) {
+        const { error } = await (supabase as any).from('packing_items').insert(aiItems.map(i => ({ id: i.id, user_id: user.id, text: i.text, packed: false, traveler: null })));
+        if (error) console.error('Failed to save AI packing items:', error);
+      }
     } catch (err) {
       console.error('Failed to generate packing list', err);
     } finally {
@@ -462,15 +523,41 @@ const PackingView = ({ onBack, tripData }: { onBack: () => void; tripData?: { de
 
 // ── Notes ──
 const NotesView = ({ onBack }: { onBack: () => void }) => {
-  const [items, setItems] = useState<NoteItem[]>(sampleNotes);
+  const { user } = useAuth();
+  const [items, setItems] = useState<NoteItem[]>([]);
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
-  const add = () => {
-    if (!newTitle.trim()) return;
-    setItems([...items, { id: Date.now().toString(), title: newTitle, content: newContent, createdAt: 'Today' }]);
+
+  useEffect(() => {
+    if (!user) return;
+    (supabase as any).from('note_items').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
+      .then(({ data, error }: { data: any[] | null; error: any }) => {
+        if (error) { console.error('Failed to load notes:', error); return; }
+        if (data) setItems(data.map((r: any) => ({
+          id: r.id,
+          title: r.title,
+          content: r.content,
+          createdAt: new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        })));
+      });
+  }, [user]);
+
+  const add = async () => {
+    if (!newTitle.trim() || !user) return;
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const newNote: NoteItem = { id, title: newTitle, content: newContent, createdAt };
+    setItems(prev => [newNote, ...prev]);
     setNewTitle(''); setNewContent('');
+    const { error } = await (supabase as any).from('note_items').insert({ id, user_id: user.id, title: newTitle, content: newContent });
+    if (error) console.error('Failed to save note:', error);
   };
-  const remove = (id: string) => setItems(items.filter(i => i.id !== id));
+
+  const remove = async (id: string) => {
+    setItems(prev => prev.filter(i => i.id !== id));
+    const { error } = await (supabase as any).from('note_items').delete().eq('id', id);
+    if (error) console.error('Failed to delete note:', error);
+  };
 
   return (
     <div className="max-w-[560px] mx-auto">
