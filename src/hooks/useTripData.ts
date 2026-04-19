@@ -305,28 +305,36 @@ export const useTripData = () => {
   // ── Transport callbacks ──
   const transportCallbacks: ItemCallbacks = {
     onAdd: async (item) => {
-      if (!user) return;
-      const { error } = await db.from('transport_items').insert(toDbTransport(item as TransportItem, user.id)).select();
+      if (!user) { console.warn('[transport] onAdd called with no user — skipping'); return; }
+      const payload = toDbTransport(item as TransportItem, user.id);
+      console.log('[transport] onAdd — inserting payload:', payload);
+      const { data, error } = await db.from('transport_items').insert(payload).select();
       if (error) console.error('[transport] insert error:', error);
+      else console.log('[transport] insert success:', data);
     },
     onUpdate: (id: string) => {
-      if (!user) return;
+      if (!user) { console.warn('[transport] onUpdate called with no user — skipping'); return; }
       const existing = transportTimers.current.get(id);
       if (existing) clearTimeout(existing);
       const timer = setTimeout(async () => {
         const item = transportRef.current.find(i => i.id === id);
-        if (!item) return;
-        const { error } = await db.from('transport_items').upsert(toDbTransport(item, user.id)).select();
+        if (!item) { console.warn('[transport] onUpdate timer fired but item not found in ref for id:', id); return; }
+        const payload = toDbTransport(item, user.id);
+        console.log('[transport] onUpdate — upserting payload:', payload);
+        const { data, error } = await db.from('transport_items').upsert(payload).select();
         if (error) console.error('[transport] upsert error:', error);
+        else console.log('[transport] upsert success:', data);
       }, 1000);
       transportTimers.current.set(id, timer);
     },
     onDelete: async (id: string) => {
-      if (!user) return;
+      if (!user) { console.warn('[transport] onDelete called with no user — skipping'); return; }
       const existing = transportTimers.current.get(id);
       if (existing) { clearTimeout(existing); transportTimers.current.delete(id); }
+      console.log('[transport] onDelete — deleting id:', id);
       const { error } = await db.from('transport_items').delete().eq('id', id).eq('user_id', user.id);
       if (error) console.error('[transport] delete error:', error);
+      else console.log('[transport] delete success for id:', id);
     },
   };
 
