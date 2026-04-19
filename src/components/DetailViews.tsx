@@ -655,7 +655,9 @@ const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => v
     callbacks?.onAdd(newItem);
   };
   const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); callbacks?.onDelete(id); };
-  const update = (id: string, field: keyof TransportItem, value: string | number) => { setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i)); callbacks?.onUpdate(id); };
+  // update only touches local state; Supabase write fires on SaveButton click via save()
+  const update = (id: string, field: keyof TransportItem, value: string | number) => { setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i)); };
+  const save = (id: string) => { setSavedIds(prev => new Set(prev).add(id)); callbacks?.onUpdate(id); };
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
 
   return (
@@ -724,7 +726,7 @@ const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => v
                   <input type="number" value={item.cost || ''} onChange={(e) => update(item.id, 'cost', parseInt(e.target.value) || 0)} placeholder="0" className={`${inputClass} pl-8`} />
                 </div>
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Add any notes here…" className={inputClass} />
-                <SaveButton label="Transportation" disabled={!item.type} onSave={() => setSavedIds(prev => new Set(prev).add(item.id))} />
+                <SaveButton label="Transportation" disabled={!item.type} onSave={() => save(item.id)} />
               </div>
             </div>
           );

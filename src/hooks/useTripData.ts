@@ -307,10 +307,14 @@ export const useTripData = () => {
     onAdd: async (item) => {
       if (!user) { console.warn('[transport] onAdd called with no user — skipping'); return; }
       const payload = toDbTransport(item as TransportItem, user.id);
-      console.log('[transport] onAdd — inserting payload:', payload);
+      console.log('[transport] onAdd — payload keys:', Object.keys(payload));
+      console.log('[transport] onAdd — payload:', payload);
       const { data, error } = await db.from('transport_items').insert(payload).select();
-      if (error) console.error('[transport] insert error:', error);
-      else console.log('[transport] insert success:', data);
+      if (error) {
+        console.error('[transport] insert error — message:', error.message, '| code:', error.code, '| details:', error.details, '| hint:', error.hint);
+      } else {
+        console.log('[transport] insert success:', data);
+      }
     },
     onUpdate: (id: string) => {
       if (!user) { console.warn('[transport] onUpdate called with no user — skipping'); return; }
@@ -320,10 +324,14 @@ export const useTripData = () => {
         const item = transportRef.current.find(i => i.id === id);
         if (!item) { console.warn('[transport] onUpdate timer fired but item not found in ref for id:', id); return; }
         const payload = toDbTransport(item, user.id);
-        console.log('[transport] onUpdate — upserting payload:', payload);
+        console.log('[transport] onUpdate — payload keys:', Object.keys(payload));
+        console.log('[transport] onUpdate — payload:', payload);
         const { data, error } = await db.from('transport_items').upsert(payload).select();
-        if (error) console.error('[transport] upsert error:', error);
-        else console.log('[transport] upsert success:', data);
+        if (error) {
+          console.error('[transport] upsert error — message:', error.message, '| code:', error.code, '| details:', error.details, '| hint:', error.hint);
+        } else {
+          console.log('[transport] upsert success:', data);
+        }
       }, 1000);
       transportTimers.current.set(id, timer);
     },
