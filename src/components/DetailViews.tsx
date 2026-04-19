@@ -654,7 +654,7 @@ const AccommodationsView = ({ onBack, items, setItems, callbacks }: { onBack: ()
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   const add = () => {
-    const newItem: AccommodationItem = { id: Date.now().toString(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 };
+    const newItem: AccommodationItem = { id: crypto.randomUUID(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 };
     setItems(prev => [...prev, newItem]);
     callbacks?.onAdd(newItem);
   };
@@ -758,7 +758,7 @@ const AccommodationsView = ({ onBack, items, setItems, callbacks }: { onBack: ()
 // ── Activities ──
 const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>> }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const add = () => setItems([...items, { id: Date.now().toString(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
+  const add = () => setItems([...items, { id: crypto.randomUUID(), name: '', notes: '', time: '', confirmation: '', cost: 0 }]);
   const remove = (id: string) => { setItems(items.filter(i => i.id !== id)); setSavedIds(prev => { const n = new Set(prev); n.delete(id); return n; }); };
   const update = (id: string, field: keyof ActivityItem, value: string | number) => setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
   const inputClass = 'w-full bg-background border border-foreground/5 rounded-xl px-4 py-2.5 text-sm font-body focus:outline-none focus:border-primary transition-colors';
@@ -830,7 +830,7 @@ const ActivitiesView = ({ onBack, items, setItems }: { onBack: () => void; items
 const ReservationsView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>; callbacks?: ItemCallbacks }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => {
-    const newItem: ReservationItem = { id: Date.now().toString(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 };
+    const newItem: ReservationItem = { id: crypto.randomUUID(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 };
     setItems(prev => [...prev, newItem]);
     callbacks?.onAdd(newItem);
   };
