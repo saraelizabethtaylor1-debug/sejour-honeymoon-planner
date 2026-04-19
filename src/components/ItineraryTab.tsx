@@ -373,61 +373,65 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
       {/* Card */}
       <div className="flex-1 bg-card rounded-2xl shadow-soft flex gap-0 min-w-0 overflow-hidden">
 
-        {/* Left column: drag handle only */}
-        <div className="flex-shrink-0 flex flex-col items-center justify-center pb-3 px-3 pt-4">
-          {/* Drag handle dots */}
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing touch-none"
-          >
-            <div className="grid grid-cols-2 gap-[3px]">
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-              <div className="w-[4px] h-[4px] rounded-full bg-foreground/20" />
-            </div>
+        {/* Drag handle strip — ~32px wide, warm tint, faint right border */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="flex-shrink-0 w-8 self-stretch flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
+          style={{ background: 'hsl(0 25% 96%)', borderRight: '1px solid hsl(0 16% 90%)' }}
+        >
+          <div className="grid grid-cols-2 gap-[3.5px]">
+            <div className="w-[3.5px] h-[3.5px] rounded-full bg-foreground/25" />
+            <div className="w-[3.5px] h-[3.5px] rounded-full bg-foreground/25" />
+            <div className="w-[3.5px] h-[3.5px] rounded-full bg-foreground/25" />
+            <div className="w-[3.5px] h-[3.5px] rounded-full bg-foreground/25" />
+            <div className="w-[3.5px] h-[3.5px] rounded-full bg-foreground/25" />
+            <div className="w-[3.5px] h-[3.5px] rounded-full bg-foreground/25" />
           </div>
         </div>
 
         {/* Content block */}
-        <div className="flex-1 min-w-0 py-4 pr-4">
-          {/* Time */}
-          {act._uid?.includes('sync-acc-stay-') ? null : (
-            editingField === 'time' ? (
-              <input
-                autoFocus
-                defaultValue={act.time}
-                onBlur={(e) => handleBlur('time', e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleBlur('time', (e.target as HTMLInputElement).value)}
-                className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 bg-transparent border-b border-primary/40 focus:outline-none w-full"
-              />
-            ) : (
-              <button onClick={() => setEditingField('time')} className="text-left w-full">
-                <span className="text-[11px] font-medium text-foreground/50 tracking-wider uppercase block mb-1 hover:text-foreground/70 transition-colors">
-                  {displayTime || 'Add time'}
-                </span>
-              </button>
-            )
-          )}
-
-          {/* Title row: icon inline-left of title */}
-          <div className="flex items-start gap-2">
-            <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mt-0.5">
-              <IconComponent size={16} strokeWidth={1.4} className="text-primary-foreground" />
+        <div className="flex-1 min-w-0 py-4 pl-3 pr-4">
+          {/* Icon + time/name row */}
+          <div className="flex items-start gap-3 mb-1">
+            {/* Icon — sized to span both time and name lines */}
+            <div
+              className="flex-shrink-0 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center"
+              style={{ width: 36, height: 36 }}
+            >
+              <IconComponent size={17} strokeWidth={1.4} className="text-primary-foreground" />
             </div>
+            {/* Stacked text: time on top, name below */}
             <div className="flex-1 min-w-0">
+              {!act._uid?.includes('sync-acc-stay-') && (
+                editingField === 'time' ? (
+                  <input
+                    autoFocus
+                    defaultValue={act.time}
+                    onBlur={(e) => handleBlur('time', e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleBlur('time', (e.target as HTMLInputElement).value)}
+                    className="text-[11px] font-light text-foreground/45 block mb-0.5 bg-transparent border-b border-primary/40 focus:outline-none w-full"
+                  />
+                ) : (
+                  <button onClick={() => setEditingField('time')} className="text-left w-full">
+                    <span className="text-[11px] font-light text-foreground/45 block mb-0.5 hover:text-foreground/65 transition-colors">
+                      {displayTime || 'Add time'}
+                    </span>
+                  </button>
+                )
+              )}
               {editingField === 'title' ? (
                 <input
                   autoFocus
                   defaultValue={act.title}
                   onBlur={(e) => handleBlur('title', e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleBlur('title', (e.target as HTMLInputElement).value)}
-                  className="font-serif text-base font-semibold text-foreground leading-snug bg-transparent border-b border-primary/40 focus:outline-none w-full"
+                  className="leading-snug bg-transparent border-b border-primary/40 focus:outline-none w-full text-foreground"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px' }}
                 />
               ) : (
                 <button onClick={() => setEditingField('title')} className="text-left w-full">
-                  <h4 className="font-serif text-base font-semibold text-foreground leading-snug hover:text-foreground/70 transition-colors">{act.title}</h4>
+                  <h4 className="leading-snug text-foreground hover:text-foreground/70 transition-colors" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px' }}>{act.title}</h4>
                 </button>
               )}
             </div>
@@ -479,8 +483,8 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
           )}
         </div>
 
-        {/* Photo — perfect square flush right */}
-        <div className="flex-shrink-0 self-stretch w-24 overflow-hidden">
+        {/* Photo — perfect square flush right, delete button bottom-left */}
+        <div className="flex-shrink-0 self-stretch w-24 overflow-hidden relative">
           {pickerOpen && (
             <ImagePickerModal
               onSelect={(url) => { onSelectImage(url); setPickerOpen(false); }}
@@ -500,15 +504,14 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
               <span className="text-[10px] text-foreground/30">photo</span>
             </button>
           )}
+          {/* Delete — secondary action, bottom-left of photo */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="absolute bottom-2 left-2 p-1 rounded-md transition-all opacity-0 group-hover/item:opacity-100 hover:bg-background/60"
+          >
+            <Trash2 size={12} strokeWidth={1.3} className="text-foreground/25 hover:text-destructive transition-colors" />
+          </button>
         </div>
-
-        {/* Delete button */}
-        <button
-          onClick={onDelete}
-          className="absolute top-3 right-3 p-1.5 hover:bg-destructive/10 rounded-lg transition-colors opacity-0 group-hover/item:opacity-100"
-        >
-          <Trash2 size={13} strokeWidth={1.3} className="text-foreground/30 hover:text-destructive transition-colors" />
-        </button>
       </div>
     </div>
   );
