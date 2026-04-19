@@ -483,9 +483,17 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
           )}
         </div>
 
-        {/* Photo — perfect square flush right */}
-        <div className="flex-shrink-0 self-stretch w-24 relative">
-          <div className="w-full h-full overflow-hidden">
+        {/* Trash + photo — side by side, trash bottom-aligned to photo */}
+        <div className="flex-shrink-0 self-stretch flex items-end">
+          {/* Delete — adjacent left of photo, bottom-aligned */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="flex-shrink-0 pb-2 px-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity"
+          >
+            <Trash2 size={12} strokeWidth={1.3} style={{ color: '#52210e' }} className="opacity-50 hover:opacity-100 transition-opacity" />
+          </button>
+          {/* Photo */}
+          <div className="w-24 self-stretch overflow-hidden">
             {pickerOpen && (
               <ImagePickerModal
                 onSelect={(url) => { onSelectImage(url); setPickerOpen(false); }}
@@ -509,14 +517,6 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
               </button>
             )}
           </div>
-          {/* Delete — bottom-left corner overlapping the photo */}
-          <button
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
-            style={{ background: 'rgba(0,0,0,0.45)' }}
-          >
-            <Trash2 size={10} strokeWidth={1.5} className="text-white/80" />
-          </button>
         </div>
       </div>
     </div>
