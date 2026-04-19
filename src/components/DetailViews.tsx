@@ -1,4 +1,5 @@
 import AIConciergeView from "@/components/AIConciergeView";
+import { formatDisplayDate, formatDisplayTime } from '@/lib/dateUtils';
 import { parse as parseDateFns, isValid as isValidDate } from 'date-fns';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -731,8 +732,8 @@ const TransportView = ({ onBack, items, setItems, callbacks, tripStartDate }: { 
                   <h3 className="font-serif text-xl text-foreground/85 leading-tight pr-8">{route}</h3>
                   <div className="border-t border-foreground/[0.07]" />
                   <div className="grid grid-cols-2 gap-3">
-                    <CardField label="Date" value={item.date} />
-                    <CardField label="Time" value={item.time} />
+                    <CardField label="Date" value={formatDisplayDate(item.date)} />
+                    <CardField label="Time" value={formatDisplayTime(item.time)} />
                     <CardField label="Details" value={item.details} />
                     <CardField label="Cost" value={item.cost} />
                   </div>
@@ -839,8 +840,8 @@ const AccommodationsView = ({ onBack, items, setItems, callbacks, tripStartDate 
       <div className="space-y-4">
         {items.map((item) => {
           if (savedIds.has(item.id)) {
-            const stayLine = [item.checkIn, item.checkOut].filter(Boolean).join(' → ');
-            const timesLine = [item.checkInTime && `In ${item.checkInTime}`, item.checkOutTime && `Out ${item.checkOutTime}`].filter(Boolean).join(' · ');
+            const stayLine = [item.checkIn, item.checkOut].filter(Boolean).map(formatDisplayDate).join(' → ');
+            const timesLine = [item.checkInTime && `In ${formatDisplayTime(item.checkInTime)}`, item.checkOutTime && `Out ${formatDisplayTime(item.checkOutTime)}`].filter(Boolean).join(' · ');
             return (
               <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
                 className="bg-card rounded-2xl shadow-soft p-6 relative overflow-hidden">
@@ -933,8 +934,8 @@ const ActivitiesView = ({ onBack, items, setItems, callbacks, tripStartDate }: {
       <div className="space-y-3">
         {items.map((item) => {
           if (savedIds.has(item.id)) {
-            const datePart = item.time?.split(',')[0]?.trim();
-            const timePart = item.confirmation;
+            const datePart = formatDisplayDate(item.time?.split(',')[0]?.trim() || '');
+            const timePart = formatDisplayTime(item.confirmation || '');
             const dateTimeLine = [datePart, timePart].filter(Boolean).join(' · ');
             return (
               <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
@@ -1017,7 +1018,7 @@ const ReservationsView = ({ onBack, items, setItems, callbacks, tripStartDate }:
       <div className="space-y-3">
         {items.map((item) => {
           if (savedIds.has(item.id)) {
-            const dateTimeLine = [item.date, item.time].filter(Boolean).join(' · ');
+            const dateTimeLine = [formatDisplayDate(item.date), formatDisplayTime(item.time)].filter(Boolean).join(' · ');
             return (
               <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
                 className="bg-card rounded-2xl shadow-soft p-6 relative overflow-hidden">

@@ -1,3 +1,33 @@
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** Format an ISO date string (YYYY-MM-DD) as "Month Day" e.g. "May 5". Passes through non-ISO values unchanged. */
+export const formatDisplayDate = (val: string): string => {
+  if (!val) return val;
+  const iso = val.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) {
+    return `${MONTH_NAMES[parseInt(iso[2], 10) - 1]} ${parseInt(iso[3], 10)}`;
+  }
+  return val;
+};
+
+/** Format a time string (HH:mm 24h, or already 12h) as short 12h with no leading zero and no AM/PM e.g. "7:30". */
+export const formatDisplayTime = (val: string): string => {
+  if (!val) return val;
+  // Strip AM/PM if present and fix leading zero
+  const withSuffix = val.match(/^(\d{1,2}):(\d{2})\s*(?:am|pm)/i);
+  if (withSuffix) return `${parseInt(withSuffix[1], 10)}:${withSuffix[2]}`;
+  // 24h HH:mm
+  const h24 = val.match(/^(\d{1,2}):(\d{2})$/);
+  if (h24) {
+    let h = parseInt(h24[1], 10);
+    const m = h24[2];
+    if (h === 0) h = 12;
+    else if (h > 12) h -= 12;
+    return `${h}:${m}`;
+  }
+  return val;
+};
+
 export const parseDateString = (dateStr: string, fallbackYear?: number): Date | null => {
   const cleaned = dateStr.replace(/\./g, '/');
   const iso = cleaned.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);

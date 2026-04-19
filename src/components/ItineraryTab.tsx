@@ -53,19 +53,20 @@ const guessIconType = (title: string): ItineraryActivity['iconType'] => {
   return 'activity';
 };
 
-/** Convert a 24h time string like "14:30" to "2:30 PM" when clockFormat is '12h'. */
-const formatTime = (time: string, clockFormat?: '12h' | '24h'): string => {
-  if (!time || clockFormat !== '12h') return time;
-  // Already contains AM/PM — already 12h
-  if (/[ap]m/i.test(time)) return time;
+/** Convert a 24h time string like "14:30" to "2:30" (12h, no leading zero, no AM/PM). */
+const formatTime = (time: string, _clockFormat?: '12h' | '24h'): string => {
+  if (!time) return time;
+  // Strip AM/PM if already present, fix leading zero
+  const withSuffix = time.match(/^(\d{1,2}):(\d{2})\s*(?:am|pm)/i);
+  if (withSuffix) return `${parseInt(withSuffix[1], 10)}:${withSuffix[2]}`;
+  // 24h HH:mm
   const match = time.match(/^(\d{1,2}):(\d{2})/);
   if (!match) return time;
   let h = parseInt(match[1], 10);
   const m = match[2];
-  const suffix = h >= 12 ? 'PM' : 'AM';
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
-  return `${h}:${m} ${suffix}`;
+  return `${h}:${m}`;
 };
 
 const extractTime = (dateTimeStr: string): string => {
