@@ -128,8 +128,10 @@ const TodosView = ({ onBack }: { onBack: () => void }) => {
     const newTodo: TodoItem = { id: crypto.randomUUID(), text: newItem, completed: false };
     setItems(prev => [...prev, newTodo]);
     setNewItem('');
-    const { error } = await (supabase as any).from('todo_items').insert({ id: newTodo.id, user_id: user.id, text: newTodo.text, completed: false });
-    if (error) console.error('Failed to save todo:', error);
+    console.log('[todos] inserting:', { id: newTodo.id, text: newTodo.text });
+    const { data, error } = await (supabase as any).from('todo_items').insert({ id: newTodo.id, user_id: user.id, text: newTodo.text, completed: false }).select();
+    if (error) console.error('[todos] insert error — message:', error.message, '| code:', error.code, '| details:', error.details);
+    else console.log('[todos] insert success:', data);
   };
 
   return (
@@ -226,7 +228,8 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
         className="rounded-2xl p-7 sm:p-8 mb-8 text-center bg-subtle-gradient"
         style={{ boxShadow: '0 4px 24px -6px hsl(0 16% 43% / 0.10), 0 1px 6px -2px hsl(0 16% 43% / 0.06)' }}
       >
-        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-body mb-3">Total Budget</p>
+        <span className="font-serif text-4xl text-foreground">{formatCost(totalAct)}</span>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-body mt-1.5 mb-3">Total Spent</p>
         {editingTotal ? (
           <input
             type="number"
@@ -235,31 +238,41 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
             onBlur={() => setEditingTotal(false)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingTotal(false)}
             autoFocus
-            className="font-serif text-4xl text-foreground bg-transparent border-b border-primary/40 text-center focus:outline-none w-48"
+            className="font-body text-sm text-foreground/60 bg-transparent border-b border-primary/40 text-center focus:outline-none w-36"
           />
         ) : (
-          <button onClick={() => setEditingTotal(true)} className="group flex items-center gap-2.5 mx-auto">
-            <span className="font-serif text-4xl text-foreground">{formatCost(totalEst)}</span>
-            <Pencil size={13} strokeWidth={1.5} className="text-foreground/25 group-hover:text-foreground/50 transition-colors" />
+          <button onClick={() => setEditingTotal(true)} className="group flex items-center gap-1.5 mx-auto">
+            <span className="text-xs font-body uppercase tracking-[0.15em] text-muted-foreground">
+              Budget {formatCost(totalEst)}
+            </span>
+            <Pencil size={11} strokeWidth={1.5} className="text-foreground/25 group-hover:text-foreground/50 transition-colors" />
           </button>
         )}
-        <div className="flex items-center justify-center gap-1.5 mt-3">
-          <span className="text-xs font-body uppercase tracking-[0.15em] text-muted-foreground">
-            Spent {formatCost(totalAct)}
-          </span>
-          {totalEst > 0 && (
-            <span className="text-[10px] font-body text-foreground/30 ml-1">
-              ({Math.round((totalAct / totalEst) * 100)}%)
-            </span>
-          )}
-        </div>
+        {totalEst > 0 && (
+          <div className="mt-4 mx-auto max-w-[280px]">
+            <div className="h-1.5 bg-foreground/8 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.min((totalAct / totalEst) * 100, 100)}%`,
+                  background: totalAct > totalEst
+                    ? 'hsl(0 60% 60% / 0.7)'
+                    : 'hsl(var(--primary) / 0.55)',
+                }}
+              />
+            </div>
+            <p className="text-[10px] font-body text-foreground/30 mt-1.5">
+              {Math.round((totalAct / totalEst) * 100)}% of budget
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Column labels */}
       <div className="flex items-center justify-between px-5 pb-2.5 text-[10px] uppercase tracking-[0.18em] text-foreground/35 font-body">
         <span>Category</span>
         <div className="flex gap-8">
-          <span>Estimated</span>
+          <span>Budget</span>
           <span className="w-24 text-right">Actual</span>
         </div>
       </div>
@@ -352,8 +365,10 @@ const PackingView = ({ onBack, tripData }: { onBack: () => void; tripData?: { de
     const newPacking: PackingItem = { id: crypto.randomUUID(), text: newItem, packed: false, traveler: newTraveler || undefined };
     setItems(prev => [...prev, newPacking]);
     setNewItem(''); setNewTraveler('');
-    const { error } = await (supabase as any).from('packing_items').insert({ id: newPacking.id, user_id: user.id, text: newPacking.text, packed: false, traveler: newPacking.traveler ?? null });
-    if (error) console.error('Failed to save packing item:', error);
+    console.log('[packing] inserting:', { id: newPacking.id, text: newPacking.text });
+    const { data, error } = await (supabase as any).from('packing_items').insert({ id: newPacking.id, user_id: user.id, text: newPacking.text, packed: false, traveler: newPacking.traveler ?? null }).select();
+    if (error) console.error('[packing] insert error — message:', error.message, '| code:', error.code, '| details:', error.details);
+    else console.log('[packing] insert success:', data);
   };
   const packed = items.filter(i => i.packed).length;
   const travelers = [...new Set(items.map(i => i.traveler).filter(Boolean))];
@@ -549,8 +564,10 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
     const newNote: NoteItem = { id, title: newTitle, content: newContent, createdAt };
     setItems(prev => [newNote, ...prev]);
     setNewTitle(''); setNewContent('');
-    const { error } = await (supabase as any).from('note_items').insert({ id, user_id: user.id, title: newTitle, content: newContent });
-    if (error) console.error('Failed to save note:', error);
+    console.log('[notes] inserting:', { id, title: newTitle });
+    const { data, error } = await (supabase as any).from('note_items').insert({ id, user_id: user.id, title: newTitle, content: newContent }).select();
+    if (error) console.error('[notes] insert error — message:', error.message, '| code:', error.code, '| details:', error.details);
+    else console.log('[notes] insert success:', data);
   };
 
   const remove = async (id: string) => {
