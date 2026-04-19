@@ -128,7 +128,7 @@ const buildSyncedActivities = (
         time: t.time || '',
         title: `${({ plane: 'Flight', ferry: 'Ferry', train: 'Train', car: 'Car' } as Record<string, string>)[typeLC] || t.type}${t.details ? ': ' + t.details : ''}`,
         location: locationStr,
-        notes: t.confirmation ? `Confirmation: ${t.confirmation}` : '',
+        notes: t.confirmation || '',
         iconType: iconKey as ItineraryActivity['iconType'],
       });
     }

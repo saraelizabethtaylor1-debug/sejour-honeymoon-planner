@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 interface PlaceResult {
   address: string;
+  name?: string;
   lat?: number;
   lng?: number;
   placeId?: string;
@@ -73,6 +74,7 @@ const PlacesAutocomplete = ({ value, onChange, onPlaceSelect, placeholder = 'Sea
         onChangeRef.current(address);
         onPlaceSelectRef.current?.({
           address,
+          name: place.name,
           lat,
           lng,
           placeId: place.place_id,

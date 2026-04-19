@@ -616,10 +616,10 @@ const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => v
                 </Select>
                 <input value={item.details} onChange={(e) => update(item.id, 'details', e.target.value)} placeholder="Details (flight number, etc.)" className={inputClass} />
                 <PlacesAutocomplete value={item.departureLocation || ''} onChange={(v) => update(item.id, 'departureLocation' as any, v)}
-                  onPlaceSelect={(r) => { update(item.id, 'departureLocation' as any, r.address); if (r.lat != null) update(item.id, 'departureLat' as any, r.lat); if (r.lng != null) update(item.id, 'departureLng' as any, r.lng); update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }}
+                  onPlaceSelect={(r) => { const loc = r.name || r.address; update(item.id, 'departureLocation' as any, loc); if (r.lat != null) update(item.id, 'departureLat' as any, r.lat); if (r.lng != null) update(item.id, 'departureLng' as any, r.lng); update(item.id, 'location', loc); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }}
                   placeholder={item.type === 'Plane' ? 'Departing airport' : 'Departure location'} className={inputClass} />
                 <PlacesAutocomplete value={item.arrivalLocation || ''} onChange={(v) => update(item.id, 'arrivalLocation' as any, v)}
-                  onPlaceSelect={(r) => { update(item.id, 'arrivalLocation' as any, r.address); if (r.lat != null) update(item.id, 'arrivalLat' as any, r.lat); if (r.lng != null) update(item.id, 'arrivalLng' as any, r.lng); }}
+                  onPlaceSelect={(r) => { const loc = r.name || r.address; update(item.id, 'arrivalLocation' as any, loc); if (r.lat != null) update(item.id, 'arrivalLat' as any, r.lat); if (r.lng != null) update(item.id, 'arrivalLng' as any, r.lng); }}
                   placeholder={item.type === 'Plane' ? 'Arrival airport' : 'Arrival location'} className={inputClass} />
                 <div className="grid grid-cols-2 gap-2.5">
                   <CustomDatePicker value={item.takeoffDate || ''} onChange={(v) => { update(item.id, 'takeoffDate' as any, v); update(item.id, 'date', v); }} placeholder="Departure date" triggerClassName={inputClass} />
