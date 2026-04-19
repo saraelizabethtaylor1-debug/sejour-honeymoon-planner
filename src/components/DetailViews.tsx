@@ -688,7 +688,16 @@ const transportIconMap: Record<string, React.ElementType> = {
 };
 
 const TransportView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set(items.map(i => i.id)));
+  const didInitSavedRef = useRef(false);
+  useEffect(() => {
+    if (didInitSavedRef.current) return;
+    if (items.length > 0) {
+      didInitSavedRef.current = true;
+      console.log('[TransportView] mount — loaded', items.length, 'items from Supabase, marking as saved');
+      setSavedIds(prev => { const next = new Set(prev); items.forEach(i => next.add(i.id)); return next; });
+    }
+  }, [items]);
   const add = () => {
     const newItem: TransportItem = { id: crypto.randomUUID(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 };
     setItems(prev => [...prev, newItem]);
@@ -783,7 +792,16 @@ const TransportView = ({ onBack, items, setItems, callbacks, tripStartDate }: { 
 // ── Accommodations ──
 const AccommodationsView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set(items.map(i => i.id)));
+  const didInitSavedRef = useRef(false);
+  useEffect(() => {
+    if (didInitSavedRef.current) return;
+    if (items.length > 0) {
+      didInitSavedRef.current = true;
+      console.log('[AccommodationsView] mount — loaded', items.length, 'items from Supabase, marking as saved');
+      setSavedIds(prev => { const next = new Set(prev); items.forEach(i => next.add(i.id)); return next; });
+    }
+  }, [items]);
 
   const add = () => {
     const newItem: AccommodationItem = { id: crypto.randomUUID(), name: '', address: '', checkIn: '', checkInTime: '', checkOut: '', checkOutTime: '', confirmation: '', cost: 0 };
@@ -889,7 +907,16 @@ const AccommodationsView = ({ onBack, items, setItems, callbacks, tripStartDate 
 
 // ── Activities ──
 const ActivitiesView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set(items.map(i => i.id)));
+  const didInitSavedRef = useRef(false);
+  useEffect(() => {
+    if (didInitSavedRef.current) return;
+    if (items.length > 0) {
+      didInitSavedRef.current = true;
+      console.log('[ActivitiesView] mount — loaded', items.length, 'items from Supabase, marking as saved');
+      setSavedIds(prev => { const next = new Set(prev); items.forEach(i => next.add(i.id)); return next; });
+    }
+  }, [items]);
   const add = () => {
     const newItem: ActivityItem = { id: crypto.randomUUID(), name: '', notes: '', time: '', confirmation: '', cost: 0 };
     setItems(prev => [...prev, newItem]);
@@ -964,7 +991,16 @@ const ActivitiesView = ({ onBack, items, setItems, callbacks, tripStartDate }: {
 
 // ── Reservations ──
 const ReservationsView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set(items.map(i => i.id)));
+  const didInitSavedRef = useRef(false);
+  useEffect(() => {
+    if (didInitSavedRef.current) return;
+    if (items.length > 0) {
+      didInitSavedRef.current = true;
+      console.log('[ReservationsView] mount — loaded', items.length, 'items from Supabase, marking as saved');
+      setSavedIds(prev => { const next = new Set(prev); items.forEach(i => next.add(i.id)); return next; });
+    }
+  }, [items]);
   const add = () => {
     const newItem: ReservationItem = { id: crypto.randomUUID(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 };
     setItems(prev => [...prev, newItem]);
