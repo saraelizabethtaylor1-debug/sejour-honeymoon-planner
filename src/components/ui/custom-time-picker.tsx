@@ -7,6 +7,7 @@ interface CustomTimePickerProps {
   placeholder?: string;
   className?: string;
   triggerClassName?: string;
+  defaultScrollTo?: string; // HH:mm — slot to scroll to when value is empty
 }
 
 const inputBase = 'w-full bg-[#fdf8f6] border border-[#e8d0cc] rounded-lg px-4 py-2.5 text-sm font-body text-[#4a3030] focus:outline-none focus:border-[#7d5a58] transition-colors cursor-pointer';
@@ -26,7 +27,7 @@ for (let h = 0; h < 24; h++) {
   }
 }
 
-export function CustomTimePicker({ value, onChange, placeholder = 'Select time', className, triggerClassName }: CustomTimePickerProps) {
+export function CustomTimePicker({ value, onChange, placeholder = 'Select time', className, triggerClassName, defaultScrollTo }: CustomTimePickerProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -40,14 +41,17 @@ export function CustomTimePicker({ value, onChange, placeholder = 'Select time',
   }, []);
 
   useEffect(() => {
-    if (open && listRef.current && value) {
-      const idx = timeSlots.indexOf(value);
-      if (idx >= 0) {
-        const el = listRef.current.children[idx] as HTMLElement;
-        el?.scrollIntoView({ block: 'center' });
+    if (open && listRef.current) {
+      const target = value || defaultScrollTo;
+      if (target) {
+        const idx = timeSlots.indexOf(target);
+        if (idx >= 0) {
+          const el = listRef.current.children[idx] as HTMLElement;
+          el?.scrollIntoView({ block: 'center' });
+        }
       }
     }
-  }, [open, value]);
+  }, [open, value, defaultScrollTo]);
 
   return (
     <div ref={ref} className={`relative ${className || ''}`}>

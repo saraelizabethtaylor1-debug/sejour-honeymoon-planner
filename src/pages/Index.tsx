@@ -172,7 +172,7 @@ const Index = () => {
               reservationItems={reservationItems}
               setReservationItems={setReservationItems}
               reservationCallbacks={reservationCallbacks}
-              tripData={{ destination: tripData.destination, days: tripData.days, names: tripData.names }}
+              tripData={{ destination: tripData.destination, days: tripData.days, names: tripData.names, date: tripData.date }}
               onAddToItinerary={(days) => {
                 setItineraryDays(days);
                 setDetailView(null);

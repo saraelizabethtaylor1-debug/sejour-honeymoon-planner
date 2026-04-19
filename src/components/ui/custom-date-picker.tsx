@@ -9,11 +9,12 @@ interface CustomDatePickerProps {
   placeholder?: string;
   className?: string;
   triggerClassName?: string;
+  defaultMonth?: Date;
 }
 
 const inputBase = 'w-full bg-[#fdf8f6] border border-[#e8d0cc] rounded-lg px-4 py-2.5 text-sm font-body text-[#4a3030] focus:outline-none focus:border-[#7d5a58] transition-colors cursor-pointer';
 
-export function CustomDatePicker({ value, onChange, placeholder = 'Select date', className, triggerClassName }: CustomDatePickerProps) {
+export function CustomDatePicker({ value, onChange, placeholder = 'Select date', className, triggerClassName, defaultMonth }: CustomDatePickerProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -46,6 +47,7 @@ export function CustomDatePicker({ value, onChange, placeholder = 'Select date',
             mode="single"
             weekStartsOn={0}
             selected={selected}
+            defaultMonth={selected ?? defaultMonth}
             onSelect={(day) => {
               if (day) {
                 onChange(format(day, 'yyyy-MM-dd'));

@@ -1,4 +1,5 @@
 import AIConciergeView from "@/components/AIConciergeView";
+import { parse as parseDateFns, isValid as isValidDate } from 'date-fns';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -69,7 +70,7 @@ interface DetailViewProps {
   reservationItems: ReservationItem[];
   setReservationItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>;
   reservationCallbacks?: ItemCallbacks;
-  tripData?: { destination: string; days: number; names: string };
+  tripData?: { destination: string; days: number; names: string; date?: string };
   onAddToItinerary?: (days: ItineraryDay[]) => void;
 }
 
@@ -664,7 +665,7 @@ const transportIconMap: Record<string, React.ElementType> = {
   Plane, Ferry: Ship, Train: TrainFront, Car,
 };
 
-const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>>; callbacks?: ItemCallbacks }) => {
+const TransportView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: TransportItem[]; setItems: React.Dispatch<React.SetStateAction<TransportItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => {
     const newItem: TransportItem = { id: crypto.randomUUID(), type: '', details: '', confirmation: '', date: '', time: '', cost: 0 };
@@ -731,12 +732,12 @@ const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => v
                   onPlaceSelect={(r) => { const loc = r.name || r.address; update(item.id, 'arrivalLocation' as any, loc); if (r.lat != null) update(item.id, 'arrivalLat' as any, r.lat); if (r.lng != null) update(item.id, 'arrivalLng' as any, r.lng); }}
                   placeholder={item.type === 'Plane' ? 'Arrival airport' : 'Arrival location'} className={inputClass} />
                 <div className="grid grid-cols-2 gap-2.5">
-                  <CustomDatePicker value={item.takeoffDate || ''} onChange={(v) => { update(item.id, 'takeoffDate' as any, v); update(item.id, 'date', v); }} placeholder="Departure date" triggerClassName={inputClass} />
-                  <CustomTimePicker value={item.takeoffTime || ''} onChange={(v) => { update(item.id, 'takeoffTime' as any, v); update(item.id, 'time', v); }} placeholder="Departure time" triggerClassName={inputClass} />
+                  <CustomDatePicker value={item.takeoffDate || ''} onChange={(v) => { update(item.id, 'takeoffDate' as any, v); update(item.id, 'date', v); }} placeholder="Departure date" triggerClassName={inputClass} defaultMonth={tripStartDate} />
+                  <CustomTimePicker value={item.takeoffTime || ''} onChange={(v) => { update(item.id, 'takeoffTime' as any, v); update(item.id, 'time', v); }} placeholder="Departure time" triggerClassName={inputClass} defaultScrollTo="08:00" />
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
-                  <CustomDatePicker value={item.landingDate || ''} onChange={(v) => update(item.id, 'landingDate' as any, v)} placeholder="Arrival date" triggerClassName={inputClass} />
-                  <CustomTimePicker value={item.landingTime || ''} onChange={(v) => update(item.id, 'landingTime' as any, v)} placeholder="Arrival time" triggerClassName={inputClass} />
+                  <CustomDatePicker value={item.landingDate || ''} onChange={(v) => update(item.id, 'landingDate' as any, v)} placeholder="Arrival date" triggerClassName={inputClass} defaultMonth={tripStartDate} />
+                  <CustomTimePicker value={item.landingTime || ''} onChange={(v) => update(item.id, 'landingTime' as any, v)} placeholder="Arrival time" triggerClassName={inputClass} defaultScrollTo="08:00" />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
@@ -758,7 +759,7 @@ const TransportView = ({ onBack, items, setItems, callbacks }: { onBack: () => v
 };
 
 // ── Accommodations ──
-const AccommodationsView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>>; callbacks?: ItemCallbacks }) => {
+const AccommodationsView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: AccommodationItem[]; setItems: React.Dispatch<React.SetStateAction<AccommodationItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
@@ -838,12 +839,12 @@ const AccommodationsView = ({ onBack, items, setItems, callbacks }: { onBack: ()
                 </div>
                 <PlacesAutocomplete value={item.address} onChange={(v) => update(item.id, 'address', v)} onPlaceSelect={(r) => { update(item.id, 'address', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Address (search or type)" className={inputClass} />
                 <div className="grid grid-cols-2 gap-2.5">
-                  <CustomDatePicker value={item.checkIn} onChange={(v) => update(item.id, 'checkIn', v)} placeholder="Check-in date" triggerClassName={inputClass} />
-                  <CustomTimePicker value={item.checkInTime} onChange={(v) => update(item.id, 'checkInTime', v)} placeholder="Check-in time" triggerClassName={inputClass} />
+                  <CustomDatePicker value={item.checkIn} onChange={(v) => update(item.id, 'checkIn', v)} placeholder="Check-in date" triggerClassName={inputClass} defaultMonth={tripStartDate} />
+                  <CustomTimePicker value={item.checkInTime} onChange={(v) => update(item.id, 'checkInTime', v)} placeholder="Check-in time" triggerClassName={inputClass} defaultScrollTo="08:00" />
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
-                  <CustomDatePicker value={item.checkOut} onChange={(v) => update(item.id, 'checkOut', v)} placeholder="Check-out date" triggerClassName={inputClass} />
-                  <CustomTimePicker value={item.checkOutTime} onChange={(v) => update(item.id, 'checkOutTime', v)} placeholder="Check-out time" triggerClassName={inputClass} />
+                  <CustomDatePicker value={item.checkOut} onChange={(v) => update(item.id, 'checkOut', v)} placeholder="Check-out date" triggerClassName={inputClass} defaultMonth={tripStartDate} />
+                  <CustomTimePicker value={item.checkOutTime} onChange={(v) => update(item.id, 'checkOutTime', v)} placeholder="Check-out time" triggerClassName={inputClass} defaultScrollTo="08:00" />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-foreground/40">$</span>
@@ -865,7 +866,7 @@ const AccommodationsView = ({ onBack, items, setItems, callbacks }: { onBack: ()
 };
 
 // ── Activities ──
-const ActivitiesView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>; callbacks?: ItemCallbacks }) => {
+const ActivitiesView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: ActivityItem[]; setItems: React.Dispatch<React.SetStateAction<ActivityItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => {
     const newItem: ActivityItem = { id: crypto.randomUUID(), name: '', notes: '', time: '', confirmation: '', cost: 0 };
@@ -917,8 +918,8 @@ const ActivitiesView = ({ onBack, items, setItems, callbacks }: { onBack: () => 
                 <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Activity name" className={inputClass} />
                 <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
                 <div className="grid grid-cols-2 gap-2.5">
-                  <CustomDatePicker value={item.time?.split(',')[0]?.trim() || ''} onChange={(v) => { const timePart = item.time?.match(/,\s*(.+)/)?.[1] || ''; update(item.id, 'time', timePart ? `${v}, ${timePart}` : v); }} placeholder="Date" triggerClassName={inputClass} />
-                  <CustomTimePicker value={item.confirmation || ''} onChange={(v) => update(item.id, 'confirmation', v)} placeholder="Time" triggerClassName={inputClass} />
+                  <CustomDatePicker value={item.time?.split(',')[0]?.trim() || ''} onChange={(v) => { const timePart = item.time?.match(/,\s*(.+)/)?.[1] || ''; update(item.id, 'time', timePart ? `${v}, ${timePart}` : v); }} placeholder="Date" triggerClassName={inputClass} defaultMonth={tripStartDate} />
+                  <CustomTimePicker value={item.confirmation || ''} onChange={(v) => update(item.id, 'confirmation', v)} placeholder="Time" triggerClassName={inputClass} defaultScrollTo="08:00" />
                 </div>
                 <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
                 <div className="relative">
@@ -940,7 +941,7 @@ const ActivitiesView = ({ onBack, items, setItems, callbacks }: { onBack: () => 
 };
 
 // ── Reservations ──
-const ReservationsView = ({ onBack, items, setItems, callbacks }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>; callbacks?: ItemCallbacks }) => {
+const ReservationsView = ({ onBack, items, setItems, callbacks, tripStartDate }: { onBack: () => void; items: ReservationItem[]; setItems: React.Dispatch<React.SetStateAction<ReservationItem[]>>; callbacks?: ItemCallbacks; tripStartDate?: Date }) => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const add = () => {
     const newItem: ReservationItem = { id: crypto.randomUUID(), name: '', date: '', time: '', confirmation: '', notes: '', cost: 0 };
@@ -991,8 +992,8 @@ const ReservationsView = ({ onBack, items, setItems, callbacks }: { onBack: () =
                 <input value={item.name} onChange={(e) => update(item.id, 'name', e.target.value)} placeholder="Restaurant / Venue" className={inputClass} />
                 <PlacesAutocomplete value={item.location || ''} onChange={(v) => update(item.id, 'location', v)} onPlaceSelect={(r) => { update(item.id, 'location', r.address); if (r.lat != null) update(item.id, 'lat' as any, r.lat); if (r.lng != null) update(item.id, 'lng' as any, r.lng); }} placeholder="Location (search or type address)" className={inputClass} />
                 <div className="grid grid-cols-2 gap-2.5">
-                  <CustomDatePicker value={item.date} onChange={(v) => update(item.id, 'date', v)} placeholder="Date" triggerClassName={inputClass} />
-                  <CustomTimePicker value={item.time} onChange={(v) => update(item.id, 'time', v)} placeholder="Time" triggerClassName={inputClass} />
+                  <CustomDatePicker value={item.date} onChange={(v) => update(item.id, 'date', v)} placeholder="Date" triggerClassName={inputClass} defaultMonth={tripStartDate} />
+                  <CustomTimePicker value={item.time} onChange={(v) => update(item.id, 'time', v)} placeholder="Time" triggerClassName={inputClass} defaultScrollTo="08:00" />
                 </div>
                 <input value={item.confirmation} onChange={(e) => update(item.id, 'confirmation', e.target.value)} placeholder="Confirmation #" className={inputClass} />
                 <input value={item.notes} onChange={(e) => update(item.id, 'notes', e.target.value)} placeholder="Notes" className={inputClass} />
@@ -1372,6 +1373,11 @@ const TravelerInfoView = ({ onBack }: { onBack: () => void }) => {
 // ── Main ──
 const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, transportCallbacks, accommodationItems, setAccommodationItems, accommodationCallbacks, activityItems, setActivityItems, activityCallbacks, reservationItems, setReservationItems, reservationCallbacks, tripData, onAddToItinerary }: DetailViewProps) => {
   if (!view) return null;
+  const tripStartDate: Date | undefined = (() => {
+    if (!tripData?.date) return undefined;
+    const d = parseDateFns(tripData.date, 'yyyy-MM-dd', new Date());
+    return isValidDate(d) ? d : undefined;
+  })();
   return (
     <motion.div
       initial={{ x: '100%' }}
@@ -1384,10 +1390,10 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
       {view === 'budget' && <BudgetView onBack={onBack} transportItems={transportItems} accommodationItems={accommodationItems} activityItems={activityItems} reservationItems={reservationItems} />}
       {view === 'packing' && <PackingView onBack={onBack} tripData={tripData} />}
       {view === 'notes' && <NotesView onBack={onBack} />}
-      {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} callbacks={transportCallbacks} />}
-      {view === 'accommodations' && <AccommodationsView onBack={onBack} items={accommodationItems} setItems={setAccommodationItems} callbacks={accommodationCallbacks} />}
-      {view === 'activities' && <ActivitiesView onBack={onBack} items={activityItems} setItems={setActivityItems} callbacks={activityCallbacks} />}
-      {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} callbacks={reservationCallbacks} />}
+      {view === 'transportation' && <TransportView onBack={onBack} items={transportItems} setItems={setTransportItems} callbacks={transportCallbacks} tripStartDate={tripStartDate} />}
+      {view === 'accommodations' && <AccommodationsView onBack={onBack} items={accommodationItems} setItems={setAccommodationItems} callbacks={accommodationCallbacks} tripStartDate={tripStartDate} />}
+      {view === 'activities' && <ActivitiesView onBack={onBack} items={activityItems} setItems={setActivityItems} callbacks={activityCallbacks} tripStartDate={tripStartDate} />}
+      {view === 'reservations' && <ReservationsView onBack={onBack} items={reservationItems} setItems={setReservationItems} callbacks={reservationCallbacks} tripStartDate={tripStartDate} />}
       {view === 'map' && <MapView onBack={onBack} />}
       {view === 'travelerInfo' && <TravelerInfoView onBack={onBack} />}
       {view === 'concierge' && <AIConciergeView onBack={onBack} tripData={tripData} onAddToItinerary={onAddToItinerary} />}
