@@ -186,6 +186,7 @@ const TodosView = ({ onBack }: { onBack: () => void }) => {
 
 // ── Budget ──
 const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems, reservationItems }: BudgetViewProps) => {
+  const { user } = useAuth();
   const [estimatedBudgets, setEstimatedBudgets] = useState<Record<string, number>>({
     Transportation: 0,
     Accommodations: 0,
@@ -196,6 +197,22 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
   const [totalBudgetOverride, setTotalBudgetOverride] = useState<number | null>(null);
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+
+  // Load saved budget from profiles on mount
+  useEffect(() => {
+    if (!user) return;
+    (supabase as any).from('profiles').select('budget').eq('user_id', user.id).single()
+      .then(({ data, error }: { data: any; error: any }) => {
+        if (error) { console.error('[BudgetView] load error:', error); return; }
+        if (data?.budget != null) setTotalBudgetOverride(data.budget);
+      });
+  }, [user]);
+
+  const saveBudget = async (value: number) => {
+    if (!user) return;
+    const { error } = await (supabase as any).from('profiles').update({ budget: value }).eq('user_id', user.id);
+    if (error) console.error('[BudgetView] save error:', error);
+  };
 
   const actualsByCategory: Record<string, number> = {
     Transportation: transportItems.reduce((s, i) => s + (i.cost || 0), 0),
@@ -241,8 +258,8 @@ const BudgetView = ({ onBack, transportItems, accommodationItems, activityItems,
               const raw = e.target.value.replace(/[^0-9.]/g, '');
               setTotalBudgetOverride(raw === '' ? 0 : parseFloat(raw) || 0);
             }}
-            onBlur={() => setEditingTotal(false)}
-            onKeyDown={(e) => e.key === 'Enter' && setEditingTotal(false)}
+            onBlur={() => { setEditingTotal(false); saveBudget(totalBudgetOverride ?? categories.reduce((s, c) => s + estimatedBudgets[c], 0)); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { setEditingTotal(false); saveBudget(totalBudgetOverride ?? categories.reduce((s, c) => s + estimatedBudgets[c], 0)); } }}
             autoFocus
             className="font-body text-sm text-foreground/60 bg-transparent border-b border-primary/40 text-center focus:outline-none w-36"
           />
