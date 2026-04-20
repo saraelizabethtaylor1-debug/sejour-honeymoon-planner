@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star, Footprints } from 'lucide-react';
 import type { DetailView } from '@/types/honeymoon';
@@ -329,7 +329,7 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng, fromLocation, toLo
   const ModeIcon = info.mode === 'walking' ? Footprints : Car;
 
   return (
-    <div className="flex items-center justify-center gap-1.5 w-full py-0.5">
+    <div className="flex items-center justify-center gap-1.5 w-full py-3">
       <ModeIcon size={11} strokeWidth={1.4} style={{ color: '#52210e', opacity: 0.4 }} />
       <ChevronDown size={11} strokeWidth={1.4} style={{ color: '#52210e', opacity: 0.4 }} />
       <span className="font-body text-[11px] text-foreground/35">{info.duration}</span>
@@ -765,17 +765,7 @@ const ItineraryItem = ({
                     <SortableContext items={activityIds} strategy={verticalListSortingStrategy}>
                       <div>
                         {orderedActivities.map((act, idx) => (
-                          <div key={act._uid} className="mb-4">
-                            {idx > 0 && (
-                              <DriveTimeConnector
-                                fromLat={orderedActivities[idx - 1].lat}
-                                fromLng={orderedActivities[idx - 1].lng}
-                                fromLocation={orderedActivities[idx - 1].location}
-                                toLat={act.lat}
-                                toLng={act.lng}
-                                toLocation={act.location}
-                              />
-                            )}
+                          <Fragment key={act._uid}>
                             <SortableActivityCard
                               id={act._uid}
                               activity={act}
@@ -785,7 +775,17 @@ const ItineraryItem = ({
                               onRemoveImage={() => removeImage(act._uid)}
                               onDelete={() => deleteActivity(act._uid)}
                             />
-                          </div>
+                            {idx < orderedActivities.length - 1 && (
+                              <DriveTimeConnector
+                                fromLat={act.lat}
+                                fromLng={act.lng}
+                                fromLocation={act.location}
+                                toLat={orderedActivities[idx + 1].lat}
+                                toLng={orderedActivities[idx + 1].lng}
+                                toLocation={orderedActivities[idx + 1].location}
+                              />
+                            )}
+                          </Fragment>
                         ))}
                       </div>
                     </SortableContext>
