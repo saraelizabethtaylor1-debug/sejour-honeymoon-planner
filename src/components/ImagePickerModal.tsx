@@ -52,9 +52,9 @@ const ImagePickerModal = ({ onSelect, onClose }: ImagePickerModalProps) => {
 
     // Step 2: Collect photo URLs from results
     const photoUrls: string[] = [];
-    for (const place of places.slice(0, 4)) {
+    for (const place of places.slice(0, 5)) {
       const photos = place.photos ?? [];
-      for (const photo of photos.slice(0, 3)) {
+      for (const photo of photos.slice(0, 4)) {
         photoUrls.push(
           `https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=800&skipHttpRedirect=false&key=${apiKey}`
         );
