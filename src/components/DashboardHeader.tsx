@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import type { TripData, DashboardTab, DetailView } from "@/types/honeymoon";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, Settings, LogOut, CalendarDays, MapPin, UserCircle } from "lucide-react";
+import { MoreVertical, Settings, LogOut, CalendarDays, MapPin, UserCircle } from "lucide-react";
 import moonLogo from "@/assets/moon-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -62,7 +62,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
         </div>
         <span
           className="font-serif"
-          style={{ fontSize: "40px", letterSpacing: "0.4em", fontWeight: 300, color: '#52210e' }}
+          style={{ fontSize: "48px", letterSpacing: "0.4em", fontWeight: 300, color: '#52210e' }}
         >
           SÉJOUR
         </span>
@@ -73,7 +73,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
             onClick={() => setProfileOpen((p) => !p)}
             className="w-9 h-9 rounded-full bg-[#f5e6e2] border border-foreground/[0.06] flex items-center justify-center transition-colors duration-200 group hover:bg-[#e8d0cc]"
           >
-            <Menu size={18} strokeWidth={1.2} className="text-[#52210e] transition-colors duration-200" />
+            <MoreVertical size={18} strokeWidth={1.2} className="text-[#52210e] transition-colors duration-200" />
           </button>
 
           <AnimatePresence>
@@ -83,7 +83,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.96 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-2 w-[260px] bg-background rounded-xl border border-foreground/[0.06] shadow-lg overflow-hidden"
+                className="absolute right-0 top-full mt-2 w-[320px] bg-background rounded-xl border border-foreground/[0.06] shadow-lg overflow-hidden"
                 style={{ boxShadow: "0 12px 40px -8px hsl(10 8% 12% / 0.12)" }}
               >
                 {/* Trip Info */}
