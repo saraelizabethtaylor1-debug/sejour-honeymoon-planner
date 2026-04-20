@@ -29,26 +29,46 @@ const ImagePickerModal = ({ onSelect, onClose }: ImagePickerModalProps) => {
   };
 
   const handleSearch = async () => {
-    if (!query.trim()) return;
-    setSearching(true);
-    setSearchError(null);
-    setResults([]);
-    try {
-      const apiKey = 'AIzaSyAb08n2fKuVLWvhSTvnsA1pZNjgmD8AVAo';
-      const cx = 'b126ae754f60c4163';
-      const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=${cx}&key=${apiKey}&searchType=image&num=9`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Search failed (${res.status})`);
-      const data = await res.json();
-      const urls: string[] = (data.items ?? []).map((item: any) => item.link);
-      if (urls.length === 0) setSearchError('No results found. Try a different search.');
-      setResults(urls);
-    } catch (err: any) {
-      setSearchError(err.message ?? 'Search failed. Please try again.');
-    } finally {
-      setSearching(false);
+  if (!query.trim()) return;
+  setSearching(true);
+  setSearchError(null);
+  setResults([]);
+  try {
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    
+    // Step 1: Find places matching the search query
+    const searchRes = await fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': 'places.photos,places.displayName'
+      },
+      body: JSON.stringify({ textQuery: query })
+    });
+    if (!searchRes.ok) throw new Error(`Search failed (${searchRes.status})`);
+    const searchData = await searchRes.json();
+    const places = searchData.places ?? [];
+
+    // Step 2: Collect photo URLs from results
+    const photoUrls: string[] = [];
+    for (const place of places.slice(0, 4)) {
+      const photos = place.photos ?? [];
+      for (const photo of photos.slice(0, 3)) {
+        photoUrls.push(
+          `https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=800&skipHttpRedirect=false&key=${apiKey}`
+        );
+      }
     }
-  };
+
+    if (photoUrls.length === 0) setSearchError('No results found. Try a different search.');
+    setResults(photoUrls);
+  } catch (err: any) {
+    setSearchError(err.message ?? 'Search failed. Please try again.');
+  } finally {
+    setSearching(false);
+  }
+};
 
   return (
     <AnimatePresence>
