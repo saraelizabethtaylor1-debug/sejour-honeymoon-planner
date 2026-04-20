@@ -73,9 +73,9 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
             onClick={() => setProfileOpen((p) => !p)}
             className="w-9 h-9 rounded-full bg-[#f5e6e2] border border-foreground/[0.06] flex items-center justify-center transition-colors duration-200 group hover:bg-[#e8d0cc]"
           >
-            <div className="grid grid-cols-3 gap-[3.5px]">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="w-[3px] h-[3px] rounded-full bg-[#52210e]" />
+            <div className="grid grid-cols-2 gap-[4px]">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="w-[3px] h-[3px] rounded-full" style={{ background: 'hsl(0 30% 35% / 0.35)' }} />
               ))}
             </div>
           </button>

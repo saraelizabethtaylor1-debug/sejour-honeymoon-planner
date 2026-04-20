@@ -627,7 +627,7 @@ const NotesView = ({ onBack }: { onBack: () => void }) => {
           onClick={add}
           className="w-full py-3.5 bg-primary pill-shape font-script text-2xl text-primary-foreground shadow-arch transition-shadow hover:shadow-lift"
         >
-          Add Note
+          add note
         </motion.button>
       </div>
 
