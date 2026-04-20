@@ -183,10 +183,10 @@ const buildSyncedActivities = (
       activities.push({
         _uid: `sync-activity-${act.id}`,
         _synced: true,
-        time: extractTime(act.time) || act.time,
+        time: act.confirmation || '',
         title: act.name,
         location: act.location || '',
-        notes: [act.notes, act.confirmation ? `Confirmation: ${act.confirmation}` : ''].filter(Boolean).join(' · '),
+        notes: act.notes || '',
         iconType: guessIconType(act.name),
       });
     }
@@ -324,7 +324,8 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng, fromLocation, toLo
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromLat, fromLng, toLat, toLng, fromLocation, toLocation]);
 
-  if (!origin || !destination || !info) return null;
+  if (!origin || !destination) return <div className="h-4" />;
+  if (!info) return <div className="h-4" />;
 
   const ModeIcon = info.mode === 'walking' ? Footprints : Car;
 
