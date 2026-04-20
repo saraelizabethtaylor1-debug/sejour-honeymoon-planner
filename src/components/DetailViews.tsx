@@ -1,5 +1,5 @@
 import AIConciergeView from "@/components/AIConciergeView";
-import { formatDisplayDate, formatDisplayTime } from '@/lib/dateUtils';
+import { formatDisplayDate, formatDisplayTime, parseDateString } from '@/lib/dateUtils';
 import { parse as parseDateFns, isValid as isValidDate } from 'date-fns';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -1446,8 +1446,14 @@ const DetailViewComponent = ({ view, onBack, transportItems, setTransportItems, 
   if (!view) return null;
   const tripStartDate: Date | undefined = (() => {
     if (!tripData?.date) return undefined;
-    const d = parseDateFns(tripData.date, 'yyyy-MM-dd', new Date());
-    return isValidDate(d) ? d : undefined;
+    console.log('[DetailViews] tripData.date raw:', tripData.date);
+    // Try strict ISO (YYYY-MM-DD) first
+    const iso = parseDateFns(tripData.date, 'yyyy-MM-dd', new Date());
+    if (isValidDate(iso)) { console.log('[DetailViews] tripStartDate resolved (ISO):', iso); return iso; }
+    // Fall back to parseDateString which handles MM/DD/YYYY, named months, etc.
+    const d = parseDateString(tripData.date);
+    console.log('[DetailViews] tripStartDate resolved (parseDateString):', d);
+    return d ?? undefined;
   })();
   return (
     <motion.div
