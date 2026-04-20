@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import type { TripData, DashboardTab, DetailView } from "@/types/honeymoon";
 import { motion, AnimatePresence } from "framer-motion";
-import { MoreVertical, Settings, LogOut, CalendarDays, MapPin, UserCircle } from "lucide-react";
+import { Settings, LogOut, CalendarDays, MapPin, UserCircle } from "lucide-react";
 import moonLogo from "@/assets/moon-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -73,7 +73,11 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
             onClick={() => setProfileOpen((p) => !p)}
             className="w-9 h-9 rounded-full bg-[#f5e6e2] border border-foreground/[0.06] flex items-center justify-center transition-colors duration-200 group hover:bg-[#e8d0cc]"
           >
-            <MoreVertical size={18} strokeWidth={1.2} className="text-[#52210e] transition-colors duration-200" />
+            <div className="grid grid-cols-3 gap-[3.5px]">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="w-[3px] h-[3px] rounded-full bg-[#52210e]" />
+              ))}
+            </div>
           </button>
 
           <AnimatePresence>
@@ -88,7 +92,7 @@ const DashboardHeader = ({ tripData, tab, onTabChange, initials, onGoToSettings,
               >
                 {/* Trip Info */}
                 <div className="px-5 pt-5 pb-4 border-b border-foreground/5">
-                  <p className="font-serif text-xs uppercase tracking-widest text-foreground/80">OUR HONEYMOON</p>
+                  <p className="font-serif text-lg tracking-widest text-foreground/80" style={{ letterSpacing: '0.18em' }}>OUR HONEYMOON</p>
                   <div className="mt-2 space-y-1.5">
                     {tripData.destination && (
                       <div className="flex items-center gap-2 text-foreground/45">
