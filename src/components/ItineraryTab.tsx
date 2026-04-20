@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star } from 'lucide-react';
+import { ChevronDown, Plus, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star, Navigation } from 'lucide-react';
+import type { DetailView } from '@/types/honeymoon';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import ImagePickerModal from '@/components/ImagePickerModal';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
@@ -20,6 +21,7 @@ interface ItineraryTabProps {
   onRemoveActivity?: (id: string) => void;
   onGoToSettings?: () => void;
   onDaysChange?: (days: ItineraryDay[]) => void;
+  onOpenDetail?: (view: DetailView) => void;
 }
 
 const iconMap: Record<string, typeof Bed> = {
@@ -327,7 +329,7 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng, fromLocation, toLo
     <div className="flex items-center gap-2 ml-[28px] py-0.5">
       <div className="flex flex-col items-center">
         <div className="w-px h-2.5 bg-primary/20" />
-        <span className="text-[11px] leading-none my-0.5">{info.mode === 'walking' ? '🚶' : '🚗'}</span>
+        <Navigation size={11} strokeWidth={1.4} style={{ color: '#52210e', opacity: 0.4 }} className="my-0.5" />
         <div className="w-px h-2.5 bg-primary/20" />
       </div>
       <span className="font-body text-[11px] text-foreground/35">{info.duration}</span>
@@ -534,6 +536,7 @@ const ItineraryItem = ({
   onAddActivity,
   onRemoveActivity,
   onDayChange,
+  onOpenDetail,
 }: {
   day: ItineraryDay;
   syncedActivities: TaggedActivity[];
@@ -543,10 +546,13 @@ const ItineraryItem = ({
   onAddActivity?: (activity: ActivityItem) => void;
   onRemoveActivity?: (id: string) => void;
   onDayChange?: (destination: string, activities: ItineraryActivity[]) => void;
+  onOpenDetail?: (view: DetailView) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [destination, setDestination] = useState(initialDay.destination);
   const [editingDestination, setEditingDestination] = useState(false);
+  const [addPopoverOpen, setAddPopoverOpen] = useState(false);
+  const addPopoverRef = useRef<HTMLDivElement>(null);
 
   const [orderedActivities, setOrderedActivities] = useState<TaggedActivity[]>([]);
   const [initialized, setInitialized] = useState(false);
@@ -557,6 +563,17 @@ const ItineraryItem = ({
   // with identical content — does not trigger a spurious save on mount.
   const prevActivitiesJsonRef = useRef<string | null>(null);
   const prevDestRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!addPopoverOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (addPopoverRef.current && !addPopoverRef.current.contains(e.target as Node)) {
+        setAddPopoverOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [addPopoverOpen]);
 
   useEffect(() => {
     if (!initialized) return;
@@ -777,13 +794,50 @@ const ItineraryItem = ({
               )}
             </div>
 
-            <div className="py-4">
-              <button
-                onClick={addActivity}
-                className="w-full py-3 font-serif text-sm sm:text-base text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-              >
-                + add activity
-              </button>
+            <div className="py-4 flex justify-center">
+              <div className="relative" ref={addPopoverRef}>
+                <button
+                  onClick={() => setAddPopoverOpen(p => !p)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-200"
+                  style={{ background: 'hsl(10 30% 88% / 0.7)' }}
+                >
+                  <Plus size={16} strokeWidth={1.8} style={{ color: '#52210e', opacity: 0.7 }} />
+                </button>
+                <AnimatePresence>
+                  {addPopoverOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                      transition={{ duration: 0.13 }}
+                      className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-background rounded-xl border border-foreground/[0.06] overflow-hidden"
+                      style={{ boxShadow: '0 8px 32px -6px hsl(10 8% 12% / 0.14)', minWidth: 180 }}
+                    >
+                      {([
+                        { label: 'Activity', view: 'activities' as DetailView },
+                        { label: 'Transportation', view: 'transportation' as DetailView },
+                        { label: 'Reservation', view: 'reservations' as DetailView },
+                        { label: 'Accommodation', view: 'accommodations' as DetailView },
+                      ]).map(({ label, view }) => (
+                        <button
+                          key={label}
+                          onClick={() => {
+                            setAddPopoverOpen(false);
+                            if (onOpenDetail) {
+                              onOpenDetail(view);
+                            } else {
+                              addActivity();
+                            }
+                          }}
+                          className="w-full text-left px-4 py-2.5 font-serif text-sm tracking-wide text-foreground/65 hover:bg-primary/10 hover:text-foreground/85 transition-colors"
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </motion.div>
         )}
@@ -819,7 +873,7 @@ const formatDayDate = (tripData: { date: string; days: number }, dayIndex: numbe
   return `${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 };
 
-const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity, onGoToSettings, onDaysChange }: ItineraryTabProps) => {
+const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems = [], activityItems = [], reservationItems = [], onAddActivity, onRemoveActivity, onGoToSettings, onDaysChange, onOpenDetail }: ItineraryTabProps) => {
   const displayDays = days.length > 0 ? days : (tripData ? generateDaysFromTrip(tripData) : []);
   const startDate = tripData ? parseDateString(tripData.date) : null;
   const fallbackYear = startDate ? startDate.getFullYear() : new Date().getFullYear();
@@ -892,6 +946,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
               onAddActivity={onAddActivity}
               onRemoveActivity={onRemoveActivity}
               onDayChange={(dest, acts) => handleDayChange(day.id, dest, acts)}
+              onOpenDetail={onOpenDetail}
             />
           );
         })

@@ -136,6 +136,7 @@ const Index = () => {
                 onRemoveActivity={(id) => { setActivityItems(prev => prev.filter(a => a.id !== id)); activityCallbacks.onDelete(id); }}
                 onGoToSettings={() => setView('welcome')}
                 onDaysChange={setItineraryDays}
+                onOpenDetail={setDetailView}
               />
             )}
           </main>
