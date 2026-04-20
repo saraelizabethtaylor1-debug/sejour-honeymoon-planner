@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star, Navigation } from 'lucide-react';
+import { ChevronDown, Plus, Bed, Plane, UtensilsCrossed, Sparkles, Palmtree, Landmark, Bus, Camera, ImagePlus, Trash2, ExternalLink, Ship, TrainFront, Car, Map, Star, Footprints } from 'lucide-react';
 import type { DetailView } from '@/types/honeymoon';
 import PlacesAutocomplete from '@/components/PlacesAutocomplete';
 import ImagePickerModal from '@/components/ImagePickerModal';
@@ -325,13 +325,12 @@ const DriveTimeConnector = ({ fromLat, fromLng, toLat, toLng, fromLocation, toLo
 
   if (!origin || !destination || !info) return null;
 
+  const ModeIcon = info.mode === 'walking' ? Footprints : Car;
+
   return (
-    <div className="flex items-center gap-2 ml-[28px] py-0.5">
-      <div className="flex flex-col items-center">
-        <div className="w-px h-2.5 bg-primary/20" />
-        <Navigation size={11} strokeWidth={1.4} style={{ color: '#52210e', opacity: 0.4 }} className="my-0.5" />
-        <div className="w-px h-2.5 bg-primary/20" />
-      </div>
+    <div className="flex items-center justify-center gap-1.5 w-full py-0.5">
+      <ModeIcon size={11} strokeWidth={1.4} style={{ color: '#52210e', opacity: 0.4 }} />
+      <ChevronDown size={11} strokeWidth={1.4} style={{ color: '#52210e', opacity: 0.4 }} />
       <span className="font-body text-[11px] text-foreground/35">{info.duration}</span>
     </div>
   );
