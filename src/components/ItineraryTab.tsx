@@ -494,7 +494,7 @@ const SortableActivityCard = ({ activity: act, id, clockFormat, onUpdate, onSele
             <Trash2 size={12} strokeWidth={1.3} style={{ color: '#52210e' }} className="opacity-50 hover:opacity-100 transition-opacity" />
           </button>
           {/* Photo */}
-          <div className="w-24 self-stretch overflow-hidden">
+         <div className="w-28 flex-shrink-0 self-stretch overflow-hidden rounded-r-2xl">
             {pickerOpen && (
               <ImagePickerModal
                 onSelect={(url) => { onSelectImage(url); setPickerOpen(false); }}
