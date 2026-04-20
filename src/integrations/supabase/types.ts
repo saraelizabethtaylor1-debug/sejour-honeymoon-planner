@@ -158,6 +158,89 @@ export type Database = {
         }
         Relationships: []
       }
+      itinerary_activities: {
+        Row: {
+          created_at: string
+          day_id: string
+          id: string
+          image_url: string | null
+          location: string | null
+          notes: string | null
+          sort_order: number
+          time: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_id: string
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          notes?: string | null
+          sort_order?: number
+          time?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day_id?: string
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          notes?: string | null
+          sort_order?: number
+          time?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itinerary_activities_day_id_fkey"
+            columns: ["day_id"]
+            isOneToOne: false
+            referencedRelation: "itinerary_days"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      itinerary_days: {
+        Row: {
+          created_at: string
+          date: string | null
+          day_number: number
+          destination: string | null
+          id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          day_number: number
+          destination?: string | null
+          id: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          day_number?: number
+          destination?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reservation_items: {
         Row: {
           confirmation: string | null
