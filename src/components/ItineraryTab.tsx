@@ -58,17 +58,18 @@ const guessIconType = (title: string): ItineraryActivity['iconType'] => {
 /** Convert a 24h time string like "14:30" to "2:30" (12h, no leading zero, no AM/PM). */
 const formatTime = (time: string, _clockFormat?: '12h' | '24h'): string => {
   if (!time) return time;
-  // Strip AM/PM if already present, fix leading zero
-  const withSuffix = time.match(/^(\d{1,2}):(\d{2})\s*(?:am|pm)/i);
-  if (withSuffix) return `${parseInt(withSuffix[1], 10)}:${withSuffix[2]}`;
+  // Already has AM/PM suffix — normalize and re-append
+  const withSuffix = time.match(/^(\d{1,2}):(\d{2})\s*(am|pm)/i);
+  if (withSuffix) return `${parseInt(withSuffix[1], 10)}:${withSuffix[2]}${withSuffix[3].toLowerCase()}`;
   // 24h HH:mm
   const match = time.match(/^(\d{1,2}):(\d{2})/);
   if (!match) return time;
   let h = parseInt(match[1], 10);
   const m = match[2];
+  const suffix = h < 12 ? 'am' : 'pm';
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
-  return `${h}:${m}`;
+  return `${h}:${m}${suffix}`;
 };
 
 const extractTime = (dateTimeStr: string): string => {
@@ -147,7 +148,7 @@ const buildSyncedActivities = (
         _uid: `sync-acc-checkin-${a.id}`,
         _synced: true,
         time: a.checkInTime || '',
-        title: `Check in at ${a.name}${a.checkInTime ? ' • ' + a.checkInTime : ''}`,
+        title: `Check in at ${a.name}`,
         location: a.address,
         notes: a.confirmation ? `Confirmation: ${a.confirmation}` : '',
         iconType: 'hotel',
@@ -157,7 +158,7 @@ const buildSyncedActivities = (
         _uid: `sync-acc-checkout-${a.id}`,
         _synced: true,
         time: a.checkOutTime || '',
-        title: `Check out at ${a.name}${a.checkOutTime ? ' • ' + a.checkOutTime : ''}`,
+        title: `Check out at ${a.name}`,
         location: a.address,
         notes: '',
         iconType: 'hotel',
