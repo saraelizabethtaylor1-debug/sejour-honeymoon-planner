@@ -61,8 +61,8 @@ const ImagePickerModal = ({ onSelect, onClose }: ImagePickerModalProps) => {
       }
     }
 
-    if (photoUrls.length === 0) setSearchError('No results found. Try a different search.');
-    setResults(photoUrls);
+    if (photoUrls.length === 0) setSearchError('No results found. Try a different search.');const trimmed = photoUrls.slice(0, 9);
+   setResults(trimmed);
   } catch (err: any) {
     setSearchError(err.message ?? 'Search failed. Please try again.');
   } finally {
