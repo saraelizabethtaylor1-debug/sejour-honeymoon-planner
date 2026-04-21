@@ -546,7 +546,7 @@ const ItineraryItem = ({
   clockFormat?: '12h' | '24h';
   onAddActivity?: (activity: ActivityItem) => void;
   onRemoveActivity?: (id: string) => void;
-  onDayChange?: (destination: string, activities: ItineraryActivity[]) => void;
+  onDayChange?: (destination: string, activities: ItineraryActivity[], imageOverrides: Record<string, string>) => void;
   onOpenDetail?: (view: DetailView) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -588,20 +588,29 @@ const ItineraryItem = ({
         imageUrl: a.imageUrl,
         iconType: a.iconType,
       }));
-    const activitiesJson = JSON.stringify(manualActivities);
+
+    // Collect imageUrl from every card (synced and manual) so photos persist
+    const imageOverrides: Record<string, string> = {};
+    for (const a of orderedActivities) {
+      if (a.imageUrl) imageOverrides[a._uid] = a.imageUrl;
+    }
+
+    const snapshotJson = JSON.stringify({ dest: destination, acts: manualActivities, imgs: imageOverrides });
 
     if (prevActivitiesJsonRef.current === null || prevDestRef.current === null) {
       // First run after initialization — record baseline, do not fire.
-      prevActivitiesJsonRef.current = activitiesJson;
+      prevActivitiesJsonRef.current = snapshotJson;
       prevDestRef.current = destination;
+      console.log('[ItineraryItem', initialDay.id, '] baseline recorded — dest:', destination);
       return;
     }
-    if (prevActivitiesJsonRef.current === activitiesJson && prevDestRef.current === destination) {
-      return; // content unchanged (e.g. StrictMode re-run with new array reference)
+    if (prevActivitiesJsonRef.current === snapshotJson) {
+      return; // content unchanged
     }
-    prevActivitiesJsonRef.current = activitiesJson;
+    console.log('[ItineraryItem', initialDay.id, '] change detected — calling onDayChange, dest:', destination);
+    prevActivitiesJsonRef.current = snapshotJson;
     prevDestRef.current = destination;
-    onDayChange?.(destination, manualActivities);
+    onDayChange?.(destination, manualActivities, imageOverrides);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderedActivities, destination, initialized]);
 
@@ -618,7 +627,10 @@ const ItineraryItem = ({
       if (!b.time) return -1;
       return a.time.localeCompare(b.time);
     });
-    setOrderedActivities(merged);
+    // Apply any previously-saved image overrides (covers synced activity photos)
+    const overrides = initialDay.imageOverrides ?? {};
+    const withImages = merged.map(a => overrides[a._uid] ? { ...a, imageUrl: overrides[a._uid] } : a);
+    setOrderedActivities(withImages);
     setInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -883,14 +895,16 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
   // Refs for propagating per-day changes up to the parent
   const displayDaysRef = useRef<ItineraryDay[]>(displayDays);
   displayDaysRef.current = displayDays;
-  const dayOverridesRef = useRef<globalThis.Map<string, { destination: string; activities: ItineraryActivity[] }>>(new globalThis.Map());
+  const dayOverridesRef = useRef<globalThis.Map<string, { destination: string; activities: ItineraryActivity[]; imageOverrides: Record<string, string> }>>(new globalThis.Map());
 
-  const handleDayChange = useCallback((dayId: string, destination: string, activities: ItineraryActivity[]) => {
-    dayOverridesRef.current.set(dayId, { destination, activities });
+  const handleDayChange = useCallback((dayId: string, destination: string, activities: ItineraryActivity[], imageOverrides: Record<string, string>) => {
+    console.log('[handleDayChange] dayId:', dayId, 'destination:', destination, 'activities:', activities.length, 'imageOverrides keys:', Object.keys(imageOverrides).length);
+    dayOverridesRef.current.set(dayId, { destination, activities, imageOverrides });
     const updated = displayDaysRef.current.map(d => {
       const override = dayOverridesRef.current.get(d.id);
-      return override ? { ...d, destination: override.destination, activities: override.activities } : d;
+      return override ? { ...d, destination: override.destination, activities: override.activities, imageOverrides: override.imageOverrides } : d;
     });
+    console.log('[handleDayChange] calling onDaysChange with', updated.length, 'days');
     onDaysChange?.(updated);
   }, [onDaysChange]);
 
@@ -946,7 +960,7 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
               clockFormat={clockFormat}
               onAddActivity={onAddActivity}
               onRemoveActivity={onRemoveActivity}
-              onDayChange={(dest, acts) => handleDayChange(day.id, dest, acts)}
+              onDayChange={(dest, acts, imgs) => handleDayChange(day.id, dest, acts, imgs)}
               onOpenDetail={onOpenDetail}
             />
           );

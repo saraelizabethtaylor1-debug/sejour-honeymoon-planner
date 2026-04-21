@@ -112,6 +112,7 @@ export interface ItineraryDay {
   date: string;
   destination: string;
   activities: ItineraryActivity[];
+  imageOverrides?: Record<string, string>; // uid → imageUrl for all activity cards
 }
 
 export interface TravelerInfo {

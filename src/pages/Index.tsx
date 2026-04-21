@@ -48,13 +48,17 @@ const Index = () => {
 
   // Debounced save whenever itineraryDays changes (skip the initial load)
   useEffect(() => {
+    console.log('[debounce] effect ran — loading:', loading, 'hasLoaded:', hasItineraryLoadedRef.current, 'days:', itineraryDays.length);
     if (loading) return;
     if (!hasItineraryLoadedRef.current) {
       hasItineraryLoadedRef.current = true;
+      console.log('[debounce] first run after load — skipping save, setting hasLoaded=true');
       return;
     }
     if (saveItineraryTimerRef.current) clearTimeout(saveItineraryTimerRef.current);
+    console.log('[debounce] scheduling save in 1s');
     saveItineraryTimerRef.current = setTimeout(() => {
+      console.log('[debounce] timer fired — calling saveItineraryDays');
       saveItineraryDays(itineraryDays);
     }, 1000);
   }, [itineraryDays, loading]);

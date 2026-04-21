@@ -253,6 +253,7 @@ export const useTripData = () => {
             dayLabel: row.title || `Day ${row.day_number}`,
             date: row.date || '',
             destination: row.destination || '',
+            imageOverrides: (() => { try { return JSON.parse(row.image_overrides || '{}'); } catch { return {}; } })(),
             activities: allActivities
               .filter((a: any) => a.day_id === row.id)
               .map((a: any): ItineraryActivity => ({
@@ -451,6 +452,7 @@ export const useTripData = () => {
         title: d.dayLabel,
         date: d.date,
         destination: d.destination,
+        image_overrides: JSON.stringify(d.imageOverrides ?? {}),
       }));
       console.log('[saveItineraryDays] inserting dayRows:', JSON.stringify(dayRows));
       const { error: daysError } = await db.from('itinerary_days').insert(dayRows);
