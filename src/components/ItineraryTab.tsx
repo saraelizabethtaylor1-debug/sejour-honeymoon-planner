@@ -902,13 +902,13 @@ const ItineraryTab = ({ days, tripData, transportItems = [], accommodationItems 
   // Refs for propagating per-day changes up to the parent
   const displayDaysRef = useRef<ItineraryDay[]>(displayDays);
   displayDaysRef.current = displayDays;
-  const dayOverridesRef = useRef<globalThis.Map<string, { destination: string; activities: ItineraryActivity[]; imageOverrides: Record<string, string> }>>(new globalThis.Map());
+  const dayOverridesRef = useRef<Record<string, { destination: string; activities: ItineraryActivity[]; imageOverrides: Record<string, string> }>>({});
 
   const handleDayChange = useCallback((dayId: string, destination: string, activities: ItineraryActivity[], imageOverrides: Record<string, string>) => {
     console.log('[handleDayChange] dayId:', dayId, 'destination:', destination, 'activities:', activities.length, 'imageOverrides keys:', Object.keys(imageOverrides).length);
-    dayOverridesRef.current.set(dayId, { destination, activities, imageOverrides });
+    dayOverridesRef.current[dayId] = { destination, activities, imageOverrides };
     const updated = displayDaysRef.current.map(d => {
-      const override = dayOverridesRef.current.get(d.id);
+      const override = dayOverridesRef.current[d.id];
       return override ? { ...d, destination: override.destination, activities: override.activities, imageOverrides: override.imageOverrides } : d;
     });
     console.log('[handleDayChange] calling onDaysChange with', updated.length, 'days');
