@@ -638,7 +638,8 @@ const ItineraryItem = ({
   useEffect(() => {
     if (!initialized) return;
     setOrderedActivities(prev => {
-      const prevByUid = new Map(prev.map(a => [a._uid, a]));
+      const prevImageByUid: Record<string, string | undefined> = {};
+      for (const a of prev) { if (a.imageUrl) prevImageByUid[a._uid] = a.imageUrl; }
       const manualItems = prev.filter(a => !a._synced);
       const manualIds = new Set(manualItems.map(a => a._uid));
       const filteredSynced = syncedActivities
@@ -647,8 +648,8 @@ const ItineraryItem = ({
           return !manualIds.has(sourceId);
         })
         .map(s => {
-          const existing = prevByUid.get(s._uid);
-          return existing?.imageUrl ? { ...s, imageUrl: existing.imageUrl } : s;
+          const savedUrl = prevImageByUid[s._uid];
+          return savedUrl ? { ...s, imageUrl: savedUrl } : s;
         });
       return [...filteredSynced, ...manualItems];
     });
