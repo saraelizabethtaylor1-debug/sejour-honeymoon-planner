@@ -431,11 +431,16 @@ export const useTripData = () => {
 
   // ── Itinerary save (delete-then-reinsert on every debounced call) ──
   const saveItineraryDays = useCallback(async (days: ItineraryDay[]) => {
-    if (!user) return;
+    if (!user) { console.warn('[saveItineraryDays] skipped — no user'); return; }
+    console.log('[saveItineraryDays] called, days:', days.map(d => ({
+      id: d.id, destination: d.destination,
+      activities: d.activities.map(a => ({ title: a.title, imageUrl: a.imageUrl })),
+    })));
     try {
       // Delete all existing days; CASCADE on FK removes activities too
       const { error: deleteError } = await db.from('itinerary_days').delete().eq('user_id', user.id);
       if (deleteError) { console.error('[saveItineraryDays] delete error:', deleteError); return; }
+      console.log('[saveItineraryDays] delete ok');
 
       if (days.length === 0) return;
 
@@ -447,8 +452,10 @@ export const useTripData = () => {
         date: d.date,
         destination: d.destination,
       }));
+      console.log('[saveItineraryDays] inserting dayRows:', JSON.stringify(dayRows));
       const { error: daysError } = await db.from('itinerary_days').insert(dayRows);
       if (daysError) { console.error('[saveItineraryDays] days insert error:', daysError); return; }
+      console.log('[saveItineraryDays] days insert ok');
 
       const activityRows = days.flatMap((d) =>
         d.activities.map((a, i) => ({
@@ -462,10 +469,13 @@ export const useTripData = () => {
           sort_order: i,
         }))
       );
+      console.log('[saveItineraryDays] inserting activityRows:', JSON.stringify(activityRows));
       if (activityRows.length > 0) {
         const { error: actError } = await db.from('itinerary_activities').insert(activityRows);
-        if (actError) console.error('[saveItineraryDays] activities insert error:', actError);
+        if (actError) { console.error('[saveItineraryDays] activities insert error:', actError); return; }
+        console.log('[saveItineraryDays] activities insert ok');
       }
+      console.log('[saveItineraryDays] save complete ✓');
     } catch (err) {
       console.error('[saveItineraryDays] unexpected error:', err);
     }
