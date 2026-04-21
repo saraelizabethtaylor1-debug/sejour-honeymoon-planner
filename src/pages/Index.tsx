@@ -58,7 +58,7 @@ const Index = () => {
     if (saveItineraryTimerRef.current) clearTimeout(saveItineraryTimerRef.current);
     console.log('[debounce] scheduling save in 1s');
     saveItineraryTimerRef.current = setTimeout(() => {
-      console.log('[debounce] timer fired — calling saveItineraryDays');
+      console.log('[debounce] timer fired — imageOverrides in snapshot:', itineraryDays.map(d => ({ id: d.id, overrides: d.imageOverrides })));
       saveItineraryDays(itineraryDays);
     }, 1000);
   }, [itineraryDays, loading]);

@@ -435,6 +435,7 @@ export const useTripData = () => {
     if (!user) { console.warn('[saveItineraryDays] skipped — no user'); return; }
     console.log('[saveItineraryDays] called, days:', days.map(d => ({
       id: d.id, destination: d.destination,
+      imageOverrides: d.imageOverrides,
       activities: d.activities.map(a => ({ title: a.title, imageUrl: a.imageUrl })),
     })));
     try {
