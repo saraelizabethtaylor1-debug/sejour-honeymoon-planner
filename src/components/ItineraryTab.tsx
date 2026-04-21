@@ -9,6 +9,8 @@ import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } 
 import { CSS } from '@dnd-kit/utilities';
 import type { ItineraryDay, ItineraryActivity, TransportItem, AccommodationItem, ActivityItem, ReservationItem } from '@/types/honeymoon';
 import { parseDateString } from '@/lib/dateUtils';
+import { useAuth } from '@/contexts/AuthContext';
+import { uploadActivityImage } from '@/utils/uploadActivityImage';
 
 interface ItineraryTabProps {
   days: ItineraryDay[];
@@ -549,6 +551,7 @@ const ItineraryItem = ({
   onDayChange?: (destination: string, activities: ItineraryActivity[], imageOverrides: Record<string, string>) => void;
   onOpenDetail?: (view: DetailView) => void;
 }) => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [destination, setDestination] = useState(initialDay.destination);
   const [editingDestination, setEditingDestination] = useState(false);
@@ -680,11 +683,23 @@ const ItineraryItem = ({
     );
   }, []);
 
-  const handleSelectImage = useCallback((uid: string, url: string) => {
+  const handleSelectImage = useCallback(async (uid: string, url: string) => {
+    // Show immediately so the UI feels instant
     setOrderedActivities(prev =>
       prev.map(a => a._uid === uid ? { ...a, imageUrl: url } : a)
     );
-  }, []);
+    // Base64 uploads must go to Storage first — raw base64 is too large for the DB
+    if (url.startsWith('data:image') && user) {
+      try {
+        const publicUrl = await uploadActivityImage(url, user.id, uid);
+        setOrderedActivities(prev =>
+          prev.map(a => a._uid === uid ? { ...a, imageUrl: publicUrl } : a)
+        );
+      } catch (err) {
+        console.error('[handleSelectImage] storage upload failed:', err);
+      }
+    }
+  }, [user]);
 
   const removeImage = useCallback((uid: string) => {
     setOrderedActivities(prev =>
